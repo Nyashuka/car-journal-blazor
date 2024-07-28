@@ -1,0 +1,8 @@
+@id=100
+
+PUT http://localhost:5958/manufacturer/{{id}}
+Content-Type: application/json
+
+{
+    "name" : "Porshe"
+}

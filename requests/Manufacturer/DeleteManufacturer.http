@@ -1,0 +1,8 @@
+@id=100
+
+DELETE http://localhost:5958/manufacturer/{{id}}
+
+
+
+
+

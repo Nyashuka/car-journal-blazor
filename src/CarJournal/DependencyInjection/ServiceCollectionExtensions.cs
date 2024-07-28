@@ -6,13 +6,13 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
 
-
         return services;
     }
 
     public static IServiceCollection AddSwagger(
         this IServiceCollection services)
     {
+        services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
         return services;

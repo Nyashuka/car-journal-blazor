@@ -1,0 +1,3 @@
+@id=100
+
+GET http://localhost:5958/manufacturer/{{id}}
