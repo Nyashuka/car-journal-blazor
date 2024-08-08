@@ -1,0 +1,7 @@
+POST http://localhost:5958/auth/register
+Content-Type: application/json
+
+{
+    "email": "human@gmail.com",
+    "password": "super-password"
+}

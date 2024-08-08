@@ -8,11 +8,11 @@ namespace CarJournal.Infrastructure.Authentication;
 
 public class JwtTokenGenerator : IJwtTokenGenerator
 {
-    public string GenerateToken(int id)
+    public string GenerateToken(Guid id)
     {
         var signingCredential = new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("secret")
+                Encoding.UTF8.GetBytes("hs256 key generatorfdsabfdjhsbf ajsdbjkhas asdb")
             ),
             SecurityAlgorithms.HmacSha256
         );

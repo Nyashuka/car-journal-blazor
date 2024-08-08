@@ -5,7 +5,7 @@ namespace CarJournal.Controllers;
 public class ErrorsController : ControllerBase
 {
     [Route("/error")]
-    public IActionResult Error()
+    protected IActionResult Error()
     {
         return Problem();
     }

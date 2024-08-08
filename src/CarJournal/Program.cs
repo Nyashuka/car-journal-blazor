@@ -4,7 +4,7 @@ using CarJournal.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddRepositories()
-                    .AddRepositories()
+                    .AddInfrastructure()
                     .AddServices()
                     .AddSwagger()
                     .AddControllers();
