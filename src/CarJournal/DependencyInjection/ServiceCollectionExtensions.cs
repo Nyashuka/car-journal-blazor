@@ -38,4 +38,15 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddRazor(
+            this IServiceCollection services)
+    {
+        services.AddRazorComponents()
+                .AddInteractiveServerComponents();
+
+        return services;
+    }
+
+
 }
