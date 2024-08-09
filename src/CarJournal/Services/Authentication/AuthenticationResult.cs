@@ -1,7 +1,7 @@
 namespace CarJournal.Services.Authentication;
 
 public record AuthenticationResult(
-    Guid Id,
+    int Id,
     string Email,
     string Token
 );

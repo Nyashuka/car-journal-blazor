@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 using CarJournal.Components;
 using CarJournal.DependencyInjection;
 
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddRepositories()
@@ -11,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
                     .AddRazor()
                     .AddSwagger()
                     .AddControllers();
+
+    builder.Services.AddDbContext<CarJournalDbContext>(options =>
+            options.UseNpgsql(DbConstants.ConnectionString));
 }
 
 var app = builder.Build();
@@ -21,16 +26,16 @@ var app = builder.Build();
         app.IncludeDeveloperServices();
     }
 
-    //app.UseStaticFiles();
-    //app.UseHttpsRedirection();
+    app.UseStaticFiles();
 
     app.UseExceptionHandler("/error");
 
     app.UseStaticFiles();
     app.UseAntiforgery();
+
     //app.MapControllers();
+
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();
-
     app.Run();
 }

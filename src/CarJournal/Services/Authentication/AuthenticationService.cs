@@ -25,6 +25,11 @@ public class AuthenticationService : IAuthenticationService
             throw new Exception("User with giver email does not exists!");
         }
 
+        if(!PasswordHasher.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+        {
+            throw new Exception("Password is incorrect!");
+        }
+
         return new AuthenticationResult(
             user.Id,
             user.Email,
@@ -39,7 +44,12 @@ public class AuthenticationService : IAuthenticationService
             throw new Exception("User with given email already exists.");
         }
 
-        User user = new User(email, password);
+        PasswordHasher.CreatePasswordHash(password,
+                        out byte[] passwordHash,
+                        out byte[] passwordSalt);
+
+        User user = new User(email, RolesStorage.User.Id,
+                        passwordHash, passwordSalt);
 
         _userRepository.Add(user);
 

@@ -2,5 +2,5 @@ namespace CarJournal.Infrastructure.Authentication;
 
 public interface IJwtTokenGenerator
 {
-    string GenerateToken(Guid id);
+    string GenerateToken(int id);
 }
