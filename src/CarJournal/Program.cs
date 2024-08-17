@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 
-using CarJournal.Components;
 using CarJournal.DependencyInjection;
 
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
                     .AddRazor()
                     .AddSwagger()
                     .AddControllers();
+    builder.Services.AddAuthenticationCore();
 
     builder.Services.AddDbContext<CarJournalDbContext>(options =>
             options.UseNpgsql(DbConstants.ConnectionString));
@@ -23,19 +23,15 @@ var app = builder.Build();
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.IncludeDeveloperServices();
+        app.IncludeDeveloperServices();  
+        app.UseExceptionHandler("/Error");
     }
 
     app.UseStaticFiles();
+    app.UseRouting();
 
-    app.UseExceptionHandler("/error");
+    app.MapBlazorHub();
+    app.MapFallbackToPage("/_Host");
 
-    app.UseStaticFiles();
-    app.UseAntiforgery();
-
-    //app.MapControllers();
-
-    app.MapRazorComponents<App>()
-        .AddInteractiveServerRenderMode();
     app.Run();
 }

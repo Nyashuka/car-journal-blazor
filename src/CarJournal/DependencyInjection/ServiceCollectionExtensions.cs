@@ -2,6 +2,9 @@ using CarJournal.Infrastructure.Authentication;
 using CarJournal.Persistence.Repositories;
 using CarJournal.Services.Authentication;
 
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+
 namespace CarJournal.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -10,6 +13,10 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<ProtectedSessionStorage>();
+        services.AddScoped<AuthenticationStateProvider, CarJournalAuthenticationStateProvider>();
+        services.AddScoped<IClientAuthenticationService, ClientAuthenticationService>();
+
 
         return services;
     }
@@ -17,7 +24,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRepositories(
         this IServiceCollection services)
     {
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddSingleton<IUserRepository, UserRepository>();
 
         return services;
     }
@@ -26,6 +33,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IJwtTokenParser, JwtTokenParser>();
 
         return services;
     }
@@ -42,8 +50,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRazor(
             this IServiceCollection services)
     {
-        services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+        services.AddRazorPages();
+        services.AddServerSideBlazor();
 
         return services;
     }

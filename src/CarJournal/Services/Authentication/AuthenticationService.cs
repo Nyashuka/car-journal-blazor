@@ -33,7 +33,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult(
             user.Id,
             user.Email,
-            _jwtTokenGenerator.GenerateToken(user.Id)
+            _jwtTokenGenerator.GenerateToken(user.Id, RolesStorage.Admin.Name)
         );
     }
 
@@ -56,7 +56,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult(
             user.Id,
             user.Email,
-            _jwtTokenGenerator.GenerateToken(user.Id)
+            _jwtTokenGenerator.GenerateToken(user.Id, RolesStorage.Admin.Name)
         );
     }
 }
