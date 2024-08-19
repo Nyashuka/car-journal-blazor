@@ -1,0 +1,16 @@
+@page "/logout"
+
+@using CarJournal.Services.Authentication
+
+@inject IClientAuthenticationService _clientAuthenticationService
+@inject NavigationManager _navigationManager
+
+@code {
+    protected override async void OnInitialized()
+    {
+        await _clientAuthenticationService.ClearSessionStorage();
+
+        _navigationManager.NavigateTo("/");
+        _navigationManager.Refresh();
+    }
+}

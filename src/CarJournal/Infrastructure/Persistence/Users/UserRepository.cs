@@ -1,5 +1,7 @@
 using CarJournal.Domain;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CarJournal.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
@@ -19,6 +21,7 @@ public class UserRepository : IUserRepository
 
     public User? GetUserByEmail(string email)
     {
-        return _dbContext.Users.SingleOrDefault(user => user.Email == email);
+        return _dbContext.Users.Include(u => u.Role)
+                .SingleOrDefault(user => user.Email == email);
     }
 }

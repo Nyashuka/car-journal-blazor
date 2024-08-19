@@ -13,6 +13,11 @@ public class ClientAuthenticationService : IClientAuthenticationService
         _protectedSessionStorage = protectedSessionStorage;
     }
 
+    public async Task ClearSessionStorage()
+    {
+        await _protectedSessionStorage.DeleteAsync(SessionStorageConstants.UserSessionStorageKey);
+    }
+
     public async Task UpdateSessionStorage(string jwtToken)
     {
         await _protectedSessionStorage.SetAsync(SessionStorageConstants.UserSessionStorageKey, jwtToken);

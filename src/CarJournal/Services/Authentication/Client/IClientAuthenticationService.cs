@@ -5,4 +5,5 @@ namespace CarJournal.Services.Authentication;
 public interface IClientAuthenticationService
 {
     Task UpdateSessionStorage(string jwtToken);
+    Task ClearSessionStorage();
 }

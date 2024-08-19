@@ -8,6 +8,7 @@
 @inject IAuthenticationService _authenticationService
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClientAuthenticationService _clientAuthenticationService
+@inject NavigationManager _navigationManager
 
 <div class="container">
     <div class="row">
@@ -61,6 +62,9 @@
     {
       var authenticationResult = _authenticationService.Register(_registerRequest.Email, _registerRequest.Password);
       await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
+
+      _navigationManager.NavigateTo("/");
+      _navigationManager.Refresh();
     }
     catch(Exception e)
     {
