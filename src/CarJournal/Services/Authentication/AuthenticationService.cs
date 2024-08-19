@@ -1,6 +1,7 @@
 using CarJournal.Api.Authentication;
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Authentication;
+using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Persistence.Repositories;
 
 using Microsoft.Extensions.Configuration.UserSecrets;
@@ -10,12 +11,14 @@ namespace CarJournal.Services.Authentication;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-    public AuthenticationService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
+    public AuthenticationService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator, IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
         _jwtTokenGenerator = jwtTokenGenerator;
+        _roleRepository = roleRepository;
     }
 
     public AuthenticationResult Login(string email, string password)
@@ -33,7 +36,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult(
             user.Id,
             user.Email,
-            _jwtTokenGenerator.GenerateToken(user.Id, RolesStorage.Admin.Name)
+            _jwtTokenGenerator.GenerateToken(user.Id, user.Role.Name)
         );
     }
 
@@ -48,15 +51,17 @@ public class AuthenticationService : IAuthenticationService
                         out byte[] passwordHash,
                         out byte[] passwordSalt);
 
-        User user = new User(email, RolesStorage.User.Id,
-                        passwordHash, passwordSalt);
+        var role = _roleRepository.GetById(RolesStorage.User.Id);
+        
+        User user = new User(email,
+                        passwordHash, passwordSalt, role.Id, role);
 
         _userRepository.Add(user);
 
         return new AuthenticationResult(
             user.Id,
             user.Email,
-            _jwtTokenGenerator.GenerateToken(user.Id, RolesStorage.Admin.Name)
+            _jwtTokenGenerator.GenerateToken(user.Id, user.Role.Name)
         );
     }
 }

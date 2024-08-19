@@ -35,5 +35,10 @@ public class UsersConfigurations : IEntityTypeConfiguration<User>
         builder.Property(u => u.PasswordSalt)
             .IsRequired();           // PasswordSalt є обов'язковим
 
+        builder.HasOne(u => u.Role)
+            .WithMany() // Не вказуємо колекцію ролей в Role
+            .HasForeignKey(u => u.RoleId) // Вказуємо зовнішній ключ
+            .OnDelete(DeleteBehavior.Restrict); // Не дозволяє видаляти ролі, якщо є користувачі
+
     }
 }

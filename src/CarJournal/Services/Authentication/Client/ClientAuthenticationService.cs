@@ -1,11 +1,6 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-
-using CarJournal.Infrastructure.Authentication;
 using CarJournal.Services.Authentication.Client;
 
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CarJournal.Services.Authentication;
 

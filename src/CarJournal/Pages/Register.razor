@@ -43,7 +43,7 @@
               <a class="d-block text-center mt-2 small" href="login">Have an account? Sign In</a>
 
               <hr class="my-4">
-              <label>@_registerRequest.Email</label>
+              <label>@_messageInfo</label>
             </form>
           </div>
         </div>
@@ -53,10 +53,18 @@
 
 @code {
   private RegisterDto _registerRequest = new RegisterDto();
+  private string _messageInfo = "";
 
   private async Task OnRegisterClicked()
   {
-    var authenticationResult = _authenticationService.Register(_registerRequest.Email, _registerRequest.Password);
-   await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token); 
+    try
+    {
+      var authenticationResult = _authenticationService.Register(_registerRequest.Email, _registerRequest.Password);
+      await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
+    }
+    catch(Exception e)
+    {
+      _messageInfo = "error: " + e.Message;
+    }
   }
 }

@@ -5,24 +5,27 @@ public class User
     public int Id { get; private set; }
     public string Email { get; private set; } = null!;
     public int RoleId { get; private set; }
+    public Role Role { get; private set; }
     public byte[] PasswordHash { get; private set; } = null!;
     public byte[] PasswordSalt { get; private set; } = null!;
 
-    public User(string email, int roleId, byte[] passwordHash,
-                byte[] passwordSalt)
+    private User(){}
+
+    public User(string email, byte[] passwordHash,
+                byte[] passwordSalt, int roleId, Role role)
     {
         Id = 0;
         Email = email;
-        RoleId = roleId;
         PasswordHash = passwordHash;
         PasswordSalt = passwordSalt;
-   }
+        RoleId = roleId;
+        Role = role;
+    }
 
     public User(int id,
                 string email,
-                int roleId,
                 byte[] passwordHash,
-                byte[] passwordSalt) : this(email, roleId, passwordHash, passwordSalt)
+                byte[] passwordSalt, int roleId, Role role) : this(email, passwordHash, passwordSalt, roleId, role)
     {
         Id = id;
     }

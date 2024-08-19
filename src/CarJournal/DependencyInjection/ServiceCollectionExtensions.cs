@@ -1,4 +1,5 @@
 using CarJournal.Infrastructure.Authentication;
+using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Persistence.Repositories;
 using CarJournal.Services.Authentication;
 
@@ -17,14 +18,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AuthenticationStateProvider, CarJournalAuthenticationStateProvider>();
         services.AddScoped<IClientAuthenticationService, ClientAuthenticationService>();
 
-
         return services;
     }
 
     public static IServiceCollection AddRepositories(
         this IServiceCollection services)
     {
-        services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
 
         return services;
     }

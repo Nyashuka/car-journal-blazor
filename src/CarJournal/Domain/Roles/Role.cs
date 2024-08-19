@@ -1,11 +1,17 @@
 public class Role
 {
-    public Role(int id, string name)
+    public int Id { get; }
+    public string Name { get; } = null!;
+
+    private Role(){}
+
+    public Role(string name)
     {
-        Id = id;
         Name = name;
     }
 
-    public int Id { get; }
-    public string Name { get; } = null!;
+    public Role(int id, string name) : this(name)
+    {
+        Id = id;
+    }
 }
