@@ -51,7 +51,10 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRazor(
             this IServiceCollection services)
     {
-        services.AddRazorPages();
+        services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizePage("/admin/vendors", "admin");
+});
         services.AddServerSideBlazor();
 
         return services;

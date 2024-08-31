@@ -12,7 +12,17 @@ public class User
     private User(){}
 
     public User(string email, byte[] passwordHash,
-                byte[] passwordSalt, int roleId, Role role)
+                byte[] passwordSalt, int roleId)
+    {
+        Id = 0;
+        Email = email;
+        PasswordHash = passwordHash;
+        PasswordSalt = passwordSalt;
+        RoleId = roleId;
+    }
+
+    public User(string email, byte[] passwordHash,
+                byte[] passwordSalt, int roleId, Role role) : this(email, passwordHash, passwordSalt, roleId)
     {
         Id = 0;
         Email = email;
@@ -22,6 +32,14 @@ public class User
         Role = role;
     }
 
+    public User(int id,
+                string email,
+                byte[] passwordHash,
+                byte[] passwordSalt, int roleId) : this(email, passwordHash, passwordSalt, roleId)
+    {
+        Id = id;
+    }
+    
     public User(int id,
                 string email,
                 byte[] passwordHash,

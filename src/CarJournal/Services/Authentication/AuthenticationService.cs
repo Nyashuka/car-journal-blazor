@@ -52,7 +52,7 @@ public class AuthenticationService : IAuthenticationService
                         out byte[] passwordSalt);
 
         var role = _roleRepository.GetById(RolesStorage.User.Id);
- 
+
         User user = new User(email,
                         passwordHash, passwordSalt, role.Id, role);
 

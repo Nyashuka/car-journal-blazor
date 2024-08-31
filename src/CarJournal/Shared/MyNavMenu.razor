@@ -1,0 +1,11 @@
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+    <AuthorizeView Roles="admin">
+        <Authorized>
+            <MudNavGroup Title="Administrating" Expanded="true">
+                <MudNavLink Href="/admin/vendors" Match="NavLinkMatch.Prefix">Vendors</MudNavLink>
+                <MudNavLink Href="/admin/cars" Match="NavLinkMatch.Prefix">Cars</MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
+</MudNavMenu>
