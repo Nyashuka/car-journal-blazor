@@ -39,7 +39,7 @@ public class User
     {
         Id = id;
     }
-    
+
     public User(int id,
                 string email,
                 byte[] passwordHash,

@@ -1,3 +1,4 @@
+
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Persistence.Vendors;
 
@@ -12,18 +13,24 @@ public class AdminVendorService : IAdminVendorService
         _vendorRepository = vendorRepository;
     }
 
-    public VendorResult CreateVendor(string name)
+    public async Task<VendorResult> CreateVendor(string name)
     {
         var vendor = new Vendor(0, name);
 
-        _vendorRepository.Add(vendor);
+        await _vendorRepository.Add(vendor);
 
         return new VendorResult(vendor.Id, vendor.Name);
     }
 
-    public void DeleteVendor(int id)
+    public async void DeleteVendor(int id)
     {
-        throw new NotImplementedException();
+        if(_vendorRepository.GetById(id) is not Vendor vendor)
+        {
+            throw new Exception("Vendor with given id is not exists");
+        }
+
+        _vendorRepository.Remove(vendor);
+        await _vendorRepository.Save();
     }
 
     public VendorResult EditVendor(int id, string name)
@@ -34,5 +41,10 @@ public class AdminVendorService : IAdminVendorService
         }
 
         throw new NotImplementedException();
+    }
+
+    public List<Vendor> GetVendors()
+    {
+        return _vendorRepository.GetAll();
     }
 }

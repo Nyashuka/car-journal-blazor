@@ -1,32 +1,33 @@
-@page "/admin/vendors"
+@page "/admin/engines"
 @attribute [Authorize(Roles = "admin")]
 
 @using CarJournal.Domain
 @using System.Net.Http.Json
-@using CarJournal.Services.Vendors
+@using CarJournal.Services.Engines
 
-@inject IAdminVendorService _vendorService
+@inject IEngineService _engineService
 
 @if(_isCreating)
 {
     <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CloseCreateMenu">Back</MudButton>
 
-    <MudTextField @bind-Value="VendorName" Label="Vendor Name" Variant="Variant.Outlined" />
+    <MudTextField @bind-Value="EngineModel" Label="Model" Variant="Variant.Outlined" />
+    <MudTextField @bind-Value="EngineSize" Label="Engine Size" Variant="Variant.Outlined" />
 
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateVendor">Create</MudButton>
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateEngine">Create</MudButton>
 }
 else
 {
     <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Vendor</MudButton>
 
-    <MudDataGrid T="Vendor" Items="@_vendors" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+    <MudDataGrid T="Engine" Items="@_engines" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
         EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
         StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem"
         CommittedItemChanges="@CommittedItemChanges"
         EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
 
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Vendors</MudText>
+            <MudText Typo="Typo.h6">Engines</MudText>
             <MudSpacer />
             <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -34,7 +35,8 @@ else
 
         <Columns>
             <PropertyColumn Property="x => x.Id" Title="#" Editable="false" HeaderStyle="width: 5%;" />
-            <PropertyColumn Property="x => x.Name" Title="Name" FlexGrow="1" />
+            <PropertyColumn Property="x => x.Model" Title="Model" FlexGrow="1" />
+            <PropertyColumn Property="x => x.EngineSize" Title="Size"/>
             <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
                 <CellTemplate>
                     <MudStack Row>
@@ -47,26 +49,29 @@ else
 
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="Vendor" />
+            <MudDataGridPager T="Engine" />
         </PagerContent>
     </MudDataGrid>
 }
 
 @code {
-    private MudDataGrid<Vendor> _dataGrid = new MudDataGrid<Vendor>();
+    private MudDataGrid<Engine> _dataGrid = new MudDataGrid<Engine>();
 
-    private List<Vendor> _vendors = new List<Vendor>();
+    private List<Engine> _engines = new List<Engine>();
     // creating
     private bool _isCreating = false;
-    private string VendorName { get; set; } = string.Empty;
+    private string EngineModel { get; set; } = string.Empty;
+    private float EngineSize { get; set; }
 
-    private async Task CreateVendor()
+    private async Task CreateEngine()
     {
-        var result = await _vendorService.CreateVendor(VendorName);
-        _vendors.Add(new Vendor(result.Id, result.Name));
+        await _engineService.Add(EngineModel, EngineSize);
+        _engines = _engineService.GetAll();
+        
+        EngineModel = string.Empty;
 
-        VendorName = string.Empty;
         _isCreating = false;
+
     }
 
     // editing
@@ -78,21 +83,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _vendors = _vendorService.GetVendors();
+        _engines = _engineService.GetAll();
     }
 
     // events
-    void StartedEditingItem(Vendor item)
+    void StartedEditingItem(Engine item)
     {
         _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
 
-    void CanceledEditingItem(Vendor item)
+    void CanceledEditingItem(Engine item)
     {
         _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
 
-    void CommittedItemChanges(Vendor item)
+    void CommittedItemChanges(Engine item)
     {
         _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
@@ -112,10 +117,10 @@ else
     {
         _isCreating = false;
     }
-
-    private void DeleteRecord(Vendor vendor)
+    
+    private void DeleteRecord(Engine engine)
     {
-        _vendorService.DeleteVendor(vendor.Id);
-        _vendors.Remove(vendor);
+        _engineService.Remove(engine.Id);
+        _engines.Remove(engine);
     }
 }

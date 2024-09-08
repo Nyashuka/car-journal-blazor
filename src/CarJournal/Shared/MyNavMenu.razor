@@ -3,7 +3,10 @@
     <AuthorizeView Roles="admin">
         <Authorized>
             <MudNavGroup Title="Administrating" Expanded="true">
-                <MudNavLink Href="/admin/vendors" Match="NavLinkMatch.Prefix">Vendors</MudNavLink>
+                <MudNavGroup Title="Car Components" Expanded="true">
+                    <MudNavLink Href="/admin/vendors" Match="NavLinkMatch.Prefix">Vendors</MudNavLink>
+                    <MudNavLink Href="/admin/engines" Match="NavLinkMatch.Prefix">Engines</MudNavLink>
+                </MudNavGroup>
                 <MudNavLink Href="/admin/cars" Match="NavLinkMatch.Prefix">Cars</MudNavLink>
             </MudNavGroup>
         </Authorized>

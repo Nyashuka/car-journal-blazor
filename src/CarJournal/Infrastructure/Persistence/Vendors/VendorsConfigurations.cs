@@ -17,7 +17,7 @@ public class VendorConfigurations : IEntityTypeConfiguration<Vendor>
 
         // Налаштування властивості Id
         builder.Property(v => v.Id)
-            .ValueGeneratedNever(); // Вказує, що Id не буде генеруватися автоматично
+            .ValueGeneratedOnAdd(); // auto generate id :D
 
         // Налаштування властивості Name
         builder.Property(v => v.Name)

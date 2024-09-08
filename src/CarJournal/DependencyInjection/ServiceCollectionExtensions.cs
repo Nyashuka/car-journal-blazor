@@ -1,7 +1,11 @@
 using CarJournal.Infrastructure.Authentication;
+using CarJournal.Infrastructure.Persistence.Engines;
 using CarJournal.Infrastructure.Persistence.Roles;
+using CarJournal.Infrastructure.Persistence.Vendors;
 using CarJournal.Persistence.Repositories;
 using CarJournal.Services.Authentication;
+using CarJournal.Services.Engines;
+using CarJournal.Services.Vendors;
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -18,6 +22,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AuthenticationStateProvider, CarJournalAuthenticationStateProvider>();
         services.AddScoped<IClientAuthenticationService, ClientAuthenticationService>();
 
+        services.AddScoped<IAdminVendorService, AdminVendorService>();
+        services.AddScoped<IEngineService, EngineService>();
         return services;
     }
 
@@ -27,6 +33,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
 
+        services.AddScoped<IVendorRepository, VendorRepository>();
+        services.AddScoped<IEngineRepository, EngineRepository>();
         return services;
     }
 

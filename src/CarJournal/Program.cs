@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
                     .AddMudServices()
                     .AddSwagger()
                     .AddControllers();
+
     builder.Services.AddAuthenticationCore();
 
     builder.Services.AddDbContext<CarJournalDbContext>(options =>
@@ -22,10 +23,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 
     builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("admin", policy =>
-        policy.RequireRole("admin"));
-});
+    {
+        options.AddPolicy("admin", policy =>
+            policy.RequireRole("admin"));
+    });
 }
 
 var app = builder.Build();
@@ -44,7 +45,7 @@ var app = builder.Build();
     app.MapFallbackToPage("/_Host");
 
     app.UseAuthentication();
-app.UseAuthorization();
+    app.UseAuthorization();
 
     app.Run();
 }
