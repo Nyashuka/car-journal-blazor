@@ -1,11 +1,11 @@
-@page "/admin/gearboxes"
+@page "/admin/fueltypes"
 @attribute [Authorize(Roles = "admin")]
 
 @using CarJournal.Domain
 @using System.Net.Http.Json
 @using CarJournal.Services
 
-@inject IGenericService<Gearbox> _gearboxService
+@inject IGenericService<FuelType> _fuelTypesService
 
 @if(_isCreating)
 {
@@ -17,16 +17,16 @@
 }
 else
 {
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Gearbox</MudButton>
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Vendor</MudButton>
 
-    <MudDataGrid T="Gearbox" Items="@_gearboxes" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+    <MudDataGrid T="FuelType" Items="@_fuelTypes" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
         EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
         StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem"
         CommittedItemChanges="@CommittedItemChanges"
         EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
 
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Gearboxes</MudText>
+            <MudText Typo="Typo.h6">Engines</MudText>
             <MudSpacer />
             <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -47,23 +47,23 @@ else
 
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="Gearbox" />
+            <MudDataGridPager T="FuelType" />
         </PagerContent>
     </MudDataGrid>
 }
 
 @code {
-    private MudDataGrid<Gearbox> _dataGrid = new MudDataGrid<Gearbox>();
+    private MudDataGrid<FuelType> _dataGrid = new MudDataGrid<FuelType>();
 
-    private List<Gearbox> _gearboxes = new List<Gearbox>();
+    private List<FuelType> _fuelTypes = new List<FuelType>();
     // creating
     private bool _isCreating = false;
     private string Name { get; set; } = string.Empty;
 
     private async Task CreateEngine()
     {
-        await _gearboxService.AddAsync(new Gearbox(0, Name));
-        _gearboxes = (await _gearboxService.GetAllAsync()).ToList();
+        await _fuelTypesService.AddAsync(new FuelType(0, Name));
+        _fuelTypes = (await _fuelTypesService.GetAllAsync()).ToList();
 
         _isCreating = false;
     }
@@ -74,23 +74,23 @@ else
     private List<string> _events = new();
     private bool _editTriggerRowClick;
     private string TextValue { get; set; } = string.Empty;
- 
+
     protected override async Task OnInitializedAsync()
     {
-        _gearboxes = (await _gearboxService.GetAllAsync()).ToList();
+        _fuelTypes = (await _fuelTypesService.GetAllAsync()).ToList();
     }
 
-    void StartedEditingItem(Gearbox item)
+    void StartedEditingItem(FuelType item)
     {
         _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
 
-    void CanceledEditingItem(Gearbox item)
+    void CanceledEditingItem(FuelType item)
     {
         _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
 
-    void CommittedItemChanges(Gearbox item)
+    void CommittedItemChanges(FuelType item)
     {
         _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
@@ -111,9 +111,9 @@ else
         _isCreating = false;
     }
 
-    private void DeleteRecord(Gearbox record)
+    private void DeleteRecord(FuelType record)
     {
-        _gearboxService.DeleteAsync(record.Id);
-        _gearboxes.Remove(record);
+        _fuelTypesService.DeleteAsync(record.Id);
+        _fuelTypes.Remove(record);
     }
 }

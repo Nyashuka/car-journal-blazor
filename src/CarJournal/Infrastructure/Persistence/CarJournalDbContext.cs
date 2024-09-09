@@ -1,5 +1,7 @@
 using CarJournal.Domain;
+using CarJournal.Infrastructure.Persistence.BodyTypes;
 using CarJournal.Infrastructure.Persistence.Engines;
+using CarJournal.Infrastructure.Persistence.FuelTypes;
 using CarJournal.Infrastructure.Persistence.Gearboxes;
 using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Infrastructure.Persistence.Vendors;
@@ -13,6 +15,8 @@ public class CarJournalDbContext : DbContext
     public DbSet<Vendor> Vendors { get; set; }
     public DbSet<Engine> Engines { get; set; }
     public DbSet<Gearbox> Gearboxes { get; set; }
+    public DbSet<FuelType> FuelTypes { get; set; }
+    public DbSet<BodyType> BodyTypes { get; set; }
 
     public CarJournalDbContext(DbContextOptions<CarJournalDbContext> options) : base(options)
     {
@@ -25,6 +29,8 @@ public class CarJournalDbContext : DbContext
         modelBuilder.ApplyConfiguration(new VendorConfigurations());
         modelBuilder.ApplyConfiguration(new EngineConfigurations());
         modelBuilder.ApplyConfiguration(new GearboxConfigurations());
+        modelBuilder.ApplyConfiguration(new FuelTypeConfigurations());
+        modelBuilder.ApplyConfiguration(new BodyTypeConfigurations());
 
         CreateDefaultRoles(modelBuilder);
         CreateAdminUser(modelBuilder);
