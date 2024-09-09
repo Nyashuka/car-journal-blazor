@@ -1,3 +1,3 @@
 # car-journal-asp
 
-- [API Documentation](./docs/Api.md#car-journal-api)
+This is Blazor Server Side project.
