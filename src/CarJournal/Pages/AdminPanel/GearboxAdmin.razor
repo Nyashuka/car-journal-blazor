@@ -1,0 +1,114 @@
+@page "/admin/gearboxes"
+@attribute [Authorize(Roles = "admin")]
+
+@using CarJournal.Domain
+@using System.Net.Http.Json
+@using CarJournal.Services
+
+@inject IGenericService<Gearbox> _gearboxService
+
+@if(_isCreating)
+{
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CloseCreateMenu">Back</MudButton>
+
+    <MudTextField @bind-Value="Name" Label="Name" Variant="Variant.Outlined" />
+
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateEngine">Create</MudButton>
+}
+else
+{
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Vendor</MudButton>
+
+    <MudDataGrid T="Gearbox" Items="@_gearboxes" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+        EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
+        StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem"
+        CommittedItemChanges="@CommittedItemChanges"
+        EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
+
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Engines</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="#" Editable="false" HeaderStyle="width: 5%;" />
+            <PropertyColumn Property="x => x.Name" Title="Model" FlexGrow="1" />
+            <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                            OnClick="@context.Actions.StartEditingItemAsync" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteRecord(@context.Item))" aria-label="delete" />
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Gearbox" />
+        </PagerContent>
+    </MudDataGrid>
+}
+
+@code {
+    private MudDataGrid<Gearbox> _dataGrid = new MudDataGrid<Gearbox>();
+
+    private List<Gearbox> _gearboxes = new List<Gearbox>();
+    // creating
+    private bool _isCreating = false;
+    private string Name { get; set; } = string.Empty;
+
+    private async Task CreateEngine()
+    {
+        await _gearboxService.AddAsync(new Gearbox(0, Name));
+        _gearboxes = (await _gearboxService.GetAllAsync()).ToList();
+
+        _isCreating = false;
+    }
+
+    // editing
+    private bool _readOnly;
+    private bool _isCellEditMode;
+    private List<string> _events = new();
+    private bool _editTriggerRowClick;
+    private string TextValue { get; set; } = string.Empty;
+
+    void StartedEditingItem(Gearbox item)
+    {
+        _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    void CanceledEditingItem(Gearbox item)
+    {
+        _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    void CommittedItemChanges(Gearbox item)
+    {
+        _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    private Task OnSearch(string text)
+    {
+        TextValue = text;
+        return _dataGrid.ReloadServerData();
+    }
+
+    private void OpenCreateMenu()
+    {
+        _isCreating = true;
+    }
+
+    private void CloseCreateMenu()
+    {
+        _isCreating = false;
+    }
+
+    private void DeleteRecord(Gearbox record)
+    {
+        _gearboxService.DeleteAsync(record.Id);
+        _gearboxes.Remove(record);
+    }
+}

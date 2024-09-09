@@ -7,20 +7,16 @@ public class RolesConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        // Налаштування таблиці
-        builder.ToTable("Roles"); // Ім'я таблиці в базі даних
+        builder.ToTable("Roles");
 
-        // Налаштування первинного ключа
         builder.HasKey(r => r.Id);
 
-        // Налаштування властивості Id
         builder.Property(r => r.Id)
-            .ValueGeneratedNever(); // Вказує, що Id не буде генеруватися автоматично
+            .ValueGeneratedNever();
 
-        // Налаштування властивості Name
         builder.Property(r => r.Name)
-            .IsRequired()  // Властивість Name є обов'язковою
-            .HasMaxLength(256); // Максимальна довжина для властивості Name
+            .IsRequired()
+            .HasMaxLength(256);
 
         builder.HasIndex(r => r.Name).IsUnique();
     }

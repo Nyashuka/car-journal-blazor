@@ -10,10 +10,8 @@ public class EngineConfigurations : IEntityTypeConfiguration<Engine>
 {
     public void Configure(EntityTypeBuilder<Engine> builder)
     {
-        // Налаштування таблиці
-        builder.ToTable("Engines"); // Ім'я таблиці в базі даних
+        builder.ToTable("Engines");
 
-        // Налаштування первинного ключа
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Id)
