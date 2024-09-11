@@ -15,7 +15,6 @@ public class CarRepository : ICarRepository
         _dbSet = dbContext.Set<Car>();
     }
 
-    // Отримати Car за ID
     public async Task<Car?> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);
@@ -26,10 +25,12 @@ public class CarRepository : ICarRepository
         return await _dbSet.ToListAsync();
     }
 
-    public async Task AddAsync(Car car)
+    public async Task<Car> AddAsync(Car car)
     {
         await _dbSet.AddAsync(car);
         await _dbContext.SaveChangesAsync();
+
+        return car;
     }
 
     public async Task UpdateAsync(Car car)
@@ -66,5 +67,16 @@ public class CarRepository : ICarRepository
             .Include(c => c.Gearbox)
             .Include(c => c.FuelType)
             .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public async Task<IEnumerable<Car>> GetAllCarsWithDetails()
+    {
+        return await _dbSet
+            .Include(c => c.Vendor)
+            .Include(c => c.BodyType)
+            .Include(c => c.Engine)
+            .Include(c => c.Gearbox)
+            .Include(c => c.FuelType)
+            .ToListAsync();
     }
 }

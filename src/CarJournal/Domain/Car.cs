@@ -18,14 +18,14 @@ public class Car
     private Car() {}
 
     public int Id { get; private set; }
-    public string Model { get; private set; }
-    public string Series { get; private set;}
-    public int Year { get; private set; }
-    public int VendorId { get; private set; }
-    public int BodyTypeId { get; private set; }
-    public int EngineId { get; private set; }
-    public int GearboxId { get; private set; }
-    public int FuelTypeId { get; private set; }
+    public string Model { get; set; }
+    public string Series { get; set;}
+    public int Year { get; set; }
+    public int VendorId { get; set; }
+    public int BodyTypeId { get; set; }
+    public int EngineId { get; set; }
+    public int GearboxId { get; set; }
+    public int FuelTypeId { get; set; }
     public Vendor Vendor { get; private set; }
     public BodyType BodyType { get; private set; }
     public Engine Engine { get; private set; }
