@@ -6,7 +6,7 @@ public interface IVendorRepository
 {
     Task Add(Vendor vendor);
     Vendor? GetById(int id);
-    List<Vendor> GetAll();
+    Task<List<Vendor>> GetAllAsync();
     void Remove(Vendor vendor);
     Task Save();
 }

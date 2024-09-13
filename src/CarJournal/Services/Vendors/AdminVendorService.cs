@@ -43,8 +43,8 @@ public class AdminVendorService : IAdminVendorService
         throw new NotImplementedException();
     }
 
-    public List<Vendor> GetVendors()
+    public async Task<List<Vendor>> GetAllAsync()
     {
-        return _vendorRepository.GetAll();
+        return await _vendorRepository.GetAllAsync();
     }
 }

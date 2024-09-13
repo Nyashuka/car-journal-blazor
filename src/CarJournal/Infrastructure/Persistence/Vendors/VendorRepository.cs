@@ -1,6 +1,8 @@
 
 using CarJournal.Domain;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CarJournal.Infrastructure.Persistence.Vendors;
 
 public class VendorRepository : IVendorRepository
@@ -18,9 +20,9 @@ public class VendorRepository : IVendorRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public List<Vendor> GetAll()
+    public async Task<List<Vendor>> GetAllAsync()
     {
-        return _dbContext.Vendors.ToList();
+        return await _dbContext.Vendors.ToListAsync();
     }
 
     public Vendor? GetById(int id)

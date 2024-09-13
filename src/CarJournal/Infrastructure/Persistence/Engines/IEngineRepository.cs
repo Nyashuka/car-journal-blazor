@@ -7,7 +7,7 @@ public interface IEngineRepository
 {
     void Add(Engine engine);
     void Remove(Engine engine);
-    List<Engine> GetAll();
+    Task<List<Engine>> GetAllAsync();
     Engine? GetById(int id);
     void Update(Engine engine);
     Task Save();

@@ -1,9 +1,5 @@
-using System.Security.Cryptography;
-
 using CarJournal.DependencyInjection;
-
 using Microsoft.EntityFrameworkCore;
-
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddDbContext<CarJournalDbContext>(options =>
             options.UseNpgsql(DbConstants.ConnectionString));
-
 
     builder.Services.AddAuthorization(options =>
     {

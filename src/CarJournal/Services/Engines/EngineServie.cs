@@ -21,9 +21,9 @@ public class EngineService : IEngineService
         await _engineRepository.Save();
     }
 
-    public List<Engine> GetAll()
+    public async Task<List<Engine>> GetAllAsync()
     {
-        return _engineRepository.GetAll();
+        return await _engineRepository.GetAllAsync();
     }
 
     public async Task Remove(int id)

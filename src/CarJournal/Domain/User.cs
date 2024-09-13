@@ -5,7 +5,7 @@ public class User
     public int Id { get; private set; }
     public string Email { get; private set; } = null!;
     public int RoleId { get; private set; }
-    public Role Role { get; private set; }
+    public Role? Role { get; private set; }
     public byte[] PasswordHash { get; private set; } = null!;
     public byte[] PasswordSalt { get; private set; } = null!;
 

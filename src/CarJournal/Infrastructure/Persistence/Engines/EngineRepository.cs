@@ -1,6 +1,8 @@
 
 using CarJournal.Domain;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CarJournal.Infrastructure.Persistence.Engines;
 
 public class EngineRepository : IEngineRepository
@@ -17,9 +19,9 @@ public class EngineRepository : IEngineRepository
         _dbContext.Add(engine);
     }
 
-    public List<Engine> GetAll()
+    public async Task<List<Engine>> GetAllAsync()
     {
-        return _dbContext.Engines.ToList();
+        return await _dbContext.Engines.ToListAsync();
     }
 
     public Engine? GetById(int id)

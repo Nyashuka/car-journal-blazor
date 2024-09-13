@@ -78,7 +78,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _vendors = _vendorService.GetVendors();
+        _vendors = await _vendorService.GetAllAsync();
     }
 
     // events

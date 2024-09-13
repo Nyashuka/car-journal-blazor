@@ -17,8 +17,7 @@
 
 @if(_isCreating)
 {
-    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-
+<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
     <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.All">
         <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
                     OnClick="@CloseCreateMenu">
@@ -45,8 +44,7 @@
         <MudAutocomplete T="Engine" Label="Engine" @bind-Value="CarDto.Engine" SearchFunc="@SearchEngine"
             ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant"/>
     </MudStack>
-
-    </MudStack>
+</MudStack>
 }
 else
 {
@@ -103,10 +101,15 @@ else
     private List<BodyType> _bodyTypes = new List<BodyType>();
     private List<Engine> _engines = new List<Engine>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        _cars = (await _carService.GetAllCarsWithDetailsAsync()).ToList();
+    }
+
     private async void OpenCreateMenu()
     {
         _isCreating = true;
-        _vendors = _vendorsService.GetVendors();
+        _vendors = await _vendorsService.GetAllAsync();
         _gearboxes = (await _gearboxesService.GetAllAsync()).ToList();
         _fuelTypes = (await _fuelTypeService.GetAllAsync()).ToList();
         _bodyTypes = (await _bodyTypesService.GetAllAsync()).ToList();
@@ -136,11 +139,6 @@ else
     private List<string> _events = new();
     private bool _editTriggerRowClick;
     private string TextValue { get; set; } = string.Empty;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _cars = (await _carService.GetAllCarsWithDetailsAsync()).ToList();
-    }
 
     // events
     void StartedEditingItem(Car item)
@@ -172,6 +170,8 @@ else
 
     private async Task<IEnumerable<Vendor>> SearchVendor(string value, CancellationToken token)
     {
+        await Task.Delay(5, token);
+
         if (string.IsNullOrEmpty(value))
             return _vendors;
 
@@ -180,6 +180,8 @@ else
 
     private async Task<IEnumerable<Gearbox>> SearchGearbox(string value, CancellationToken token)
     {
+        await Task.Delay(5, token);
+
         if (string.IsNullOrEmpty(value))
             return _gearboxes;
 
@@ -188,6 +190,8 @@ else
 
     private async Task<IEnumerable<FuelType>> SearchFuelType(string value, CancellationToken token)
     {
+        await Task.Delay(5, token);
+
         if (string.IsNullOrEmpty(value))
             return _fuelTypes;
 
@@ -196,6 +200,8 @@ else
 
     private async Task<IEnumerable<BodyType>> SearchBodyType(string value, CancellationToken token)
     {
+        await Task.Delay(5, token);
+
         if (string.IsNullOrEmpty(value))
             return _bodyTypes;
 
@@ -204,6 +210,8 @@ else
 
     private async Task<IEnumerable<Engine>> SearchEngine(string value, CancellationToken token)
     {
+        await Task.Delay(5, token);
+
         if (string.IsNullOrEmpty(value))
             return _engines;
 
