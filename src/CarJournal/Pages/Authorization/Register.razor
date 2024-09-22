@@ -48,28 +48,28 @@
 </EditForm>
 
 @code {
-  bool success;
-  private RegisterDto _registerRequest = new RegisterDto();
-  private string _messageInfo = "";
+    bool success;
+    private RegisterDto _registerRequest = new RegisterDto();
+    private string _messageInfo = "";
 
-  private async Task OnRegisterClicked()
-  {
-    try
+    private async Task OnRegisterClicked()
     {
-      var authenticationResult = _authenticationService.Register(_registerRequest.Email, _registerRequest.Password);
-      await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
+        try
+        {
+            var authenticationResult = _authenticationService.Register(_registerRequest.Email, _registerRequest.Password);
+            await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
 
-      _navigationManager.NavigateTo("/");
-      _navigationManager.Refresh();
+            _navigationManager.NavigateTo("/");
+            _navigationManager.Refresh();
+        }
+        catch (Exception e)
+        {
+            _messageInfo = "error: " + e.Message;
+        }
     }
-    catch(Exception e)
+    private void OnValidSubmit(EditContext context)
     {
-      _messageInfo = "error: " + e.Message;
+        success = true;
+        StateHasChanged();
     }
-  }
-  private void OnValidSubmit(EditContext context)
-  {
-    success = true;
-    StateHasChanged();
-  }
 }

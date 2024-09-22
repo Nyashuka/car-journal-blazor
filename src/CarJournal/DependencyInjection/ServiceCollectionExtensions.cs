@@ -3,12 +3,15 @@ using CarJournal.Infrastructure.Persistence;
 using CarJournal.Infrastructure.Persistence.Cars;
 using CarJournal.Infrastructure.Persistence.Engines;
 using CarJournal.Infrastructure.Persistence.Roles;
+using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
 using CarJournal.Persistence.Repositories;
 using CarJournal.Services;
 using CarJournal.Services.Authentication;
 using CarJournal.Services.Cars;
+using CarJournal.Services.Client;
 using CarJournal.Services.Engines;
+using CarJournal.Services.UserCars;
 using CarJournal.Services.Vendors;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,6 +33,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEngineService, EngineService>();
 
         services.AddScoped<ICarService, CarService>();
+        services.AddScoped<IUserCarsService, UserCarsService>();
+
+        services.AddScoped<ISelectedCarService, SelectedCarService>();
 
         services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
         return services;
@@ -43,7 +49,9 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IVendorRepository, VendorRepository>();
         services.AddScoped<IEngineRepository, EngineRepository>();
+
         services.AddScoped<ICarRepository, CarRepository>();
+        services.AddScoped<IUserCarsRepository, UserCarsRepository>();
 
         services.AddScoped(typeof(IDataRepository<>), typeof(DataRepository<>));
         return services;
@@ -71,9 +79,9 @@ public static class ServiceCollectionExtensions
             this IServiceCollection services)
     {
         services.AddRazorPages(options =>
-{
-    options.Conventions.AuthorizePage("/admin/vendors", "admin");
-});
+        {
+            options.Conventions.AuthorizePage("/admin/vendors", "admin");
+        });
         services.AddServerSideBlazor();
 
         return services;

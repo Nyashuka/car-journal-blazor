@@ -1,0 +1,23 @@
+@using CarJournal.Services.Authentication
+@using CarJournal.Services.Client
+@using CarJournal.Services.UserCars
+
+@inject IUserCarsService _userCarService
+@inject IClientAuthenticationService _authenticationService
+@inject ISelectedCarService _selectedCarService
+
+<MudAutocomplete T="UserCar" Label="Select Car" ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+                        Class="max-width: 300px;"
+                         SearchFunc="@ViewModel.SearchCar" ValueChanged="@ViewModel.OnSelectedCarChanged" Strict="false">
+</MudAutocomplete>
+
+@code {
+    private MainPageViewModel ViewModel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new MainPageViewModel(_userCarService, _authenticationService, _selectedCarService);
+
+        await ViewModel.LoadUserCarsAsync();
+    }
+}

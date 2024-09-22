@@ -1,4 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using CarJournal.Services.Client
+@using CarJournal.Services.UserCars
+
+@inject ISelectedCarService _selectedCarService
+@inject IUserCarsService _userCarService
+
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider/>
@@ -8,7 +14,14 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Car Journal</MudText>
+        <AuthorizeView Roles="user">
+            <Authorized>
+                <MudText Typo="Typo.h5" Class="ml-3">@SelectedCar?.Name</MudText>
+            </Authorized>
+            <NotAuthorized>
+                <MudText Typo="Typo.h5" Class="ml-3">Car Journal</MudText>
+            </NotAuthorized>
+        </AuthorizeView>
         <MudSpacer />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" AriaLabel="Open user menu">
@@ -21,6 +34,11 @@
                     <MudMenuItem Href="/register">Register</MudMenuItem>
                 </NotAuthorized>
             </AuthorizeView>
+            <AuthorizeView Roles="user">
+                <Authorized>
+                    <MudMenuItem>Account Settings</MudMenuItem>
+                </Authorized>
+            </AuthorizeView>
         </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -31,14 +49,17 @@
     </MudMainContent>
 </MudLayout>
 
-@code {  
+@code {
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
+    private UserCar? SelectedCar;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
+
+        _selectedCarService.UserCarChanged += OnUserCarChanged;
 
         _theme = new()
         {
@@ -48,6 +69,10 @@
         };
     }
 
+    private async void OnUserCarChanged(int userCarId)
+    {
+        SelectedCar = await _userCarService.GetByIdAsync(userCarId);
+    }
 
     private void DrawerToggle()
     {
@@ -103,34 +128,4 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
-
 }
-
-
-@* @inherits LayoutComponentBase
-
-<PageTitle>Car Journal</PageTitle>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <AuthorizeView>
-                <NotAuthorized>
-                    <a href="login">Login</a>
-                    <a href="register">Register</a>
-                </NotAuthorized>
-                <Authorized>
-                    <a href="logout">Logout</a>
-                </Authorized>
-            </AuthorizeView>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div> *@

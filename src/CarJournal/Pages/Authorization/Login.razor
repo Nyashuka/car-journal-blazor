@@ -18,7 +18,7 @@
         <MudCard>
             <MudCardContent>
                 <MudTextField Label="Email" Class="mt-3"
-                              @bind-Value="_loginDto.Email" For="@(() => _loginDto.Email)" InputType="InputType.Email"/>
+                              @bind-Value="_loginDto.Email" For="@(() => _loginDto.Email)" InputType="InputType.Text"/>
                 <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
                               @bind-Value="_loginDto.Password" For="@(() => _loginDto.Password)" InputType="InputType.Password"/>
             </MudCardContent>
@@ -38,6 +38,7 @@
             {
                 <MudText Color="@Color.Error">
                     <ValidationSummary />
+                    @_errorMessage
                 </MudText>
             }
         </MudPaper>
@@ -52,19 +53,11 @@
 
     private async Task OnLoginClicked()
     {
-        try
-        {
-            var authenticationResult = _authenticationService.Login(_loginDto.Email, _loginDto.Password);
-            await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
+        var authenticationResult = _authenticationService.Login(_loginDto.Email, _loginDto.Password);
+        await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
 
-            _navigationManager.NavigateTo("/");
-            _navigationManager.Refresh();
-
-        }
-        catch (Exception e)
-        {
-            _errorMessage = "error: " + e.Message;
-        }
+        _navigationManager.NavigateTo("/");
+        _navigationManager.Refresh();
     }
 
     private void OnValidSubmit(EditContext context)

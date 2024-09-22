@@ -6,4 +6,5 @@ public interface IClientAuthenticationService
 {
     Task UpdateSessionStorage(string jwtToken);
     Task ClearSessionStorage();
+    Task<string?> GetUserIdAsync();
 }

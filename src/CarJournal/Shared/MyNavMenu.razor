@@ -1,5 +1,15 @@
 <MudNavMenu>
-    <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+    <AuthorizeView Roles="user">
+        <Authorized>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="/garage" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Garage">Garage</MudNavLink>
+            <MudNavLink Href="/garage/addcar" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AddCircle">Add car in Garage</MudNavLink>
+            <MudNavLink Href="/services" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.BuildCircle">Services Journal</MudNavLink>
+            <MudNavLink Href="/trackings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.TrackChanges">Trackings</MudNavLink>
+            <MudNavLink Href="/mileages" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled._60fps">Mileages</MudNavLink>
+            <MudNavLink Href="/cars/search" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Search">Search cars</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
     <AuthorizeView Roles="admin">
         <Authorized>
             <MudNavGroup Title="Administrating" Expanded="true">

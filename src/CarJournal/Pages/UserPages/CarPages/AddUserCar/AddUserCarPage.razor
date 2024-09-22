@@ -1,0 +1,31 @@
+@page "/garage/addcar"
+
+@using CarJournal.Services.Authentication
+@using CarJournal.Services.UserCars
+
+@inject IClientAuthenticationService _authenticationService
+@inject IUserCarsService _userCarService
+
+<MudStack>
+    <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.All">
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+            OnClick="ViewModel.AddCar">
+            Add
+        </MudButton>
+    </MudStack>
+    <MudStack Style="width: 400px; margin: 0 10px;">
+        <MudTextField @bind-Value="ViewModel.AddUserCarDto.Name" Label="Own car name" Variant="@_variant"/>
+        <MudTextField @bind-Value="ViewModel.AddUserCarDto.StartMileage" Label="Current mileage" Variant="@_variant"/>
+    </MudStack>
+</MudStack>
+
+@code {
+    private Variant _variant = Variant.Outlined;
+    private AddUserCarViewModel ViewModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ViewModel = new AddUserCarViewModel(_userCarService, _authenticationService);
+    }
+}
+

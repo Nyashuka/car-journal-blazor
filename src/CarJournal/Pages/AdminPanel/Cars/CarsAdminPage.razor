@@ -1,0 +1,139 @@
+@page "/admin/cars"
+@attribute [Authorize(Roles = "admin")]
+
+@using CarJournal.Domain
+@using System.Net.Http.Json
+@using CarJournal.Services
+@using CarJournal.Services.Cars
+@using CarJournal.Services.Vendors
+@using CarJournal.ClientDtos
+
+@inject ICarService _carService
+@inject IAdminVendorService _vendorsService
+@inject IGenericService<Gearbox> _gearboxesService
+@inject IGenericService<BodyType> _bodyTypesService
+@inject IGenericService<Engine> _engineService
+@inject IGenericService<FuelType> _fuelTypeService
+
+@if(ViewModel.State == FormState.Create)
+{
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+    <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.All">
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+            OnClick="@ViewModel.CloseCreatingOrEditingMenu">
+            Back
+        </MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary"
+            Class="mb-4" OnClick="@ViewModel.CreateCar">
+            Create
+        </MudButton>
+    </MudStack>
+    <MudStack Style="width: 400px; margin: 0 10px;">
+        <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
+
+        <MudAutocomplete T="Vendor" Label="Vendor" @bind-Value="ViewModel.CreateDto.Vendor" SearchFunc="@ViewModel.SearchVendor"
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="Gearbox" Label="Gearbox" @bind-Value="ViewModel.CreateDto.Gearbox"
+            SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="FuelType" Label="Fuel" @bind-Value="ViewModel.CreateDto.FuelType"
+            SearchFunc="@ViewModel.SearchFuelType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="BodyType" Label="Body" @bind-Value="ViewModel.CreateDto.BodyType"
+            SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="Engine" Label="Engine" @bind-Value="ViewModel.CreateDto.Engine" SearchFunc="@ViewModel.SearchEngine"
+            ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" />
+    </MudStack>
+</MudStack>
+}
+else if(ViewModel.State == FormState.Edit)
+{
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+    <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.All">
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+            OnClick="@ViewModel.CloseCreatingOrEditingMenu">
+            Back
+        </MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+            OnClick="@ViewModel.SaveItemChanges">
+            Save editing
+        </MudButton>
+    </MudStack>
+    <MudStack Style="width: 400px; margin: 0 10px;">
+        <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
+
+        <MudAutocomplete T="Vendor" Label="Vendor" @bind-Value="ViewModel.CreateDto.Vendor" SearchFunc="@ViewModel.SearchVendor"
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="Gearbox" Label="Gearbox" @bind-Value="ViewModel.CreateDto.Gearbox"
+            SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="FuelType" Label="Fuel" @bind-Value="ViewModel.CreateDto.FuelType"
+            SearchFunc="@ViewModel.SearchFuelType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="BodyType" Label="Body" @bind-Value="ViewModel.CreateDto.BodyType"
+            SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudAutocomplete T="Engine" Label="Engine" @bind-Value="ViewModel.CreateDto.Engine" SearchFunc="@ViewModel.SearchEngine"
+            ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" />
+    </MudStack>
+</MudStack>
+}
+else
+{
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+                OnClick="@ViewModel.OpenCreateMenu">Add new Car</MudButton>
+
+    <MudDataGrid T="Car" Items="@ViewModel.Cars" Bordered="true" Dense="true"
+                    SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+                    EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
+                    EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
+
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Cars</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>ViewModel.OnSearch(s))"
+                        Placeholder="Search" Adornment="Adornment.Start"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="#" Editable="false" HeaderStyle="width: 5%;" />
+            <PropertyColumn Property="x => x.Vendor.Name" Title="Vendor" />
+            <PropertyColumn Property="x => x.Model" Title="Model" />
+            <PropertyColumn Property="x => x.Series" Title="Series" />
+            <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                            OnClick="@(() => ViewModel.StartedEditingItem(@context.Item))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => ViewModel.DeleteRecord(@context.Item))" aria-label="delete" />
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Car" />
+        </PagerContent>
+    </MudDataGrid>
+}
+
+@code {
+    private Variant _variant = Variant.Outlined;
+    private bool _readOnly;
+    private bool _isCellEditMode;
+    private bool _editTriggerRowClick;
+
+    private CarComponentsData Componenets { get; set; }
+    private CarAdminPageViewModel ViewModel { get; set; }
+
+    protected async Task OnInitializedAsync()
+    {
+        Componenets = new CarComponentsData(_vendorsService, _gearboxesService,
+                                            _fuelTypeService, _bodyTypesService,
+                                            _engineService);
+
+        ViewModel = new CarAdminPageViewModel(_carService, Componenets);
+        await ViewModel.Initialize();
+    }
+}
