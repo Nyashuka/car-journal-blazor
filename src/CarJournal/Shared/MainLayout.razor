@@ -16,7 +16,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <AuthorizeView Roles="user">
             <Authorized>
-                <MudText Typo="Typo.h5" Class="ml-3">@SelectedCar?.Name</MudText>
+                <MudText Typo="Typo.h5" Class="ml-3">@_selectedCarName</MudText>
             </Authorized>
             <NotAuthorized>
                 <MudText Typo="Typo.h5" Class="ml-3">Car Journal</MudText>
@@ -54,12 +54,14 @@
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
     private UserCar? SelectedCar;
+    private string _selectedCarName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        _selectedCarService.UserCarChanged += OnUserCarChanged;
+        _selectedCarService.SelectedCarChangedAsync += OnUserCarChanged;
+        await TryInitializeSelectedCar();
 
         _theme = new()
         {
@@ -69,9 +71,23 @@
         };
     }
 
-    private async void OnUserCarChanged(int userCarId)
+    private async Task TryInitializeSelectedCar()
+    {
+        var stringId = await _selectedCarService.GetSelectedCarId();
+
+        if(string.IsNullOrEmpty(stringId))
+        {
+            SelectedCar = await _userCarService.GetByIdAsync(Convert.ToInt32(stringId));
+            _selectedCarName = SelectedCar?.Name ?? string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnUserCarChanged(int userCarId)
     {
         SelectedCar = await _userCarService.GetByIdAsync(userCarId);
+        _selectedCarName = SelectedCar?.Name ?? string.Empty;
+        StateHasChanged();
     }
 
     private void DrawerToggle()

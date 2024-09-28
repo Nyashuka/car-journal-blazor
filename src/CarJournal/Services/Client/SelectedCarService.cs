@@ -8,7 +8,7 @@ namespace CarJournal.Services.Client;
 
 public class SelectedCarService : ISelectedCarService
 {
-    public event Action<int> UserCarChanged;
+    public event Func<int, Task> SelectedCarChangedAsync;
     private readonly ProtectedSessionStorage _sessionStorage;
 
     public SelectedCarService(ProtectedSessionStorage protectedSessionStorage)
@@ -16,17 +16,23 @@ public class SelectedCarService : ISelectedCarService
         _sessionStorage = protectedSessionStorage;
     }
 
-    public async Task<int?> GetSelectedCarId()
+    public async Task<string?> GetSelectedCarId()
     {
-        var data = await _sessionStorage.GetAsync<int?>(SessionStorageConstants.SelectedCarId);
+        var data = await _sessionStorage.GetAsync<string?>(SessionStorageConstants.SelectedCarId);
 
         return data.Value;
     }
 
     public async Task SetSelectedCarId(int id)
     {
-        await _sessionStorage.SetAsync(SessionStorageConstants.SelectedCarId, id);
+        await _sessionStorage.SetAsync(SessionStorageConstants.SelectedCarId, id.ToString());
 
-        UserCarChanged?.Invoke(id);
+        if (SelectedCarChangedAsync != null)
+        {
+            foreach (Func<int, Task> handler in SelectedCarChangedAsync.GetInvocationList())
+            {
+                await handler(id);
+            }
+        }
     }
 }

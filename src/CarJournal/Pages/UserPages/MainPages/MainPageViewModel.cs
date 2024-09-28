@@ -35,10 +35,25 @@ public class MainPageViewModel
         }
 
         UserCars = await _userCarsService.GetAllAsync(Convert.ToInt32(userIdString));
+
+        var selectedCarId = await _selectedCarService.GetSelectedCarId();
+
+        if(!string.IsNullOrEmpty(selectedCarId))
+        {
+            var car = UserCars.FirstOrDefault(uc => uc.Id == Convert.ToInt32(selectedCarId));
+            await OnSelectedCarChanged(car);
+        }
+        else
+        {
+            await OnSelectedCarChanged(UserCars.FirstOrDefault());
+        }
     }
 
-    public async void OnSelectedCarChanged(UserCar userCar)
+    public async Task OnSelectedCarChanged(UserCar? userCar)
     {
+        if(userCar == null)
+            return;
+
         SelectedCar = userCar;
 
         await _selectedCarService.SetSelectedCarId(userCar.Id);

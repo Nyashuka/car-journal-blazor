@@ -7,8 +7,11 @@
 @inject ISelectedCarService _selectedCarService
 
 <MudAutocomplete T="UserCar" Label="Select Car" ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
-                        Class="max-width: 300px;"
-                         SearchFunc="@ViewModel.SearchCar" ValueChanged="@ViewModel.OnSelectedCarChanged" Strict="false">
+                        Style="max-width: 300px;"
+                        SearchFunc="@ViewModel.SearchCar"
+                        Value="@ViewModel.SelectedCar"
+                        ValueChanged="@ViewModel.OnSelectedCarChanged"
+                        Strict="false">
 </MudAutocomplete>
 
 @code {

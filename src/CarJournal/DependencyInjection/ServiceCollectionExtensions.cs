@@ -2,6 +2,7 @@ using CarJournal.Infrastructure.Authentication;
 using CarJournal.Infrastructure.Persistence;
 using CarJournal.Infrastructure.Persistence.Cars;
 using CarJournal.Infrastructure.Persistence.Engines;
+using CarJournal.Infrastructure.Persistence.MileageRecords;
 using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
@@ -11,6 +12,7 @@ using CarJournal.Services.Authentication;
 using CarJournal.Services.Cars;
 using CarJournal.Services.Client;
 using CarJournal.Services.Engines;
+using CarJournal.Services.Mileages;
 using CarJournal.Services.UserCars;
 using CarJournal.Services.Vendors;
 
@@ -34,6 +36,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ICarService, CarService>();
         services.AddScoped<IUserCarsService, UserCarsService>();
+        services.AddScoped<IMileageService, MileageService>();
 
         services.AddScoped<ISelectedCarService, SelectedCarService>();
 
@@ -52,6 +55,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ICarRepository, CarRepository>();
         services.AddScoped<IUserCarsRepository, UserCarsRepository>();
+        services.AddScoped<IMileageRepository, MileageRepository>();
 
         services.AddScoped(typeof(IDataRepository<>), typeof(DataRepository<>));
         return services;

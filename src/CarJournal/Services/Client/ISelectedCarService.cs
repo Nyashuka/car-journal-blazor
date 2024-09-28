@@ -5,7 +5,7 @@ namespace CarJournal.Services.Client;
 public interface ISelectedCarService
 {
     Task SetSelectedCarId(int id);
-    Task<int?> GetSelectedCarId();
+    Task<string?> GetSelectedCarId();
 
-    event Action<int> UserCarChanged;  
+    event Func<int, Task> SelectedCarChangedAsync;
 }

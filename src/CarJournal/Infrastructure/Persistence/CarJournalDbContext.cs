@@ -4,7 +4,9 @@ using CarJournal.Infrastructure.Persistence.Cars;
 using CarJournal.Infrastructure.Persistence.Engines;
 using CarJournal.Infrastructure.Persistence.FuelTypes;
 using CarJournal.Infrastructure.Persistence.Gearboxes;
+using CarJournal.Infrastructure.Persistence.MileageRecords;
 using CarJournal.Infrastructure.Persistence.Roles;
+using CarJournal.Infrastructure.Persistence.ServiceCategories;
 using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
 
@@ -21,6 +23,8 @@ public class CarJournalDbContext : DbContext
     public DbSet<BodyType> BodyTypes { get; set; }
     public DbSet<Car> Cars { get; set; }
     public DbSet<UserCar> UserCars { get; set; }
+    public DbSet<MileageRecord> MileageRecords { get; set; }
+    public DbSet<ServiceCategory> ServiceCategories { get; set; }
 
     public CarJournalDbContext(DbContextOptions<CarJournalDbContext> options) : base(options)
     {
@@ -37,6 +41,8 @@ public class CarJournalDbContext : DbContext
         modelBuilder.ApplyConfiguration(new BodyTypeConfigurations());
         modelBuilder.ApplyConfiguration(new CarConfigurations());
         modelBuilder.ApplyConfiguration(new UserCarsConfiguration());
+        modelBuilder.ApplyConfiguration(new MileageConfiguration());
+        modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
 
         CreateDefaultRoles(modelBuilder);
         CreateAdminUser(modelBuilder);
@@ -45,7 +51,7 @@ public class CarJournalDbContext : DbContext
     private void CreateDefaultRoles(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Role>()
-        .HasData(RolesStorage.User, RolesStorage.Admin);
+            .HasData(RolesStorage.User, RolesStorage.Admin);
     }
 
     private void CreateAdminUser(ModelBuilder modelBuilder)
@@ -53,8 +59,8 @@ public class CarJournalDbContext : DbContext
         PasswordHasher.CreatePasswordHash("admin", out var passwordHash, out var passwordSalt);
 
         modelBuilder.Entity<User>()
-        .HasData(
-            new User(-1, "admin", passwordHash, passwordSalt, RolesStorage.Admin.Id)
-        );
+            .HasData(
+                new User(-1, "admin", passwordHash, passwordSalt, RolesStorage.Admin.Id)
+            );
     }
 }

@@ -1,0 +1,35 @@
+@page "/mileages"
+
+@using CarJournal.Services.Client
+@using CarJournal.Services.Mileages
+
+@inject IMileageService _mileageService
+@inject ISelectedCarService _selectedCarService
+
+<MudStack Row="true">
+    <MudTextField Style="max-width: 300px;" @bind-Value="ViewModel.MileageToAdd" Label="Model" Variant="Variant.Outlined" />
+    <MudButton @onclick="ViewModel.AddMileage">Add</MudButton>
+</MudStack>
+
+@foreach(var mileage in ViewModel.MileageRecords)
+{
+<MudCard Style="margin: 10px; padding: 20px;">
+    <MudItem xs="3" md="3">
+        <MudText Typo="Typo.h6">@mileage.Mileage KM</MudText>
+        <MudText Typo="Typo.body1" Class="mt-3 mb-3">
+            @mileage.UpdatedAt
+        </MudText>
+    </MudItem>
+</MudCard>
+<MudDivider />
+}
+
+@code {
+    private MileageViewModel ViewModel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new MileageViewModel(_mileageService, _selectedCarService);
+        await ViewModel.LoadMileages();
+    }
+}
