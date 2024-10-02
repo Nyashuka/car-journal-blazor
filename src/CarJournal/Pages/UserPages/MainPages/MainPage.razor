@@ -1,3 +1,5 @@
+@attribute [Authorize(Roles = "user")]
+
 @using CarJournal.Services.Authentication
 @using CarJournal.Services.Client
 @using CarJournal.Services.UserCars
@@ -5,6 +7,7 @@
 @inject IUserCarsService _userCarService
 @inject IClientAuthenticationService _authenticationService
 @inject ISelectedCarService _selectedCarService
+@inject NavigationManager _navigationManager
 
 <MudAutocomplete T="UserCar" Label="Select Car" ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
                         Style="max-width: 300px;"
@@ -19,8 +22,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ViewModel = new MainPageViewModel(_userCarService, _authenticationService, _selectedCarService);
-
+        ViewModel = new MainPageViewModel(
+            _userCarService,
+            _authenticationService,
+            _selectedCarService,
+            _navigationManager
+        );
+        await Task.Delay(1000);
         await ViewModel.LoadUserCarsAsync();
     }
 }

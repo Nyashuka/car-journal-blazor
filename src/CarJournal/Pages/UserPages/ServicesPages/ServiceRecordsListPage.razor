@@ -1,0 +1,79 @@
+@page "/services"
+@attribute [Authorize(Roles = "user")]
+
+@using CarJournal.Services.Client
+@using CarJournal.Services.ServiceCategories
+@using CarJournal.Services.ServiceRecords
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject IServiceCategoryService _categoriesService
+@inject ISelectedCarService _selectedCarService
+@inject IServiceRecordService _servicesService
+@inject NavigationManager _naviagationManager
+@inject ProtectedSessionStorage _protectedSessionStorage
+
+<MudButton Variant="Variant.Filled"
+    DropShadow="false"
+    Color="Color.Primary"
+    Class="mb-4"
+    OnClick="@ViewModel.NavigateToCreateServiceRecord">
+    Add Record
+</MudButton>
+
+@foreach(var service in ViewModel.ServiceRecords)
+{
+<MudCard Style="margin: 10px; padding: 20px;">
+    <MudGrid>
+        <MudItem xs="3" md="3">
+            <MudText Typo="Typo.h6">@service.Title</MudText>
+            <MudText Typo="Typo.h6">@service.DateOfService</MudText>
+            <MudStack Row="false" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
+                <MudStack Row="true">
+                    <MudIcon Icon="@Icons.Material.Outlined.Numbers" />
+                    <MudText Typo="Typo.body2">@service.Mileage KM</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudIcon Icon="@Icons.Material.Outlined.Money" Class="ml-4" />
+                    <MudText Typo="Typo.body2">$ @service.Price</MudText>
+                </MudStack>
+            </MudStack>
+            <MudText Class="mt-3" Typo="Typo.body1">@service?.ServiceCategory?.Name</MudText>
+            <MudText Typo="Typo.body1" Class="mt-3 mb-3">
+                @service.Description
+            </MudText>
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
+                <MudButton Variant="@_variant" Color="Color.Primary" Class="mt-3">Details</MudButton>
+                <MudButton Variant="@_variant" Color="Color.Warning" Class="mt-3">Delete</MudButton>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudCard>
+<MudDivider />
+}
+
+@code {
+    private ServiceRecordsListViewModel ViewModel { get; set; }
+    private Variant _variant = Variant.Outlined;
+    private bool _readOnly;
+    private bool _isCellEditMode;
+    private bool _editTriggerRowClick;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _selectedCarService.Initialize(_protectedSessionStorage);
+        _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChangedAsync;
+
+        ViewModel = new ServiceRecordsListViewModel(
+            _servicesService,
+            _selectedCarService,
+            _naviagationManager);
+
+        await ViewModel.InitializeAsync();
+    }
+
+    private async Task OnSelectedCarChangedAsync(int id, string name)
+    {
+        await ViewModel.InitializeAsync();
+        StateHasChanged();
+    }
+}

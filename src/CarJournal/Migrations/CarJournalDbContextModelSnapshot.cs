@@ -194,6 +194,46 @@ namespace CarJournal.Migrations
                     b.ToTable("ServiceCategories");
                 });
 
+            modelBuilder.Entity("CarJournal.Domain.ServiceRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateOfService")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Mileage")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserCarId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceCategoryId");
+
+                    b.HasIndex("UserCarId");
+
+                    b.ToTable("ServiceRecords");
+                });
+
             modelBuilder.Entity("CarJournal.Domain.User", b =>
                 {
                     b.Property<int>("Id")
@@ -229,8 +269,8 @@ namespace CarJournal.Migrations
                         {
                             Id = -1,
                             Email = "admin",
-                            PasswordHash = new byte[] { 115, 72, 158, 189, 8, 183, 122, 205, 47, 72, 62, 189, 61, 224, 182, 17, 79, 164, 64, 66, 155, 98, 144, 32, 13, 191, 18, 190, 235, 53, 183, 142, 133, 255, 134, 236, 236, 36, 102, 202, 157, 119, 75, 103, 17, 210, 59, 123, 39, 68, 209, 78, 91, 6, 10, 105, 236, 88, 223, 214, 178, 34, 42, 143 },
-                            PasswordSalt = new byte[] { 13, 171, 121, 162, 205, 125, 242, 56, 48, 69, 212, 31, 53, 198, 191, 44, 8, 54, 164, 243, 237, 255, 147, 103, 150, 33, 195, 237, 153, 110, 136, 176, 50, 53, 219, 164, 126, 82, 65, 223, 174, 122, 85, 165, 217, 148, 82, 105, 137, 59, 150, 174, 5, 128, 239, 141, 137, 77, 126, 2, 217, 180, 133, 237, 34, 250, 57, 184, 42, 205, 10, 235, 195, 55, 21, 89, 13, 103, 63, 99, 170, 151, 54, 219, 160, 42, 50, 78, 241, 42, 34, 72, 254, 161, 95, 94, 0, 91, 166, 220, 17, 162, 160, 106, 229, 96, 205, 246, 72, 56, 138, 187, 46, 221, 64, 218, 126, 224, 139, 44, 162, 187, 186, 185, 36, 198, 32, 142 },
+                            PasswordHash = new byte[] { 25, 10, 92, 173, 181, 4, 173, 201, 233, 112, 64, 130, 60, 13, 226, 27, 78, 94, 126, 206, 142, 36, 241, 223, 240, 132, 50, 16, 159, 100, 19, 126, 225, 45, 112, 6, 204, 50, 50, 170, 96, 101, 216, 155, 28, 33, 177, 208, 114, 174, 217, 197, 253, 152, 206, 152, 177, 127, 105, 180, 120, 77, 113, 208 },
+                            PasswordSalt = new byte[] { 139, 252, 77, 198, 10, 186, 58, 124, 146, 250, 156, 225, 217, 160, 250, 97, 34, 181, 202, 156, 250, 144, 207, 116, 147, 214, 2, 39, 104, 57, 130, 161, 197, 239, 107, 69, 244, 186, 182, 136, 192, 110, 56, 12, 78, 20, 39, 13, 115, 26, 184, 110, 241, 173, 19, 228, 179, 120, 122, 40, 188, 196, 155, 163, 17, 96, 69, 229, 104, 90, 72, 224, 47, 123, 178, 206, 55, 253, 107, 238, 140, 200, 86, 254, 173, 35, 130, 78, 165, 225, 3, 166, 233, 160, 5, 189, 173, 99, 199, 201, 128, 90, 29, 179, 78, 62, 70, 56, 48, 82, 250, 51, 74, 75, 190, 130, 13, 136, 203, 133, 150, 96, 70, 201, 57, 95, 225, 169 },
                             RoleId = 2
                         });
                 });
@@ -373,6 +413,25 @@ namespace CarJournal.Migrations
                         .HasForeignKey("UserCarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserCar");
+                });
+
+            modelBuilder.Entity("CarJournal.Domain.ServiceRecord", b =>
+                {
+                    b.HasOne("CarJournal.Domain.ServiceCategory", "ServiceCategory")
+                        .WithMany()
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CarJournal.Domain.UserCar", "UserCar")
+                        .WithMany()
+                        .HasForeignKey("UserCarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceCategory");
 
                     b.Navigation("UserCar");
                 });

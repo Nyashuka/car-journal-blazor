@@ -4,6 +4,9 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Services.AddDbContext<CarJournalDbContext>(options =>
+            options.UseNpgsql(DbConstants.ConnectionString));
+
     builder.Services.AddRepositories()
                     .AddInfrastructure()
                     .AddServices()
@@ -14,8 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddAuthenticationCore();
 
-    builder.Services.AddDbContext<CarJournalDbContext>(options =>
-            options.UseNpgsql(DbConstants.ConnectionString));
+
 
     builder.Services.AddAuthorization(options =>
     {

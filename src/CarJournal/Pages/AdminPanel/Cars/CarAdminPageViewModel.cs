@@ -1,5 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-
 using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Pages.Enums;
@@ -14,10 +12,10 @@ public class CarAdminPageViewModel
     private readonly ICarService _carService;
 
     public CarComponentsData Components { get; private set; }
-    public CreateCarDto CreateDto { get; private set; }
+    public CreateCarDto CreateDto { get; private set; } = new();
 
     public MudDataGrid<Car> DataGrid { get; private set; } = new();
-    public List<Car> Cars { get; private set; }
+    public List<Car> Cars { get; private set; } = new List<Car>();
 
     public FormState State = FormState.View;
 
@@ -29,7 +27,7 @@ public class CarAdminPageViewModel
 
     public async Task Initialize()
     {
-        Cars = (await _carService.GetAllCarsAsync()).ToList();
+        Cars = (await _carService.GetAllCarsWithDetailsAsync()).ToList();
     }
 
     public async void OpenCreateMenu()
@@ -46,6 +44,15 @@ public class CarAdminPageViewModel
 
     public async Task CreateCar()
     {
+        if(CreateDto.Vendor == null || 
+            CreateDto.BodyType == null ||
+            CreateDto.Engine == null ||
+            CreateDto.Gearbox == null ||
+            CreateDto.FuelType == null)
+        {
+            throw new Exception("Fields for creating car can't be null!");
+        }
+
         var car = new Car(0, CreateDto.Model, CreateDto.Series,
                             CreateDto.Year, CreateDto.Vendor.Id,
                             CreateDto.BodyType.Id, CreateDto.Engine.Id,
@@ -68,8 +75,9 @@ public class CarAdminPageViewModel
     {
     }
 
-    public async Task SaveItemChanges()
+    public Task SaveItemChanges()
     {
+        throw new NotImplementedException();
     }
 
     public Task OnSearch(string text)

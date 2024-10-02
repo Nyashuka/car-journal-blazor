@@ -1,11 +1,15 @@
 using CarJournal.Domain;
 
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+
 namespace CarJournal.Services.Client;
 
 public interface ISelectedCarService
 {
-    Task SetSelectedCarId(int id);
+    void Initialize(ProtectedSessionStorage protectedSessionStorage);
+    Task SetSelectedCar(int id, string name);
     Task<string?> GetSelectedCarId();
+    Task<string?> GetSelectedCarName();
 
-    event Func<int, Task> SelectedCarChangedAsync;
+    event Func<int, string, Task> SelectedCarChangedAsync;
 }

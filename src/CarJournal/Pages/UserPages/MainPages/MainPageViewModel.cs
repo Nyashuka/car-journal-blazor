@@ -13,16 +13,20 @@ public class MainPageViewModel
     private readonly IUserCarsService _userCarsService;
     private readonly IClientAuthenticationService _authenticationService;
     private readonly ISelectedCarService _selectedCarService;
+    private readonly NavigationManager _navigationManager;
+
     public UserCar? SelectedCar { get; set; }
     public List<UserCar> UserCars { get; set; } = new();
 
     public MainPageViewModel(IUserCarsService userCarService,
                              IClientAuthenticationService authenticationService,
-                             ISelectedCarService selectedCarService)
+                             ISelectedCarService selectedCarService,
+                             NavigationManager navigationManager)
     {
         _userCarsService = userCarService;
         _authenticationService = authenticationService;
         _selectedCarService = selectedCarService;
+        _navigationManager = navigationManager;
     }
 
     public async Task LoadUserCarsAsync()
@@ -56,7 +60,7 @@ public class MainPageViewModel
 
         SelectedCar = userCar;
 
-        await _selectedCarService.SetSelectedCarId(userCar.Id);
+        await _selectedCarService.SetSelectedCar(userCar.Id, userCar.Name);
     }
 
     public async Task<IEnumerable<UserCar>> SearchCar(string value, CancellationToken token)

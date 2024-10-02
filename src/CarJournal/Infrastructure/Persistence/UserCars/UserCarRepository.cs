@@ -8,19 +8,17 @@ namespace CarJournal.Infrastructure.Persistence.UserCars;
 public class UserCarsRepository : IUserCarsRepository
 {
     private readonly CarJournalDbContext _context;
-    private readonly DbSet<UserCar> _userCars;
 
     public UserCarsRepository(CarJournalDbContext dbContext)
     {
         _context = dbContext;
-        _userCars = _context.UserCars;
     }
 
     public async Task<UserCar?> GetByIdAsync(int id)
     {
         return await _context.UserCars
             .Include(uc => uc.User)
-            .Include(uc => uc.Car)
+            .Include(uc => uc.Car).AsSplitQuery()
             .FirstOrDefaultAsync(uc => uc.Id == id);
     }
 

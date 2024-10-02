@@ -1,13 +1,16 @@
 @page "/mileages"
+@attribute [Authorize(Roles = "user")]
 
 @using CarJournal.Services.Client
 @using CarJournal.Services.Mileages
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 @inject IMileageService _mileageService
 @inject ISelectedCarService _selectedCarService
+@inject ProtectedSessionStorage _protectedSessionStorage
 
 <MudStack Row="true">
-    <MudTextField Style="max-width: 300px;" @bind-Value="ViewModel.MileageToAdd" Label="Model" Variant="Variant.Outlined" />
+    <MudTextField Style="max-width: 300px;" @bind-Value="ViewModel.MileageToAdd" Label="Value in KM" Variant="Variant.Outlined" />
     <MudButton @onclick="ViewModel.AddMileage">Add</MudButton>
 </MudStack>
 
@@ -29,7 +32,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _selectedCarService.Initialize(_protectedSessionStorage);
+        _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChangedAsync;
         ViewModel = new MileageViewModel(_mileageService, _selectedCarService);
         await ViewModel.LoadMileages();
+    }
+
+    private async Task OnSelectedCarChangedAsync(int id, string name)
+    {
+        await ViewModel.LoadMileages();
+        StateHasChanged();
     }
 }

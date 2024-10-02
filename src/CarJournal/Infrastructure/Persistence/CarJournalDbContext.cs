@@ -25,6 +25,7 @@ public class CarJournalDbContext : DbContext
     public DbSet<UserCar> UserCars { get; set; }
     public DbSet<MileageRecord> MileageRecords { get; set; }
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
+    public DbSet<ServiceRecord> ServiceRecords { get; set; }
 
     public CarJournalDbContext(DbContextOptions<CarJournalDbContext> options) : base(options)
     {

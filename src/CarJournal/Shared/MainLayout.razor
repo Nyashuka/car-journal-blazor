@@ -16,7 +16,8 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <AuthorizeView Roles="user">
             <Authorized>
-                <MudText Typo="Typo.h5" Class="ml-3">@_selectedCarName</MudText>
+                <MainPage/>
+                @* <MudText Typo="Typo.h5" Class="ml-3">@_selectedCarName</MudText> *@
             </Authorized>
             <NotAuthorized>
                 <MudText Typo="Typo.h5" Class="ml-3">Car Journal</MudText>
@@ -56,11 +57,12 @@
     private UserCar? SelectedCar;
     private string _selectedCarName = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnInitializedAsync();
 
         _selectedCarService.SelectedCarChangedAsync += OnUserCarChanged;
+
         await TryInitializeSelectedCar();
 
         _theme = new()
@@ -73,21 +75,21 @@
 
     private async Task TryInitializeSelectedCar()
     {
-        var stringId = await _selectedCarService.GetSelectedCarId();
+        var name = await _selectedCarService.GetSelectedCarName();
 
-        if(string.IsNullOrEmpty(stringId))
+        if (!string.IsNullOrEmpty(name))
         {
-            SelectedCar = await _userCarService.GetByIdAsync(Convert.ToInt32(stringId));
-            _selectedCarName = SelectedCar?.Name ?? string.Empty;
+            _selectedCarName = name;
             StateHasChanged();
         }
     }
 
-    private async Task OnUserCarChanged(int userCarId)
+    private Task OnUserCarChanged(int userCarId, string name)
     {
-        SelectedCar = await _userCarService.GetByIdAsync(userCarId);
-        _selectedCarName = SelectedCar?.Name ?? string.Empty;
+        _selectedCarName = name;
         StateHasChanged();
+
+        return Task.CompletedTask;
     }
 
     private void DrawerToggle()

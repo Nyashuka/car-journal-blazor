@@ -1,0 +1,37 @@
+@page "/admin/servicecategories/create"
+@attribute [Authorize(Roles = "admin")]
+
+@using CarJournal.Services.ServiceCategories
+
+@inject IServiceCategoryService _categoriesService
+@inject NavigationManager _naviagationManager
+
+<MudButton Variant="Variant.Filled"
+    DropShadow="false"
+    Color="Color.Primary"
+    Class="mb-4"
+    OnClick="@ViewModel.NavigateBackToCategoriesList">
+    Back
+</MudButton>
+
+<MudTextField Style="max-width: 400px;"
+    @bind-Value="@ViewModel.CategoryName"
+    Label="Name"
+    Variant="Variant.Outlined" />
+
+<MudButton Variant="Variant.Filled"
+    DropShadow="false"
+    Color="Color.Primary"
+    Class="mb-4"
+    OnClick="@ViewModel.CreateCategory">
+    Create
+</MudButton>
+
+@code {
+    public CreateServiceCategoryViewModel ViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new CreateServiceCategoryViewModel(_categoriesService, _naviagationManager);
+    }
+}

@@ -19,6 +19,8 @@ public class MileageViewModel
         _selectedCarService = selectedCarService;
     }
 
+    
+
     private async Task<int> GetSelectedCarId()
     {
         var selectedCar = await _selectedCarService.GetSelectedCarId();

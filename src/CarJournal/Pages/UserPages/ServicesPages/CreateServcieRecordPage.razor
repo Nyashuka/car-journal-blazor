@@ -1,0 +1,79 @@
+@page "/services/create"
+@attribute [Authorize(Roles = "user")]
+
+@using CarJournal.Services.Client
+@using CarJournal.Services.ServiceCategories
+@using CarJournal.Services.ServiceRecords
+
+@inject IServiceCategoryService _serviceCategoryService
+@inject IServiceRecordService _servicesService
+@inject ISelectedCarService _selectedCarService
+@inject NavigationManager _naviagationManager
+
+<MudStack Row="true" Style="max-width: 400px;">
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false"
+        Color="Color.Primary"
+        Class="mb-4"
+        OnClick="@ViewModel.NavigateBackToServicesList">
+        Back
+    </MudButton>
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false"
+        Color="Color.Primary"
+        Class="mb-4"
+        OnClick="@ViewModel.CreateRecord">
+        Create
+    </MudButton>
+</MudStack>
+
+<MudStack Style="max-width: 400px;">
+    <MudTextField
+        @bind-Value="@ViewModel.CreateServiceRecordDto.Title"
+        Label="Title"
+        Variant="Variant.Outlined" />
+
+    <MudTextField
+        @bind-Value="@ViewModel.CreateServiceRecordDto.Description"
+        Label="Description"
+        Variant="Variant.Outlined" />
+
+    <MudTextField
+        @bind-Value="@ViewModel.CreateServiceRecordDto.Mileage"
+        Label="Mileage" Variant="Variant.Outlined" />
+
+    <MudTextField
+        @bind-Value="@ViewModel.CreateServiceRecordDto.Price"
+        Label="Price" Variant="Variant.Outlined" />
+
+    <MudAutocomplete T="ServiceCategory" Label="Category"
+        @bind-Value="@ViewModel.CreateServiceRecordDto.ServiceCategory"
+        SearchFunc="@ViewModel.SearchCategory"
+        ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+        Variant="Variant.Outlined" />
+</MudStack>
+
+
+@*
+<MudButton Variant="Variant.Filled"
+    DropShadow="false"
+    Color="Color.Primary"
+    Class="mb-4"
+    OnClick="@ViewModel.CreateCategory">
+    Create
+</MudButton> *@
+
+@code {
+    public CreateServiceRecordViewModel ViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new CreateServiceRecordViewModel(
+            _serviceCategoryService,
+            _servicesService,
+            _selectedCarService,
+            _naviagationManager);
+
+        await ViewModel.InitializeAsync();
+    }
+}

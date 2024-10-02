@@ -127,7 +127,7 @@ else
     private CarComponentsData Componenets { get; set; }
     private CarAdminPageViewModel ViewModel { get; set; }
 
-    protected async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         Componenets = new CarComponentsData(_vendorsService, _gearboxesService,
                                             _fuelTypeService, _bodyTypesService,

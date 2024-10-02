@@ -2,5 +2,5 @@ namespace CarJournal.ClientDtos;
 
 public class VendorDto
 {
-    public string Name;
+    public string Name { get; set; } = string.Empty;
 }

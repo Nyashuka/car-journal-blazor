@@ -7,27 +7,25 @@ namespace CarJournal.Infrastructure.Persistence.Cars;
 public class CarRepository : ICarRepository
 {
     private readonly CarJournalDbContext _dbContext;
-    private readonly DbSet<Car> _dbSet;
 
     public CarRepository(CarJournalDbContext dbContext)
     {
         _dbContext = dbContext;
-        _dbSet = dbContext.Set<Car>();
     }
 
     public async Task<Car?> GetByIdAsync(int id)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbContext.Cars.FindAsync(id);
     }
 
     public async Task<IEnumerable<Car>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync();
+        return await _dbContext.Cars.ToListAsync();
     }
 
     public async Task<Car> AddAsync(Car car)
     {
-        await _dbSet.AddAsync(car);
+        await _dbContext.Cars.AddAsync(car);
         await _dbContext.SaveChangesAsync();
 
         return car;
@@ -35,7 +33,7 @@ public class CarRepository : ICarRepository
 
     public async Task UpdateAsync(Car car)
     {
-        _dbSet.Update(car);
+        _dbContext.Cars.Update(car);
         await _dbContext.SaveChangesAsync();
     }
 
@@ -43,24 +41,24 @@ public class CarRepository : ICarRepository
     {
         if (car != null)
         {
-            _dbSet.Remove(car);
+            _dbContext.Cars.Remove(car);
             await _dbContext.SaveChangesAsync();
         }
     }
 
     public async Task<IEnumerable<Car>> GetByModelAsync(string model)
     {
-        return await _dbSet.Where(c => c.Model == model).ToListAsync();
+        return await _dbContext.Cars.Where(c => c.Model == model).ToListAsync();
     }
 
     public async Task<IEnumerable<Car>> GetCarsByVendorAsync(int vendorId)
     {
-        return await _dbSet.Where(c => c.VendorId == vendorId).ToListAsync();
+        return await _dbContext.Cars.Where(c => c.VendorId == vendorId).ToListAsync();
     }
 
     public async Task<Car?> GetCarWithDetailsAsync(int id)
     {
-        return await _dbSet
+        return await _dbContext.Cars
             .Include(c => c.Vendor)
             .Include(c => c.BodyType)
             .Include(c => c.Engine)
@@ -71,7 +69,7 @@ public class CarRepository : ICarRepository
 
     public async Task<IEnumerable<Car>> GetAllCarsWithDetails()
     {
-        return await _dbSet
+        return await _dbContext.Cars
             .Include(c => c.Vendor)
             .Include(c => c.BodyType)
             .Include(c => c.Engine)

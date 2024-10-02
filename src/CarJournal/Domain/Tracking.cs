@@ -3,7 +3,7 @@ namespace CarJournal.Domain;
 public class Tracking
 {
     public int Id { get; private set; }
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
     public TrackingType TrackingType { get; private set; }
     public DateTime? EndDate { get; private set; }
     public int TotalMileage { get; private set; }

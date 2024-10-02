@@ -9,18 +9,29 @@
 
 @if(_isCreating)
 {
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CloseCreateMenu">Back</MudButton>
+    <MudButton Variant="Variant.Filled" 
+        DropShadow="false"
+        Color="Color.Primary"
+        Class="mb-4"
+        OnClick="@CloseCreateMenu">Back</MudButton>
 
     <MudTextField @bind-Value="EngineModel" Label="Model" Variant="Variant.Outlined" />
     <MudTextField @bind-Value="EngineSize" Label="Engine Size" Variant="Variant.Outlined" />
 
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateEngine">Create</MudButton>
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false"
+        Color="Color.Primary"
+        Class="mb-4"
+        OnClick="@CreateEngine">
+        Create
+    </MudButton>
 }
 else
 {
     <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Vendor</MudButton>
 
-    <MudDataGrid T="Engine" Items="@_engines" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+    <MudDataGrid T="Engine" Items="@_engines"
+        Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
         EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
         StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem"
         CommittedItemChanges="@CommittedItemChanges"

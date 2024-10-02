@@ -1,0 +1,63 @@
+@page "/admin/servicecategories"
+@attribute [Authorize(Roles = "admin")]
+
+@using CarJournal.Services.ServiceCategories
+
+@inject IServiceCategoryService _categoriesService
+@inject NavigationManager _naviagationManager
+
+<MudButton Variant="Variant.Filled"
+    DropShadow="false"
+    Color="Color.Primary"
+    Class="mb-4"
+    OnClick="@ViewModel.NavigateToCreateServiceCategory">
+    Add new Vendor
+</MudButton>
+
+    <MudDataGrid T="ServiceCategory" Items="@ViewModel.ServiceCategories"
+        Bordered="true" Dense="true"
+        SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+        EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
+        EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
+
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Service Categories</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>ViewModel.OnSearch(s))"
+                    Placeholder="Search" Adornment="Adornment.Start"
+                    AdornmentIcon="@Icons.Material.Filled.Search"
+                    IconSize="Size.Medium" Class="mt-0">
+            </MudTextField>
+        </ToolBarContent>
+
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="#" Editable="false" HeaderStyle="width: 5%;" />
+            <PropertyColumn Property="x => x.Name" Title="Category Name"/>
+            @* <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                            OnClick="@context.Actions.StartEditingItemAsync" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => ViewModel.DeleteRecord(@context.Item))" aria-label="delete" />
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn> *@
+
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ServiceCategory" />
+        </PagerContent>
+    </MudDataGrid>
+
+@code {
+    public ServiceCategoriesViewModel ViewModel { get; set; }
+    private Variant _variant = Variant.Outlined;
+    private bool _readOnly;
+    private bool _isCellEditMode;
+    private bool _editTriggerRowClick;
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new ServiceCategoriesViewModel(_categoriesService, _naviagationManager);
+        await ViewModel.InitializeAsync();
+    }
+}

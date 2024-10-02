@@ -1,10 +1,7 @@
-using CarJournal.Api.Authentication;
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Authentication;
 using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Persistence.Repositories;
-
-using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace CarJournal.Services.Authentication;
 
