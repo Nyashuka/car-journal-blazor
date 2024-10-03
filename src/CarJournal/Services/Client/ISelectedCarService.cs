@@ -6,7 +6,6 @@ namespace CarJournal.Services.Client;
 
 public interface ISelectedCarService
 {
-    void Initialize(ProtectedSessionStorage protectedSessionStorage);
     Task SetSelectedCar(int id, string name);
     Task<string?> GetSelectedCarId();
     Task<string?> GetSelectedCarName();

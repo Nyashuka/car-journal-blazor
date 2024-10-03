@@ -9,24 +9,18 @@ namespace CarJournal.Services.Client;
 public class SelectedCarService : ISelectedCarService
 {
     public event Func<int, string, Task> SelectedCarChangedAsync;
-    private ProtectedSessionStorage _sessionStorage;
+    private readonly ProtectedSessionStorage _sessionStorage;
 
-    public SelectedCarService()
+    public SelectedCarService(ProtectedSessionStorage sessionStorage)
     {
-
-    }
-
-    public void Initialize(ProtectedSessionStorage protectedSessionStorage)
-    {
-        _sessionStorage = protectedSessionStorage;
+        _sessionStorage = sessionStorage;
     }
 
     public async Task<string?> GetSelectedCarId()
     {
-        ProtectedBrowserStorageResult<string?> data;
         try
         {
-            data = await _sessionStorage.GetAsync<string?>(SessionStorageConstants.SelectedCarId);
+            var data = await _sessionStorage.GetAsync<string?>(SessionStorageConstants.SelectedCarId);
 
             return data.Value;
         }

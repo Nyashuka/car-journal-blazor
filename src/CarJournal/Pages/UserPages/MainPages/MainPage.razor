@@ -9,6 +9,9 @@
 @inject ISelectedCarService _selectedCarService
 @inject NavigationManager _navigationManager
 
+@if(_isLoaded)
+{
+
 <MudAutocomplete T="UserCar" Label="Select Car" ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
                         Style="max-width: 300px;"
                         SearchFunc="@ViewModel.SearchCar"
@@ -17,8 +20,15 @@
                         Strict="false">
 </MudAutocomplete>
 
+}
+else
+{
+    <p>Loading...</p>
+}
 @code {
     private MainPageViewModel ViewModel { get; set; }
+
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,7 +38,11 @@
             _selectedCarService,
             _navigationManager
         );
-        await Task.Delay(1000);
-        await ViewModel.LoadUserCarsAsync();
+        //await Task.Delay(1000);
+        await Task.WhenAll(
+            ViewModel.LoadUserCarsAsync()
+        );
+
+        _isLoaded = true;
     }
 }

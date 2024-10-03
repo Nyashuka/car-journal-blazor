@@ -2,7 +2,6 @@
 @using CarJournal.Services.UserCars
 
 @inject ISelectedCarService _selectedCarService
-@inject IUserCarsService _userCarService
 
 @inherits LayoutComponentBase
 
@@ -19,9 +18,11 @@
                 <MainPage/>
                 @* <MudText Typo="Typo.h5" Class="ml-3">@_selectedCarName</MudText> *@
             </Authorized>
-            <NotAuthorized>
-                <MudText Typo="Typo.h5" Class="ml-3">Car Journal</MudText>
-            </NotAuthorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="admin">
+            <Authorized>
+                <MudText Typo="Typo.h5" Class="ml-3">Admin Panel</MudText>
+            </Authorized>
         </AuthorizeView>
         <MudSpacer />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
@@ -54,16 +55,11 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
-    private UserCar? SelectedCar;
     private string _selectedCarName = string.Empty;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         _selectedCarService.SelectedCarChangedAsync += OnUserCarChanged;
-
-        await TryInitializeSelectedCar();
 
         _theme = new()
         {

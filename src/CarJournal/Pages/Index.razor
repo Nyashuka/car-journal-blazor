@@ -1,9 +1,5 @@
 ﻿@page "/"
+@attribute [Authorize]
 
 <PageTitle>Index</PageTitle>
 
-<AuthorizeView Roles="user">
-    <Authorized>
-        <MainPage></MainPage>
-    </Authorized>
-</AuthorizeView>

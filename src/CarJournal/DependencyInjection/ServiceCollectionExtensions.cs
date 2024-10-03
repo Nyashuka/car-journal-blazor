@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
         services.AddScoped<IServiceRecordService, ServiceRecordService>();
 
-        services.AddSingleton<ISelectedCarService, SelectedCarService>();
+        services.AddScoped<ISelectedCarService, SelectedCarService>();
 
         services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
         return services;

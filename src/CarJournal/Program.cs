@@ -5,7 +5,7 @@ using MudBlazor.Services;
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddDbContext<CarJournalDbContext>(options =>
-            options.UseNpgsql(DbConstants.ConnectionString));
+            options.UseNpgsql(DbConstants.ConnectionString), ServiceLifetime.Transient);
 
     builder.Services.AddRepositories()
                     .AddInfrastructure()

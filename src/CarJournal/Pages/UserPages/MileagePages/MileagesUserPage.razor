@@ -32,7 +32,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _selectedCarService.Initialize(_protectedSessionStorage);
         _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChangedAsync;
         ViewModel = new MileageViewModel(_mileageService, _selectedCarService);
         await ViewModel.LoadMileages();
