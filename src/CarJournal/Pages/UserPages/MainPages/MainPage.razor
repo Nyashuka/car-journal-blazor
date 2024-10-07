@@ -38,10 +38,8 @@ else
             _selectedCarService,
             _navigationManager
         );
-        //await Task.Delay(1000);
-        await Task.WhenAll(
-            ViewModel.LoadUserCarsAsync()
-        );
+
+        await ViewModel.LoadUserCarsAsync();
 
         _isLoaded = true;
     }

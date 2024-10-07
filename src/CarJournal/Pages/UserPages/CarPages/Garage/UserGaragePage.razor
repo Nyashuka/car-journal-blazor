@@ -50,7 +50,8 @@
     protected override async Task OnInitializedAsync()
     {
         ViewModel = new UserGarageViewModel(_userCarService, _authenticationService);
-        await ViewModel.LoadCars();
+
+        await Task.WhenAll(ViewModel.LoadCars());
     }
 
     bool _expanded = false;

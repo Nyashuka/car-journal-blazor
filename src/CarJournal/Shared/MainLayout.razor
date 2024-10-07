@@ -16,13 +16,17 @@
         <AuthorizeView Roles="user">
             <Authorized>
                 <MainPage/>
-                @* <MudText Typo="Typo.h5" Class="ml-3">@_selectedCarName</MudText> *@
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Roles="admin">
             <Authorized>
                 <MudText Typo="Typo.h5" Class="ml-3">Admin Panel</MudText>
             </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="user,admin">
+            <NotAuthorized>
+                <MudText Typo="Typo.h5" Class="ml-3">Not Authorized</MudText>
+            </NotAuthorized>
         </AuthorizeView>
         <MudSpacer />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />

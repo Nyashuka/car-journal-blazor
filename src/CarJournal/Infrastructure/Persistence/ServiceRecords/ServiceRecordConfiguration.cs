@@ -11,6 +11,9 @@ public class ServiceRecordConfiguration : IEntityTypeConfiguration<ServiceRecord
     {
         builder.HasKey(sr => sr.Id);
 
+        builder.Property(sr => sr.Id)
+            .ValueGeneratedOnAdd();
+
         builder.Property(sr => sr.Title)
             .IsRequired();
 

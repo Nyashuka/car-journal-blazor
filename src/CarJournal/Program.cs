@@ -4,8 +4,14 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    builder.Services.AddDbContext<CarJournalDbContext>(options =>
-            options.UseNpgsql(DbConstants.ConnectionString), ServiceLifetime.Transient);
+    builder.Services.AddDbContextFactory<CarJournalDbContext>(options =>
+    options.UseNpgsql(DbConstants.ConnectionString));
+
+    builder.Services.AddScoped<CarJournalDbContext>(provider =>
+        provider.GetRequiredService<IDbContextFactory<CarJournalDbContext>>().CreateDbContext());
+
+    // builder.Services.AddDbContext<CarJournalDbContext>(options =>
+    //         options.UseNpgsql(DbConstants.ConnectionString), ServiceLifetime.Scoped);
 
     builder.Services.AddRepositories()
                     .AddInfrastructure()
@@ -18,12 +24,11 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAuthenticationCore();
 
 
-
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy("admin", policy =>
-            policy.RequireRole("admin"));
-    });
+    // builder.Services.AddAuthorization(options =>
+    // {
+    //     options.AddPolicy("admin", policy =>
+    //         policy.RequireRole("admin"));
+    // });
 }
 
 var app = builder.Build();
@@ -31,7 +36,7 @@ var app = builder.Build();
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.IncludeDeveloperServices();  
+        app.IncludeDeveloperServices();
         app.UseExceptionHandler("/Error");
     }
 

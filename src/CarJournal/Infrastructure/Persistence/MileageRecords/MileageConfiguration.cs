@@ -10,6 +10,9 @@ public class MileageConfiguration : IEntityTypeConfiguration<MileageRecord>
     {
         builder.HasKey(mr => mr.Id);
 
+        builder.Property(mr => mr.Id)
+            .ValueGeneratedOnAdd();
+
         builder.Property(mr => mr.Mileage)
             .IsRequired();
 

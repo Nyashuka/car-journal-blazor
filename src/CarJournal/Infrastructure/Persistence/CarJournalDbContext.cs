@@ -7,6 +7,7 @@ using CarJournal.Infrastructure.Persistence.Gearboxes;
 using CarJournal.Infrastructure.Persistence.MileageRecords;
 using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Infrastructure.Persistence.ServiceCategories;
+using CarJournal.Infrastructure.Persistence.Trackings;
 using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
 
@@ -26,6 +27,7 @@ public class CarJournalDbContext : DbContext
     public DbSet<MileageRecord> MileageRecords { get; set; }
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
     public DbSet<ServiceRecord> ServiceRecords { get; set; }
+    public DbSet<Tracking> Trackings { get; set; }
 
     public CarJournalDbContext(DbContextOptions<CarJournalDbContext> options) : base(options)
     {
@@ -44,6 +46,7 @@ public class CarJournalDbContext : DbContext
         modelBuilder.ApplyConfiguration(new UserCarsConfiguration());
         modelBuilder.ApplyConfiguration(new MileageConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new TrackingConfiguration());
 
         CreateDefaultRoles(modelBuilder);
         CreateAdminUser(modelBuilder);

@@ -11,6 +11,9 @@ public class UserCarsConfiguration : IEntityTypeConfiguration<UserCar>
     {
         builder.HasKey(uc => uc.Id);
 
+        builder.Property(uc => uc.Id)
+            .ValueGeneratedOnAdd();
+
         builder.Property(uc => uc.Name)
             .IsRequired()
             .HasMaxLength(100);

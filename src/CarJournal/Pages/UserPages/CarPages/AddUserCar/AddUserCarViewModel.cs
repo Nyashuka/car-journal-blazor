@@ -19,7 +19,7 @@ public class AddUserCarViewModel : ISearchCarComponents
     public AddUserCarDto AddUserCarDto { get; private set; } = new AddUserCarDto();
     public List<Car> SearchedCars { get; set; } = new List<Car>();
 
-    public AddUserCarViewModel(IUserCarsService userCarsService, 
+    public AddUserCarViewModel(IUserCarsService userCarsService,
                                IClientAuthenticationService authenticationService)
     {
         _userCarsService = userCarsService;
@@ -36,11 +36,13 @@ public class AddUserCarViewModel : ISearchCarComponents
         }
 
         var car = new UserCar(0, AddUserCarDto.Name,
-                        AddUserCarDto.StartMileage, AddUserCarDto.StartMileage,
+                        AddUserCarDto.StartMileage,
+                        AddUserCarDto.StartMileage,
+                        0,
                         Convert.ToInt32(userId), null,
                         AddUserCarDto.Car?.Id, null, DateTime.UtcNow);
 
-       await _userCarsService.AddUserCarAsync(car); 
+       await _userCarsService.AddUserCarAsync(car);
     }
 
     public Task<IEnumerable<BodyType>> SearchBodyType(string value, CancellationToken token)

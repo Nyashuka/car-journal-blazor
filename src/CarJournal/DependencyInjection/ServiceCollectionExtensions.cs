@@ -6,6 +6,7 @@ using CarJournal.Infrastructure.Persistence.MileageRecords;
 using CarJournal.Infrastructure.Persistence.Roles;
 using CarJournal.Infrastructure.Persistence.ServiceCategories;
 using CarJournal.Infrastructure.Persistence.ServiceRecords;
+using CarJournal.Infrastructure.Persistence.Trackings;
 using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
 using CarJournal.Persistence.Repositories;
@@ -17,6 +18,7 @@ using CarJournal.Services.Engines;
 using CarJournal.Services.Mileages;
 using CarJournal.Services.ServiceCategories;
 using CarJournal.Services.ServiceRecords;
+using CarJournal.Services.Trackings;
 using CarJournal.Services.UserCars;
 using CarJournal.Services.Vendors;
 
@@ -45,6 +47,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IServiceRecordService, ServiceRecordService>();
 
         services.AddScoped<ISelectedCarService, SelectedCarService>();
+        services.AddScoped<ITrackingService, TrackingService>();
+
 
         services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
         return services;
@@ -64,6 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMileageRepository, MileageRepository>();
         services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
         services.AddScoped<IServiceRecordRepository, ServiceRecordRepository>();
+        services.AddScoped<ITrackingsRepository, TrackingsRepository>();
 
         services.AddScoped(typeof(IDataRepository<>), typeof(DataRepository<>));
         return services;
@@ -90,10 +95,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRazor(
             this IServiceCollection services)
     {
-        services.AddRazorPages(options =>
-        {
-            options.Conventions.AuthorizePage("/admin/vendors", "admin");
-        });
+        services.AddRazorPages();
         services.AddServerSideBlazor();
 
         return services;
