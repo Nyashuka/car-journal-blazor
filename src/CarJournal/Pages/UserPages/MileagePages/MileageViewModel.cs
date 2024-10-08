@@ -40,7 +40,6 @@ public class MileageViewModel
 
         if(selectedCar == null || !selectedCar.HasData)
         {
-            
             return;
         }
 

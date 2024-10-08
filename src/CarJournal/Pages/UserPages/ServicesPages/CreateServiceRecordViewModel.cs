@@ -46,14 +46,16 @@ public class CreateServiceRecordViewModel
 
         await _serviceRecordService.AddServiceRecordAsync(
             new ServiceRecord(
-                0, CreateServiceRecordDto.Title,
+                0,
+                CreateServiceRecordDto.Title,
                 CreateServiceRecordDto.ServiceCategory.Id,
                 selectedCar.Id,
                 CreateServiceRecordDto.Mileage,
                 CreateServiceRecordDto.Price,
                 CreateServiceRecordDto.Description,
                 DateTime.UtcNow,
-                null, null
+                null,
+                null
             )
         );
 

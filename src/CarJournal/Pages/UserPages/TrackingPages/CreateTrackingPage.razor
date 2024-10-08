@@ -1,0 +1,89 @@
+@page "/trackings/create"
+@attribute [Authorize(Roles = "user")]
+
+@implements IDisposable
+
+@using CarJournal.Services.Client
+@using CarJournal.Services.ServiceCategories
+@using CarJournal.Services.ServiceRecords
+@using CarJournal.Services.Trackings
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject IServiceCategoryService _categoriesService
+@inject ISelectedCarService _selectedCarService
+@inject IServiceRecordService _servicesService
+@inject NavigationManager _navigationManager
+@inject ProtectedSessionStorage _protectedSessionStorage
+@inject ITrackingService _trackingService
+
+<MudStack Row="true" Style="max-width: 400px;">
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false"
+        Color="Color.Primary"
+        Class="mb-4"
+        OnClick="@ViewModel.NavigateBackToTrackingList">
+        Back
+    </MudButton>
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false"
+        Color="Color.Primary"
+        Class="mb-4"
+        OnClick="@ViewModel.CreateRecord">
+        Create
+    </MudButton>
+</MudStack>
+
+<MudStack Style="max-width: 400px;">
+    <MudTextField
+        @bind-Value="@ViewModel.CreateTrackingDto.Name"
+        Label="Name"
+        Variant="Variant.Outlined" />
+
+    <MudTextField
+        @bind-Value="@ViewModel.CreateTrackingDto.MessageForReminder"
+        Label="Message for reminder"
+        Variant="Variant.Outlined" />
+
+    <MudAutocomplete T="TrackingType"
+        Label="Tracking Type"
+        @bind-Value="selectedTrackingType"
+        SearchFunc="@SearchTrackingType"
+        ToStringFunc="@(e=> e==null?null : $"{e}")" Strict="false"/>
+
+    @if(selectedTrackingType == TrackingType.Date)
+    {
+        <MudDatePicker Label="Notification date" @bind-Date="ViewModel.CreateTrackingDto.EndDate"/>
+    }
+    @if(selectedTrackingType == TrackingType.Mileage)
+    {
+        <MudTextField
+            @bind-Value="@ViewModel.CreateTrackingDto.LimitMileage"
+            Label="Limit Miliage"
+            Variant="Variant.Outlined" />
+    }
+</MudStack>
+
+@code {
+    private CreateTrackingViewModel ViewModel { get; set; }
+    private TrackingType selectedTrackingType;
+    private TrackingType[] trackingTypes = (TrackingType[])Enum.GetValues(typeof(TrackingType));
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new CreateTrackingViewModel(_trackingService, _navigationManager);
+    }
+
+    public async Task<IEnumerable<TrackingType>> SearchTrackingType(string value, CancellationToken token)
+    {
+        await Task.Delay(5, token);
+
+        if (string.IsNullOrEmpty(value))
+            return trackingTypes;
+
+        return trackingTypes.Where(x => x.ToString().Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    public void Dispose()
+    {
+    }
+}

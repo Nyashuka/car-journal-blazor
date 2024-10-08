@@ -1,5 +1,3 @@
-using System.Net.Http.Headers;
-
 using CarJournal.Domain;
 using CarJournal.Services.Client;
 using CarJournal.Services.Trackings;
@@ -23,6 +21,10 @@ public class TrackingListViewModel
     public async Task Initialize()
     {
         var selectedCar = await _selectedCarService.GetSelectedCar();
+
+        if(selectedCar == null || !selectedCar.HasData)
+            return;
+
         Trackings = await _trackingService.GetAllTrackingsByCarIdAsync(selectedCar.Id);
     }
 

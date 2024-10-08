@@ -1,9 +1,12 @@
 @page "/trackings"
 @attribute [Authorize(Roles = "user")]
 
-@* @using CarJournal.Services.Client
+@implements IDisposable
+
+@using CarJournal.Services.Client
 @using CarJournal.Services.ServiceCategories
 @using CarJournal.Services.ServiceRecords
+@using CarJournal.Services.Trackings
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 @inject IServiceCategoryService _categoriesService
@@ -11,35 +14,26 @@
 @inject IServiceRecordService _servicesService
 @inject NavigationManager _naviagationManager
 @inject ProtectedSessionStorage _protectedSessionStorage
+@inject ITrackingService _trackingService
 
-<MudButton Variant="Variant.Filled"
+@* <MudButton Variant="Variant.Filled"
     DropShadow="false"
     Color="Color.Primary"
     Class="mb-4"
-    OnClick="@ViewModel.NavigateToCreateServiceRecord">
+    OnClick="@ViewModel">
     Crete Tracking
-</MudButton>
+</MudButton> *@
 
-@foreach(var service in ViewModel.ServiceRecords)
+@foreach(var tracking in ViewModel.Trackings)
 {
 <MudCard Style="margin: 10px; padding: 20px;">
     <MudGrid>
         <MudItem xs="3" md="3">
-            <MudText Typo="Typo.h6">@service.Title</MudText>
-            <MudText Typo="Typo.h6">@service.DateOfService</MudText>
-            <MudStack Row="false" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
-                <MudStack Row="true">
-                    <MudIcon Icon="@Icons.Material.Outlined.Numbers" />
-                    <MudText Typo="Typo.body2">@service.Mileage KM</MudText>
-                </MudStack>
-                <MudStack Row="true">
-                    <MudIcon Icon="@Icons.Material.Outlined.Money" Class="ml-4" />
-                    <MudText Typo="Typo.body2">$ @service.Price</MudText>
-                </MudStack>
-            </MudStack>
-            <MudText Class="mt-3" Typo="Typo.body1">@service?.ServiceCategory?.Name</MudText>
+            <MudText Typo="Typo.h6">@tracking.Name</MudText>
+            <MudText Typo="Typo.h6">Last update @tracking.UpdatedAt</MudText>
+            <MudText Class="mt-3" Typo="Typo.body1">@tracking.CreatedAt</MudText>
             <MudText Typo="Typo.body1" Class="mt-3 mb-3">
-                @service.Description
+                @tracking.MessageForReminder
             </MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudButton Variant="@_variant" Color="Color.Primary" Class="mt-3">Details</MudButton>
@@ -49,7 +43,7 @@
     </MudGrid>
 </MudCard>
 <MudDivider />
-} *@
+}
 
 @code {
     private TrackingListViewModel ViewModel { get; set; } 
@@ -60,12 +54,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
+        _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChangedAsync;
+
+        ViewModel = new TrackingListViewModel(
+            _trackingService,
+            _selectedCarService
+        );
+
+        await ViewModel.Initialize();
     }
 
-    private async Task OnSelectedCarChangedAsync(int id, string name)
+    private async Task OnSelectedCarChangedAsync(SelectedCarData selectedCar)
     {
-        @* await ViewModel.InitializeAsync(); *@
+        await ViewModel.Initialize();
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _selectedCarService.SelectedCarChangedAsync -= OnSelectedCarChangedAsync;
     }
 }
