@@ -17,7 +17,7 @@ public class MainPageViewModel
 
     public UserCar? SelectedCar { get; set; }
     public List<UserCar> UserCars { get; set; } = new();
-
+    public string ErrorMessage { get; private set; }
     public MainPageViewModel(IUserCarsService userCarService,
                              IClientAuthenticationService authenticationService,
                              ISelectedCarService selectedCarService,
@@ -40,15 +40,22 @@ public class MainPageViewModel
 
         UserCars = await _userCarsService.GetAllAsync(Convert.ToInt32(userIdString));
 
-        var selectedCarId = await _selectedCarService.GetSelectedCarId();
+        var selectedCar = await _selectedCarService.GetSelectedCar();
 
-        if(!string.IsNullOrEmpty(selectedCarId))
+        if(selectedCar != null && selectedCar.HasData)
         {
-            var car = UserCars.FirstOrDefault(uc => uc.Id == Convert.ToInt32(selectedCarId));
+            var car = UserCars.FirstOrDefault(uc => uc.Id == Convert.ToInt32(selectedCar.Id));
             await OnSelectedCarChanged(car);
         }
         else
         {
+            if(UserCars.Count < 1)
+            {
+                ErrorMessage = "You may add car in garage!";
+                return;
+            }
+                // throw new Exception("\n\n\nNO CARS, NEED HANDLE\n\n\n");
+
             await OnSelectedCarChanged(UserCars.FirstOrDefault());
         }
     }

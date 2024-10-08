@@ -42,11 +42,13 @@ public class CreateServiceRecordViewModel
             return;
         }
 
+        var selectedCar = await _selectedCarService.GetSelectedCar();
+
         await _serviceRecordService.AddServiceRecordAsync(
             new ServiceRecord(
                 0, CreateServiceRecordDto.Title,
                 CreateServiceRecordDto.ServiceCategory.Id,
-                await GetSelectedCarId(),
+                selectedCar.Id,
                 CreateServiceRecordDto.Mileage,
                 CreateServiceRecordDto.Price,
                 CreateServiceRecordDto.Description,
@@ -56,18 +58,6 @@ public class CreateServiceRecordViewModel
         );
 
         NavigateBackToServicesList();
-    }
-
-    private async Task<int> GetSelectedCarId()
-    {
-        var selectedCar = await _selectedCarService.GetSelectedCarId();
-
-        if(string.IsNullOrEmpty(selectedCar))
-        {
-            throw new Exception("Car is not selected");
-        }
-
-        return Convert.ToInt32(selectedCar);
     }
 
     public void NavigateBackToServicesList()

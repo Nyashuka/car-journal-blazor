@@ -17,7 +17,7 @@
     Color="Color.Primary"
     Class="mb-4"
     OnClick="@ViewModel.NavigateToCreateServiceRecord">
-    Add Record
+    Crete Tracking
 </MudButton>
 
 @foreach(var service in ViewModel.ServiceRecords)
@@ -49,10 +49,10 @@
     </MudGrid>
 </MudCard>
 <MudDivider />
-}
+} *@
 
 @code {
-    private ServiceRecordsListViewModel ViewModel { get; set; } 
+    private TrackingListViewModel ViewModel { get; set; } 
     private Variant _variant = Variant.Outlined;
     private bool _readOnly;
     private bool _isCellEditMode;
@@ -60,19 +60,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChangedAsync;
-
-        ViewModel = new ServiceRecordsListViewModel(
-            _servicesService,
-            _selectedCarService,
-            _naviagationManager);
-
-        await ViewModel.InitializeAsync();
-    } 
+        
+    }
 
     private async Task OnSelectedCarChangedAsync(int id, string name)
     {
-        await ViewModel.InitializeAsync();
+        @* await ViewModel.InitializeAsync(); *@
         StateHasChanged();
     }
-} *@
+}

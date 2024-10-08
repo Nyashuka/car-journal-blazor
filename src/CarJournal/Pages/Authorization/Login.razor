@@ -53,6 +53,8 @@
 
     private async Task OnLoginClicked()
     {
+        await _clientAuthenticationService.ClearSessionStorage();
+        
         var authenticationResult = _authenticationService.Login(_loginDto.Email, _loginDto.Password);
         await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
 

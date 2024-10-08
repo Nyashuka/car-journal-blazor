@@ -27,21 +27,9 @@ public class ServiceRecordsListViewModel
 
     public async Task InitializeAsync()
     {
-        var selectedCarId = await GetSelectedCarId();
+        var selectedCar = await _selectedCarService.GetSelectedCar();
 
-        ServiceRecords = await _serviceRecordService.GetAllCarServicesAsync(selectedCarId);
-    }
-
-    private async Task<int> GetSelectedCarId()
-    {
-        var selectedCar = await _selectedCarService.GetSelectedCarId();
-
-        if(string.IsNullOrEmpty(selectedCar))
-        {
-            throw new Exception("Car is not selected");
-        }
-
-        return Convert.ToInt32(selectedCar);
+        ServiceRecords = await _serviceRecordService.GetAllCarServicesAsync(selectedCar.Id);
     }
 
     public void NavigateToCreateServiceRecord()

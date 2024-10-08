@@ -1,9 +1,12 @@
 @page "/logout"
 
 @using CarJournal.Services.Authentication
+@using CarJournal.Services.Authentication.Client
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 @inject IClientAuthenticationService _clientAuthenticationService
 @inject NavigationManager _navigationManager
+@inject ProtectedSessionStorage _sessionStorage
 
 @code {
     protected override async void OnInitialized()

@@ -22,6 +22,7 @@ public class ClientAuthenticationService : IClientAuthenticationService
     public async Task ClearSessionStorage()
     {
         await _protectedSessionStorage.DeleteAsync(SessionStorageConstants.UserSessionStorageKey);
+        await _protectedSessionStorage.DeleteAsync(SessionStorageConstants.SelectedCar);
     }
 
     public async Task<string?> GetUserIdAsync()

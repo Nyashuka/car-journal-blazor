@@ -37,7 +37,7 @@
         await ViewModel.LoadMileages();
     }
 
-    private async Task OnSelectedCarChangedAsync(int id, string name)
+    private async Task OnSelectedCarChangedAsync(SelectedCarData selectedCar)
     {
         await ViewModel.LoadMileages();
         StateHasChanged();

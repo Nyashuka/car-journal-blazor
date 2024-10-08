@@ -70,7 +70,7 @@
         await ViewModel.InitializeAsync();
     }
 
-    private async Task OnSelectedCarChangedAsync(int id, string name)
+    private async Task OnSelectedCarChangedAsync(SelectedCarData selectedCar)
     {
         await ViewModel.InitializeAsync();
         StateHasChanged();

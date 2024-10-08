@@ -23,7 +23,7 @@
 }
 else
 {
-    <p>Loading...</p>
+    <p>@ViewModel.ErrorMessage</p>
 }
 @code {
     private MainPageViewModel ViewModel { get; set; }
@@ -41,6 +41,9 @@ else
 
         await ViewModel.LoadUserCarsAsync();
 
-        _isLoaded = true;
+        if(string.IsNullOrEmpty(ViewModel.ErrorMessage))
+            _isLoaded = true;
+
+        StateHasChanged();
     }
 }

@@ -19,30 +19,39 @@ public class MileageViewModel
         _selectedCarService = selectedCarService;
     }
 
-    
-
-    private async Task<int> GetSelectedCarId()
-    {
-        var selectedCar = await _selectedCarService.GetSelectedCarId();
-
-        if(string.IsNullOrEmpty(selectedCar))
-        {
-            throw new Exception("Car is not selected");
-        }
-
-        return Convert.ToInt32(selectedCar);
-    }
-
     public async Task LoadMileages()
     {
-        MileageRecords = (await _mileageService.GetAllAsync(await GetSelectedCarId()))
-                                .OrderByDescending(m => m.UpdatedAt).ToList();
+        var selectedCar = await _selectedCarService.GetSelectedCar();
+
+        if(selectedCar == null || !selectedCar.HasData)
+        {
+            return;
+            //throw new Exception("\n\n\nNEED HANDLE\n\n\n");
+        }
+
+        MileageRecords = (await _mileageService.GetAllAsync(selectedCar.Id))
+                                .OrderByDescending(m => m.UpdatedAt)
+                                .ToList();
     }
 
     public async Task AddMileage()
     {
-        var newMileage = new MileageRecord(0, MileageToAdd,
-                        false, await GetSelectedCarId(), null, DateTime.UtcNow);
+        var selectedCar = await _selectedCarService.GetSelectedCar();
+
+        if(selectedCar == null || !selectedCar.HasData)
+        {
+            
+            return;
+        }
+
+        var newMileage = new MileageRecord(
+            0,
+            MileageToAdd,
+            false,
+            selectedCar.Id,
+            null,
+            DateTime.UtcNow
+        );
 
         await _mileageService.AddMileageRecordAsync(newMileage);
 

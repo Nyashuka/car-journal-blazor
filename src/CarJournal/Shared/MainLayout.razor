@@ -15,7 +15,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <AuthorizeView Roles="user">
             <Authorized>
-                <MainPage/>
+                <SelectCarComponent/>
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Roles="admin">
@@ -52,7 +52,7 @@
     </MudDrawer>
     <MudMainContent Class="mt-4 px-4 pb-4">
         @Body
-    </MudMainContent>
+    </MudMainContent>    //
 </MudLayout>
 
 @code {
@@ -75,18 +75,18 @@
 
     private async Task TryInitializeSelectedCar()
     {
-        var name = await _selectedCarService.GetSelectedCarName();
+        var selectedCar = await _selectedCarService.GetSelectedCar();
 
-        if (!string.IsNullOrEmpty(name))
+        if (selectedCar != null && selectedCar.HasData)
         {
-            _selectedCarName = name;
+            _selectedCarName = selectedCar.Name;
             StateHasChanged();
         }
     }
 
-    private Task OnUserCarChanged(int userCarId, string name)
+    private Task OnUserCarChanged(SelectedCarData selectedCar)
     {
-        _selectedCarName = name;
+        _selectedCarName = selectedCar.Name;
         StateHasChanged();
 
         return Task.CompletedTask;
