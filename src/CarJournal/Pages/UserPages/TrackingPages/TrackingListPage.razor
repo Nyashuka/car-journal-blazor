@@ -16,13 +16,13 @@
 @inject ProtectedSessionStorage _protectedSessionStorage
 @inject ITrackingService _trackingService
 
-@* <MudButton Variant="Variant.Filled"
+<MudButton Variant="Variant.Filled"
     DropShadow="false"
     Color="Color.Primary"
     Class="mb-4"
-    OnClick="@ViewModel">
-    Crete Tracking
-</MudButton> *@
+    OnClick="@ViewModel.NavigateToCreateTrackingPage">
+    Create Tracking
+</MudButton>
 
 @foreach(var tracking in ViewModel.Trackings)
 {
@@ -46,7 +46,7 @@
 }
 
 @code {
-    private TrackingListViewModel ViewModel { get; set; } 
+    private TrackingListViewModel ViewModel { get; set; }
     private Variant _variant = Variant.Outlined;
     private bool _readOnly;
     private bool _isCellEditMode;
@@ -58,7 +58,8 @@
 
         ViewModel = new TrackingListViewModel(
             _trackingService,
-            _selectedCarService
+            _selectedCarService,
+            _naviagationManager
         );
 
         await ViewModel.Initialize();

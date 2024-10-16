@@ -11,4 +11,5 @@ public interface ICarService
     Task<Car?> GetCarByIdAsync(int id);
     Task UpdateCarAsync(int id, UpdateCarDto updateCarDto);
     Task DeleteCarAsync(int id);
+    Task<List<Car>> SearchCars(string? vendor = null, string? model = null, int? year = null);
 }

@@ -9,18 +9,23 @@
 @inject ISelectedCarService _selectedCarService
 @inject ProtectedSessionStorage _protectedSessionStorage
 
-<MudStack Row="true">
-    <MudTextField Style="max-width: 300px;" @bind-Value="ViewModel.MileageToAdd" Label="Value in KM" Variant="Variant.Outlined" />
-    <MudButton @onclick="ViewModel.AddMileage">Add</MudButton>
+<MudStack Style="max-width: 300px;" Row="true">
+    <MudTextField
+        @bind-Value="ViewModel.MileageToAdd"
+        Label="Value in KM"
+        Variant="Variant.Outlined" />
+    <MudButton @onclick="ViewModel.AddMileage">
+        Update
+    </MudButton>
 </MudStack>
 
 @foreach(var mileage in ViewModel.MileageRecords)
 {
 <MudCard Style="margin: 10px; padding: 20px;">
     <MudItem xs="3" md="3">
-        <MudText Typo="Typo.h6">@mileage.Mileage KM</MudText>
+        <MudText Typo="Typo.h5">@mileage.Mileage KM</MudText>
         <MudText Typo="Typo.body1" Class="mt-3 mb-3">
-            @mileage.UpdatedAt
+            Last update @mileage.UpdatedAt
         </MudText>
     </MudItem>
 </MudCard>

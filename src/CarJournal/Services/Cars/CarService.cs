@@ -1,3 +1,4 @@
+
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Persistence.Cars;
 using CarJournal.Services.DTOs;
@@ -67,5 +68,10 @@ public class CarService : ICarService
     public async Task<IEnumerable<Car>> GetAllCarsWithDetailsAsync()
     {
         return await _carRepository.GetAllCarsWithDetails();
+    }
+
+    public async Task<List<Car>> SearchCars(string? vendor = null, string? model = null, int? year = null)
+    {
+        return await _carRepository.SearchCars(vendor, model, year);
     }
 }

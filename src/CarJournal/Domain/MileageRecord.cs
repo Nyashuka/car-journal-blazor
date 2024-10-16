@@ -20,4 +20,15 @@ public class MileageRecord
     public int UserCarId { get; private set; }
     public UserCar? UserCar { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+
+    public void UpdateData(int mileage, DateTime dateTime)
+    {
+        Mileage = mileage;
+        UpdatedAt = dateTime.ToUniversalTime();
+    }
+
+    public void UpdateDate()
+    {
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

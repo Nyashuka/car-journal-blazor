@@ -77,4 +77,29 @@ public class CarRepository : ICarRepository
             .Include(c => c.FuelType)
             .ToListAsync();
     }
+
+    public async Task<List<Car>> SearchCars(
+        string? vendor = null,
+        string? model = null,
+        int? year = null)
+    {
+        var query = _dbContext.Cars.AsQueryable();
+
+        if (!string.IsNullOrEmpty(vendor))
+        {
+            query = query.Where(car => car.Vendor.Name.Contains(vendor, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        if (!string.IsNullOrEmpty(model))
+        {
+            query = query.Where(car => car.Model.Contains(model, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        if (year != null)
+        {
+            query = query.Where(car => car.Year == year);
+        }
+
+        return await query.ToListAsync();
+    }
 }

@@ -10,26 +10,13 @@ public class SelectedCarService : ISelectedCarService
 {
     public event Func<SelectedCarData, Task> SelectedCarChangedAsync;
     private readonly ProtectedSessionStorage _sessionStorage;
+    private SelectedCarData? _selectedCarData;
 
     public SelectedCarService(ProtectedSessionStorage sessionStorage)
     {
         _sessionStorage = sessionStorage;
     }
 
-    // private async Task<string?> TryGetSelectedCarId()
-    // {
-    //     try
-    //     {
-    //         var data = await _sessionStorage.GetAsync<string?>(SessionStorageConstants.SelectedCarId);
-
-    //         return data.Value;
-    //     }
-    //     catch (CryptographicException)
-    //     {
-    //         await _sessionStorage.DeleteAsync(SessionStorageConstants.SelectedCarId);
-    //         return null;
-    //     }
-    // }
 
     private async Task<SelectedCarData?> TryGetSelectedCar()
     {
@@ -53,6 +40,11 @@ public class SelectedCarService : ISelectedCarService
 
     public async Task<SelectedCarData> GetSelectedCar()
     {
+        if(_selectedCarData != null)
+        {
+            return _selectedCarData;
+        }
+
         var selectedCar = await TryGetSelectedCar();
 
         if(selectedCar == null)
@@ -63,27 +55,12 @@ public class SelectedCarService : ISelectedCarService
         return selectedCar;
     }
 
-    // private async Task<string?> GetSelectedCarName()
-    // {
-    //     ProtectedBrowserStorageResult<string?> data; try
-    //     {
-    //         data = await _sessionStorage.GetAsync<string?>(SessionStorageConstants.SelectedCarName);
-
-    //         return data.Value;
-    //     }
-    //     catch (CryptographicException)
-    //     {
-    //         await _sessionStorage.DeleteAsync(SessionStorageConstants.SelectedCarName);
-    //         return null;
-    //     }
-    // }
-
     public async Task SetSelectedCar(int id, string name)
     {
-        // await _sessionStorage.SetAsync(SessionStorageConstants.SelectedCarId, id.ToString());
-        // await _sessionStorage.SetAsync(SessionStorageConstants.SelectedCarName, name);
         var selectedCar = new SelectedCarData(id, name, true);
         await _sessionStorage.SetAsync(SessionStorageConstants.SelectedCar, selectedCar);
+
+        _selectedCarData = selectedCar;
 
         await InvokeAllAboutSelectingCar(selectedCar);
     }

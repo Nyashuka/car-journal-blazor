@@ -6,9 +6,9 @@ using CarJournal.Services.UserCars;
 
 using Microsoft.AspNetCore.Components;
 
-namespace CarJournal.Pages.UserPages.MainPages;
+namespace CarJournal.Shared.Components.SelectedCar;
 
-public class MainPageViewModel
+public class SelectedCarViewModel
 {
     private readonly IUserCarsService _userCarsService;
     private readonly IClientAuthenticationService _authenticationService;
@@ -18,7 +18,8 @@ public class MainPageViewModel
     public UserCar? SelectedCar { get; set; }
     public List<UserCar> UserCars { get; set; } = new();
     public string ErrorMessage { get; private set; }
-    public MainPageViewModel(IUserCarsService userCarService,
+
+    public SelectedCarViewModel(IUserCarsService userCarService,
                              IClientAuthenticationService authenticationService,
                              ISelectedCarService selectedCarService,
                              NavigationManager navigationManager)

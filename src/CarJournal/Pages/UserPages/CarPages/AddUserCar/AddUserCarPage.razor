@@ -1,10 +1,13 @@
 @page "/garage/addcar"
+@attribute [Authorize(Roles = "user")]
 
 @using CarJournal.Services.Authentication
+@using CarJournal.Services.Cars
 @using CarJournal.Services.UserCars
 
 @inject IClientAuthenticationService _authenticationService
 @inject IUserCarsService _userCarService
+@inject ICarService _carService;
 
 <MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.All">
@@ -17,15 +20,106 @@
         <MudTextField @bind-Value="ViewModel.AddUserCarDto.Name" Label="Own car name" Variant="@_variant"/>
         <MudTextField @bind-Value="ViewModel.AddUserCarDto.StartMileage" Label="Current mileage" Variant="@_variant"/>
     </MudStack>
+    <MudDivider />
+    <MudStack Style="width: 400px; margin: 0 10px;" >
+        <MudAlert Severity="Severity.Info">Binding a car is optional feature</MudAlert>
+        @if(SelectedCar == null)
+        {
+            <MudText>
+                <b>Car is not binding</b>
+            </MudText>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Success">
+                @SelectedCar?.Vendor?.Name @SelectedCar?.Model @SelectedCar?.Year
+            </MudAlert>
+            <MudButton Variant="@_variant" @onclick="ClearBindedCar">
+                Clear
+            </MudButton>
+        }
+        @* <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4">
+            Bind car
+        </MudButton> *@
+    </MudStack>
 </MudStack>
+
+
+<MudStack Direction="Row" Spacing="2">
+    <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Collapse Filters" : "Expand Filters")</MudButton>
+        <MudDivider />
+     <MudCollapse Expanded="_expanded">
+        <MudTextField @bind-Value="SelectCarViewModel.Vendor" Label="Vendor" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="SelectCarViewModel.Model" Label="Model" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="SelectCarViewModel.Year" Label="Year" Variant="Variant.Outlined" />
+     </MudCollapse>
+</MudStack>
+
+@foreach(var car in SelectCarViewModel.Cars)
+{
+    <MudCard Style="margin: 10px 10px; padding: 20px;">
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.h6">@car?.Vendor?.Name @car.Model @car.Year</MudText>
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
+                <MudIcon Icon="@Icons.Material.Outlined.LocalGasStation" />
+                <MudText Typo="Typo.body2">@car.FuelType.Name, @car.Engine.EngineSize л.</MudText>
+                <MudIcon Icon="@Icons.Material.Outlined.Settings" Class="ml-4" />
+                <MudText Typo="Typo.body2">@car.Gearbox.Name</MudText>
+            </MudStack>
+            <MudDivider Style="max-width: 200px;margin: 10px 0px 10px 0px;"/>
+            @if (SelectedCar != null && SelectedCar.Id == car.Id)
+            {
+                <MudAlert Severity="Severity.Success">
+                    Binded
+                </MudAlert>
+            }
+            else
+            {
+                <MudButton Variant="@_variant" Color="Color.Primary"
+                    @onclick="() => SelectCar(car)">
+                    Bind
+                </MudButton>
+            }
+        </MudItem>
+    </MudGrid>
+</MudCard>
+<MudDivider />
+}
 
 @code {
     private Variant _variant = Variant.Outlined;
-    private AddUserCarViewModel ViewModel { get; set; }
 
-    protected override void OnInitialized()
+    bool _expanded = false;
+
+    private void OnExpandCollapseClick() {
+        _expanded = !_expanded;
+    }
+    private AddUserCarViewModel ViewModel { get; set; }
+    private SearchCarsViewModel SelectCarViewModel { get; set; }
+
+    private Car? SelectedCar
+    {
+        get => ViewModel.AddUserCarDto.Car;
+        set => ViewModel.AddUserCarDto.Car = value;
+    }
+
+    protected override async Task OnInitializedAsync()
     {
         ViewModel = new AddUserCarViewModel(_userCarService, _authenticationService);
+        SelectCarViewModel = new SearchCarsViewModel(_carService);
+        await SelectCarViewModel.InitializeAsync();
+    }
+
+    private void SelectCar(Car car)
+    {
+        SelectedCar = car;
+        StateHasChanged();
+    }
+
+    private void ClearBindedCar()
+    {
+        SelectedCar = null;
+        StateHasChanged();
     }
 }
-

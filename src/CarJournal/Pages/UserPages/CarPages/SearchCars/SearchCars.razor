@@ -1,4 +1,4 @@
-@page "/cars/search"
+@* @page "/cars/search"
 
 <MudStack Direction="Row" Spacing="2">
     <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Collapse Filters" : "Expand Filters")</MudButton>
@@ -14,12 +14,6 @@
 {
     <MudCard Style="margin: 10px 10px; padding: 20px;">
     <MudGrid>
-        @* <MudItem xs="12" md="3">
-            <MudImage Src="car-image.jpg" Alt="Mercedes-Benz E-Class 2017" />
-            <MudPaper>
-
-            </MudPaper>
-        </MudItem> *@
         <MudItem xs="12" md="6">
             <MudText Typo="Typo.h6">Mercedes-Benz E-Class 2017</MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
@@ -36,7 +30,7 @@
     </MudGrid>
 </MudCard>
 <MudDivider />
-}
+} 
 
 @code {
     private Variant _variant = Variant.Outlined;
@@ -49,3 +43,4 @@
         _expanded = !_expanded;
     }
 }
+*@

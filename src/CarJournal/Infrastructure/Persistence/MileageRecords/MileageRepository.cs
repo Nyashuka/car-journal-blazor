@@ -41,8 +41,23 @@ public class MileageRepository : IMileageRepository
         return await _dbContext.MileageRecords.FirstOrDefaultAsync(mr => mr.Id == id);
     }
 
+    public async Task<MileageRecord?> GetLastMileage(int userCarId)
+    {
+        return await _dbContext.MileageRecords
+                .Where(mr => mr.UserCarId == userCarId)
+                .OrderByDescending(mr => mr.UpdatedAt)
+                .FirstOrDefaultAsync();
+    }
+
     public async Task UpdateAsync(MileageRecord mileage)
     {
+        // var mileageToUpdate = await GetByIdAsync(mileage.Id);
+        // if(mileageToUpdate == null)
+        // {
+        //     return;
+        // }
+
+        // mileageToUpdate.UpdateData(mileage.Mileage, mileage.UpdatedAt);
         _dbContext.MileageRecords.Update(mileage);
 
         await _dbContext.SaveChangesAsync();

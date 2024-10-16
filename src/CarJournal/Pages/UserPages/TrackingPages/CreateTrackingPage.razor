@@ -4,17 +4,21 @@
 @implements IDisposable
 
 @using CarJournal.Services.Client
+@using CarJournal.Services.Mileages
 @using CarJournal.Services.ServiceCategories
 @using CarJournal.Services.ServiceRecords
 @using CarJournal.Services.Trackings
+@using CarJournal.Services.UserCars
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 @inject IServiceCategoryService _categoriesService
 @inject ISelectedCarService _selectedCarService
 @inject IServiceRecordService _servicesService
+@inject IUserCarsService _userCarService;
 @inject NavigationManager _navigationManager
 @inject ProtectedSessionStorage _protectedSessionStorage
 @inject ITrackingService _trackingService
+@inject IMileageService _mileageService
 
 <MudStack Row="true" Style="max-width: 400px;">
     <MudButton Variant="Variant.Filled"
@@ -24,16 +28,21 @@
         OnClick="@ViewModel.NavigateBackToTrackingList">
         Back
     </MudButton>
-    <MudButton Variant="Variant.Filled"
-        DropShadow="false"
-        Color="Color.Primary"
-        Class="mb-4"
-        OnClick="@ViewModel.CreateRecord">
-        Create
-    </MudButton>
+    @if(ViewModel.HasTodayMileageRecord)
+    {
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+            OnClick="@ViewModel.CreateRecord">
+            Create
+        </MudButton>
+    }
 </MudStack>
-
-<MudStack Style="max-width: 400px;">
+@if(!ViewModel.HasTodayMileageRecord)
+{
+<MudAlert Severity="Severity.Error">For creating Tracking you may update your <a href="/mileages">Mileage</a></MudAlert>
+}
+else
+{
+<MudStack disabled="@(!ViewModel.HasTodayMileageRecord)" Style="max-width: 400px;">
     <MudTextField
         @bind-Value="@ViewModel.CreateTrackingDto.Name"
         Label="Name"
@@ -62,6 +71,8 @@
             Variant="Variant.Outlined" />
     }
 </MudStack>
+}
+
 
 @code {
     private CreateTrackingViewModel ViewModel { get; set; }
@@ -70,7 +81,23 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ViewModel = new CreateTrackingViewModel(_trackingService, _navigationManager);
+        ViewModel = new CreateTrackingViewModel(
+            _trackingService,
+            _navigationManager,
+            _selectedCarService,
+            _userCarService,
+            _mileageService
+        );
+
+        _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChanged;
+
+        await ViewModel.InitializeAsync();
+    }
+
+    private async Task OnSelectedCarChanged(SelectedCarData selectedCarData)
+    {
+        await ViewModel.InitializeAsync();
+        StateHasChanged();
     }
 
     public async Task<IEnumerable<TrackingType>> SearchTrackingType(string value, CancellationToken token)
@@ -85,5 +112,6 @@
 
     public void Dispose()
     {
+        _selectedCarService.SelectedCarChangedAsync -= OnSelectedCarChanged;
     }
 }

@@ -9,4 +9,5 @@ public interface IMileageRepository
     Task AddAsync(MileageRecord mileage);
     Task UpdateAsync(MileageRecord mileage);
     Task DeleteAsync(int id);
+    Task<MileageRecord?> GetLastMileage(int userCarId);
 }

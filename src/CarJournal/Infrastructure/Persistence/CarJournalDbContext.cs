@@ -50,12 +50,19 @@ public class CarJournalDbContext : DbContext
 
         CreateDefaultRoles(modelBuilder);
         CreateAdminUser(modelBuilder);
+        CreateFuelTypes(modelBuilder);
     }
 
     private void CreateDefaultRoles(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Role>()
             .HasData(RolesStorage.User, RolesStorage.Admin);
+    }
+
+    private void CreateFuelTypes(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<FuelType>()
+            .HasData(FuelTypeCollection.FuelTypes.Values);
     }
 
     private void CreateAdminUser(ModelBuilder modelBuilder)

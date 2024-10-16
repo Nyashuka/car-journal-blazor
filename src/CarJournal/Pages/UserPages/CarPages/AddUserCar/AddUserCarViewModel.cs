@@ -1,14 +1,7 @@
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-
 using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Services.Authentication;
 using CarJournal.Services.UserCars;
-
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.SignalR;
 
 namespace CarJournal.Pages.UserPages;
 
@@ -19,8 +12,11 @@ public class AddUserCarViewModel : ISearchCarComponents
     public AddUserCarDto AddUserCarDto { get; private set; } = new AddUserCarDto();
     public List<Car> SearchedCars { get; set; } = new List<Car>();
 
-    public AddUserCarViewModel(IUserCarsService userCarsService,
-                               IClientAuthenticationService authenticationService)
+    public string BindedCarText { get; private set; }
+
+    public AddUserCarViewModel(
+        IUserCarsService userCarsService,
+        IClientAuthenticationService authenticationService)
     {
         _userCarsService = userCarsService;
         _authenticationService = authenticationService;
@@ -35,12 +31,17 @@ public class AddUserCarViewModel : ISearchCarComponents
             throw new Exception ("not authorized");
         }
 
-        var car = new UserCar(0, AddUserCarDto.Name,
-                        AddUserCarDto.StartMileage,
-                        AddUserCarDto.StartMileage,
-                        0,
-                        Convert.ToInt32(userId), null,
-                        AddUserCarDto.Car?.Id, null, DateTime.UtcNow);
+        var car = new UserCar(
+            0,
+            AddUserCarDto.Name,
+            AddUserCarDto.StartMileage,
+            AddUserCarDto.StartMileage,
+            0,
+            Convert.ToInt32(userId), null,
+            AddUserCarDto.Car?.Id,
+            null,
+            DateTime.UtcNow
+        );
 
        await _userCarsService.AddUserCarAsync(car);
     }

@@ -14,4 +14,8 @@ public interface ICarRepository
     Task<IEnumerable<Car>> GetByModelAsync(string model);
     Task<IEnumerable<Car>> GetCarsByVendorAsync(int vendorId);
     Task<Car?> GetCarWithDetailsAsync(int id);
+    Task<List<Car>> SearchCars(
+        string? vendor = null,
+        string? model = null,
+        int? year = null);
 }

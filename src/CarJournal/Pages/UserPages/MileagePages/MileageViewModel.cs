@@ -52,9 +52,12 @@ public class MileageViewModel
             DateTime.UtcNow
         );
 
+
+       // MileageRecords.FirstOrDefault(mr => mr.UpdatedAt.Date ==)
+
         await _mileageService.AddMileageRecordAsync(newMileage);
 
-        MileageRecords.Add(newMileage);
+        await LoadMileages();   
     }
 
 }
