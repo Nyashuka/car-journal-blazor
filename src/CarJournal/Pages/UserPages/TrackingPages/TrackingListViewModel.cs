@@ -32,7 +32,7 @@ public class TrackingListViewModel
         if(selectedCar == null || !selectedCar.HasData)
             return;
 
-        Trackings = await _trackingService.GetAllTrackingsByCarIdAsync(selectedCar.Id);
+        Trackings = await _trackingService.GetAllTrackingsByCarIdAsync(selectedCar.Id, null);
     }
 
     public void NavigateToCreateTrackingPage()

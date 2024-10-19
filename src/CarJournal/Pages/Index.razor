@@ -1,5 +1,32 @@
 ﻿@page "/"
+@using CarJournal.Services.Client
+@using CarJournal.Services.UserCars
+
 @attribute [Authorize]
 
-<PageTitle>Index</PageTitle>
+@inject ISelectedCarService _selectedCarService
+@inject IUserCarsService _userCarService
 
+<PageTitle>Main Page</PageTitle>
+
+@if(SelectedCar != null)
+{
+    <MudStack>
+        <MudText Typo="Typo.h3">@SelectedCar.Name</MudText>
+        <MudText Typo="Typo.h5">Current mileage @SelectedCar.CurrentMileage KM</MudText>
+        <MudText Typo="Typo.h5">Average mileage @SelectedCar.AverageMileage KM/Day</MudText>
+    </MudStack>
+}
+
+@code {
+    private UserCar? SelectedCar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var selectedCarDto = await _selectedCarService.GetSelectedCar();
+
+        SelectedCar = await _userCarService.GetByIdAsync(selectedCarDto.Id);
+
+        StateHasChanged();
+    }
+}

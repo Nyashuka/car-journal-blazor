@@ -9,41 +9,76 @@ namespace CarJournal.Infrastructure.Persistence.Trackings;
 
 public class TrackingsRepository : ITrackingsRepository
 {
-    private readonly CarJournalDbContext _dbContext;
+    private readonly IDbContextFactory<CarJournalDbContext> _factory;
 
-    public TrackingsRepository(CarJournalDbContext dbContext)
+    public TrackingsRepository(IDbContextFactory<CarJournalDbContext> factory)
     {
-        _dbContext = dbContext;
+        _factory = factory;
     }
 
-    public Task AddAsync(Tracking tracking)
+    public async Task AddAsync(Tracking tracking)
     {
-        _dbContext.Trackings.Add(tracking);
-        _dbContext.SaveChanges();
-
-        return Task.CompletedTask;
+        using(var context = _factory.CreateDbContext())
+        {
+            context.Trackings.Add(tracking);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task DeleteAsync(int id)
     {
-        if((await GetByIdAsync(id)) is Tracking tracking)
+        using(var context = _factory.CreateDbContext())
         {
-            _dbContext.Trackings.Remove(tracking);
+            if ((await GetByIdAsync(id)) is Tracking tracking)
+            {
+                context.Trackings.Remove(tracking);
+            }
         }
     }
 
-    public async Task<List<Tracking>> GetAllByCarIdAsync(int carId)
+    public async Task<List<Tracking>> GetAllByCarIdAsync(int carId, TrackingType? type)
     {
-        return await _dbContext.Trackings.Where(t => t.UserCarId == carId).ToListAsync();
+        using(var context = _factory.CreateDbContext())
+        {
+            return await context.Trackings
+                .Where(t => t.UserCarId == carId && (type == null ? true : t.TrackingType == type))
+                .ToListAsync();
+        }
     }
 
     public async Task<Tracking?> GetByIdAsync(int id)
     {
-        return await _dbContext.Trackings.FirstOrDefaultAsync(t => t.Id == id);
+        using(var context = _factory.CreateDbContext())
+        {
+            return await context.Trackings.FirstOrDefaultAsync(t => t.Id == id);
+        }
     }
 
-    public Task UpdateAsync(Tracking tracking)
+    public async Task<List<Tracking>> GetByParameters(TrackingType? type)
     {
-        throw new NotImplementedException();
+        using(var context = _factory.CreateDbContext())
+        {
+            return await context.Trackings
+                .Where(t => t.TrackingType == type)
+                .Include(t => t.UserCar)
+                .ThenInclude(uc => uc.User)
+                .ToListAsync();
+        }
+    }
+
+    public async Task UpdateAsync(Tracking tracking)
+    {
+        var trackingToUpdate = await GetByIdAsync(tracking.Id);
+
+        if(trackingToUpdate == null)
+            return;
+
+        using (var context = _factory.CreateDbContext())
+        {
+            trackingToUpdate.UpdateMileage(Convert.ToInt32(tracking.TotalMileage));
+
+            context.Trackings.Update(trackingToUpdate);
+            await context.SaveChangesAsync();
+        }
     }
 }

@@ -31,10 +31,14 @@ public class TrackingConfiguration : IEntityTypeConfiguration<Tracking>
             .IsRequired();
 
         builder.Property(t => t.EndDate)
-            .IsRequired(false);
+            .IsRequired(false)
+            .HasConversion(
+                v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
+                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : (DateTime?)null
+            );
 
         builder.Property(t => t.MileageAtStart)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(t => t.TotalMileage)
             .IsRequired(false);
@@ -43,10 +47,18 @@ public class TrackingConfiguration : IEntityTypeConfiguration<Tracking>
             .IsRequired(false);
 
         builder.Property(t => t.CreatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                v => v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
 
         builder.Property(t => t.UpdatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                v => v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
 
         builder.HasOne(t => t.UserCar)
             .WithMany()

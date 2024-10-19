@@ -61,8 +61,8 @@ public class CarJournalDbContext : DbContext
 
     private void CreateFuelTypes(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<FuelType>()
-            .HasData(FuelTypeCollection.FuelTypes.Values);
+        // modelBuilder.Entity<FuelType>()
+        //     .HasData(FuelTypeCollection.FuelTypes.Values);
     }
 
     private void CreateAdminUser(ModelBuilder modelBuilder)

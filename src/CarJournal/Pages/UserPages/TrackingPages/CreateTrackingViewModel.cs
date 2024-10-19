@@ -1,8 +1,10 @@
 using CarJournal.ClientDtos;
+using CarJournal.Domain;
 using CarJournal.Services.Client;
 using CarJournal.Services.Mileages;
 using CarJournal.Services.Trackings;
 using CarJournal.Services.UserCars;
+using CarJournal.Utilities;
 
 using Microsoft.AspNetCore.Components;
 
@@ -64,8 +66,35 @@ public class CreateTrackingViewModel
         _navigationManager.NavigateTo("/trackings");
     }
 
-    public void CreateRecord()
+    public async Task CreateRecord()
     {
+        var selectedCar = await _selectedCarService.GetSelectedCar();
 
+        var lastMileage = 
+                await _mileageService.GetLastMileage(selectedCar.Id);
+
+        if(lastMileage == null)
+        {
+            HasTodayMileageRecord = false;
+            return;
+        }
+
+        await _trackingService.AddTrackingAsync(
+            new Tracking(
+                0,
+                CreateTrackingDto.Name,
+                CreateTrackingDto.MessageForReminder,
+                selectedCar.Id,
+                null,
+                CreateTrackingDto.TrackingType,
+                DateTime.UtcNow,
+                lastMileage.Mileage,
+                0,
+                CreateTrackingDto.LimitMileage,
+                CreateTrackingDto.EndDate
+            )
+        );
+
+        NavigateBackToTrackingList();
     }
 }

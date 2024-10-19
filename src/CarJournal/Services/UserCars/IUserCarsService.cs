@@ -9,4 +9,6 @@ public interface IUserCarsService
     Task AddUserCarAsync(UserCar userCar);
     Task UpdateUserCarAsync(UserCar userCar);
     Task DeleteUserCarAsync(int id);
+    Task UpdateAverageMileageAsync(int userCarId, int newAverageMileage);
+    Task UpdateCurrentMileage(int userCarId, int mileage);
 }

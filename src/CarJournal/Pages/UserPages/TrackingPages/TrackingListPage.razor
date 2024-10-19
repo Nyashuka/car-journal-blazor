@@ -15,6 +15,7 @@
 @inject NavigationManager _naviagationManager
 @inject ProtectedSessionStorage _protectedSessionStorage
 @inject ITrackingService _trackingService
+@inject IDialogService _dialogService
 
 <MudButton Variant="Variant.Filled"
     DropShadow="false"
@@ -27,20 +28,61 @@
 @foreach(var tracking in ViewModel.Trackings)
 {
 <MudCard Style="margin: 10px; padding: 20px;">
-    <MudGrid>
-        <MudItem xs="3" md="3">
-            <MudText Typo="Typo.h6">@tracking.Name</MudText>
-            <MudText Typo="Typo.h6">Last update @tracking.UpdatedAt</MudText>
-            <MudText Class="mt-3" Typo="Typo.body1">@tracking.CreatedAt</MudText>
-            <MudText Typo="Typo.body1" Class="mt-3 mb-3">
-                @tracking.MessageForReminder
-            </MudText>
-            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
-                <MudButton Variant="@_variant" Color="Color.Primary" Class="mt-3">Details</MudButton>
-                <MudButton Variant="@_variant" Color="Color.Warning" Class="mt-3">Delete</MudButton>
+    <MudStack>
+        <MudText Typo="Typo.h6">@tracking.Name</MudText>
+        <MudText Typo="Typo.h6">Last update @tracking.UpdatedAt.ToLocalTime()</MudText>
+        <MudText Class="mt-3" Typo="Typo.body1">Created @tracking.CreatedAt.ToLocalTime()</MudText>
+        <MudText Typo="Typo.body1" Class="mt-3 mb-3">
+            @tracking.MessageForReminder
+        </MudText>
+        @if(@tracking.TotalMileage != null)
+        {
+            <MudStack Row="true">
+                <MudProgressLinear
+                    Color="@(@tracking.TotalMileage >= @tracking.LimitMileage ? Color.Error : Color.Success)"
+                    Style="max-width: 300px;"
+                    Rounded="true"
+                    Size="Size.Large"
+                    Value="@tracking.GetMileagePercentageProgress()" />
+                <MudText>
+                    @tracking?.TotalMileage / @tracking?.LimitMileage KM
+                </MudText>
             </MudStack>
-        </MudItem>
-    </MudGrid>
+        }
+        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" >
+            <MudButton Variant="@_variant"
+                Color="Color.Primary"
+                Class="mt-3">
+                Details
+            </MudButton>
+            <MudButton
+                Variant="@_variant"
+                Color="Color.Warning"
+                StartIcon="@Icons.Material.Filled.Refresh" Class="mt-3">
+                Reset
+            </MudButton>
+            <MudButton Variant="@_variant"
+                @onclick="() => DeleteRecord(tracking.Id)"
+                Color="Color.Error"
+                StartIcon="@Icons.Material.Filled.Delete" Class="mt-3">
+                Delete
+            </MudButton>
+        </MudStack>
+        @if(tracking.TotalMileage >= tracking.LimitMileage ||
+            tracking.EndDate.HasValue &&
+            tracking.EndDate.Value.Date == DateTime.Today.Date)
+        {
+        <MudStack AlignItems="AlignItems.Start">
+            <MudButton
+                Variant="@_variant"
+                Color="Color.Warning"
+                StartIcon="@Icons.Material.Filled.Build"
+                Class="mt-3">
+                Add Service
+            </MudButton>
+        </MudStack>
+        }
+    </MudStack>
 </MudCard>
 <MudDivider />
 }
@@ -63,6 +105,26 @@
         );
 
         await ViewModel.Initialize();
+    }
+    
+    private async Task DeleteRecord(int recordId)
+    {
+        var parameters = new DialogParameters<Delete_Dialog>
+        {
+            { x => x.ContentText, "Do you really want to delete these records? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error },
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await _dialogService.ShowAsync<Delete_Dialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if(result != null && !result.Canceled)
+        {
+            //await ViewModel.Delete(mileageRecordId);
+        }
     }
 
     private async Task OnSelectedCarChangedAsync(SelectedCarData selectedCar)

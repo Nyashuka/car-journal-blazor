@@ -6,7 +6,18 @@
 
 @inject IClientAuthenticationService _authenticationService
 @inject IUserCarsService _userCarService
+@inject NavigationManager _navigationManager
 
+<MudStack AlignItems="AlignItems.Start">
+    <MudButton
+            Variant="Variant.Outlined"
+            StartIcon="@Icons.Material.Filled.Add"
+            DropShadow="false"
+            Color="Color.Success" Class="mt-3"
+            OnClick="NavigateToAddCarInGarage">
+            Add new car
+        </MudButton>
+</MudStack>
 
 @foreach(var userCar in ViewModel.UserCars)
 {
@@ -58,5 +69,10 @@
 
     private void OnExpandCollapseClick() {
         _expanded = !_expanded;
+    }
+
+    private void NavigateToAddCarInGarage()
+    {
+        _navigationManager.NavigateTo("/garage/addcar");
     }
 }

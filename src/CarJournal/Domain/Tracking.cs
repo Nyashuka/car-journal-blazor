@@ -9,7 +9,7 @@ public class Tracking
     public UserCar? UserCar { get; private set; }
     public TrackingType TrackingType { get; private set; }
     public DateTime? EndDate { get; private set; }
-    public int? MileageAtStart { get; private set; }
+    public int MileageAtStart { get; private set; }
     public int? TotalMileage { get; private set; }
     public int? LimitMileage { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -25,7 +25,8 @@ public class Tracking
         UserCar? userCar,
         TrackingType trackingType,
         DateTime createdAt,
-        int totalMileage = 0,
+        int mileageAtStart,
+        int? totalMileage = 0,
         int? limitMileage = null,
         DateTime? endDate = null)
     {
@@ -35,8 +36,8 @@ public class Tracking
         UserCarId = userCarId;
         UserCar = userCar;
         TrackingType = trackingType;
-        CreatedAt = createdAt;
-        UpdatedAt = DateTime.Now;
+        CreatedAt = createdAt.ToUniversalTime();
+        UpdatedAt = DateTime.UtcNow;
 
         if (trackingType == TrackingType.Mileage && limitMileage == null)
             throw new ArgumentException("Limit mileage is required for mileage tracking.");
@@ -46,7 +47,9 @@ public class Tracking
 
         TotalMileage = totalMileage;
         LimitMileage = limitMileage;
-        EndDate = endDate;
+
+        if(endDate.HasValue)
+            EndDate = endDate.Value.ToUniversalTime();
     }
 
     public void UpdateMileage(int mileage)
@@ -63,8 +66,16 @@ public class Tracking
         return TrackingType switch
         {
             TrackingType.Mileage => LimitMileage.HasValue && TotalMileage >= LimitMileage.Value,
-            TrackingType.Date => EndDate.HasValue && DateTime.Now >= EndDate.Value,
+            TrackingType.Date => EndDate.HasValue && DateTime.Today >= EndDate.Value,
             _ => false,
         };
+    }
+
+    public double GetMileagePercentageProgress()
+    {
+        if(TrackingType != TrackingType.Mileage)
+            return 0;
+
+        return Convert.ToDouble(TotalMileage) / Convert.ToDouble(LimitMileage) * 100;
     }
 }

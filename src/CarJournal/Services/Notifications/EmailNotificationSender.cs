@@ -3,11 +3,11 @@ using System.Net.Mail;
 
 namespace CarJournal.Services.Notifications;
 
-public class NotificationSender
+public class EmailNotificationSender
 {
     private readonly SmtpClient _smtpClient;
 
-    public NotificationSender(string senderMailAddress, string emailPassword)
+    public EmailNotificationSender(string senderMailAddress, string emailPassword)
     {
 
         _smtpClient = new SmtpClient("smtp.gmail.com", 587)

@@ -39,7 +39,7 @@ public class UserCar
 
     public void UpdateCurrentMileage(int mileage)
     {
-        if(mileage < StartMileage)
+        if(mileage < StartMileage || mileage < CurrentMileage)
             return;
 
         CurrentMileage = mileage;

@@ -22,6 +22,9 @@ using CarJournal.Services.Trackings;
 using CarJournal.Services.UserCars;
 using CarJournal.Services.Vendors;
 
+using Hangfire;
+using Hangfire.MemoryStorage;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
@@ -51,6 +54,12 @@ public static class ServiceCollectionExtensions
 
 
         services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
+
+        services.AddHangfire(config =>
+            config.UseMemoryStorage());
+
+        services.AddHangfireServer();
+
         return services;
     }
 

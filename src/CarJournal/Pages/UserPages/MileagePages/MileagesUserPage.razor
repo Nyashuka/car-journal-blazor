@@ -3,18 +3,32 @@
 
 @using CarJournal.Services.Client
 @using CarJournal.Services.Mileages
+@using CarJournal.Services.Trackings
+@using CarJournal.Services.UserCars
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 @inject IMileageService _mileageService
 @inject ISelectedCarService _selectedCarService
+@inject IUserCarsService _userCarService
+@inject ITrackingService _trackingService
 @inject ProtectedSessionStorage _protectedSessionStorage
+@inject IDialogService _dialogService
 
-<MudStack Style="max-width: 300px;" Row="true">
+<MudStack Style="max-width: 300px;" Row="true" AlignItems="AlignItems.Start">
     <MudTextField
         @bind-Value="ViewModel.MileageToAdd"
         Label="Value in KM"
         Variant="Variant.Outlined" />
-    <MudButton @onclick="ViewModel.AddMileage">
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Primary"
+               Class="mt-3"
+        @onclick="ViewModel.AddMileage">
+        Add
+    </MudButton>
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Warning"
+               Class="mt-3"
+        @onclick="ViewModel.UpdateMileage">
         Update
     </MudButton>
 </MudStack>
@@ -27,6 +41,10 @@
         <MudText Typo="Typo.body1" Class="mt-3 mb-3">
             Last update @mileage.UpdatedAt
         </MudText>
+        <MudButton Variant="Variant.Outlined" Color="Color.Warning" Class="mt-3"
+            @onclick="() => DeleteRecord(mileage.Id)">
+            Delete
+        </MudButton>
     </MudItem>
 </MudCard>
 <MudDivider />
@@ -38,7 +56,11 @@
     protected override async Task OnInitializedAsync()
     {
         _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChangedAsync;
-        ViewModel = new MileageViewModel(_mileageService, _selectedCarService);
+        ViewModel = new MileageViewModel(
+            _mileageService,
+            _selectedCarService,
+            _userCarService,
+            _trackingService);
         await ViewModel.LoadMileages();
     }
 
@@ -46,5 +68,25 @@
     {
         await ViewModel.LoadMileages();
         StateHasChanged();
+    }
+
+    private async Task DeleteRecord(int mileageRecordId)
+    {
+        var parameters = new DialogParameters<Delete_Dialog>
+        {
+            { x => x.ContentText, "Do you really want to delete these records? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error },
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await _dialogService.ShowAsync<Delete_Dialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if(result != null && !result.Canceled)
+        {
+            await ViewModel.DeleteMileage(mileageRecordId);
+        }
     }
 }

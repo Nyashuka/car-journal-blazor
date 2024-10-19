@@ -8,12 +8,25 @@
 @inject IClientAuthenticationService _authenticationService
 @inject IUserCarsService _userCarService
 @inject ICarService _carService;
+@inject NavigationManager _navigationManager;
 
 <MudStack>
-    <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.All">
-        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
+    <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.None">
+        <MudButton
+            Variant="Variant.Outlined"
+            StartIcon="@Icons.Material.Filled.ArrowBack"
+            DropShadow="false"
+            Color="Color.Primary" Class="mt-3"
+            OnClick="NavigateToGarage">
+            Garage
+        </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            StartIcon="@Icons.Material.Filled.Save"
+            DropShadow="false"
+            Color="Color.Success" Class="mt-3"
             OnClick="ViewModel.AddCar">
-            Add
+            Save
         </MudButton>
     </MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;">
@@ -109,6 +122,11 @@
         ViewModel = new AddUserCarViewModel(_userCarService, _authenticationService);
         SelectCarViewModel = new SearchCarsViewModel(_carService);
         await SelectCarViewModel.InitializeAsync();
+    }
+
+    private void NavigateToGarage()
+    {
+        _navigationManager.NavigateTo("/garage");
     }
 
     private void SelectCar(Car car)

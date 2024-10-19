@@ -29,6 +29,7 @@ public class MileageRepository : IMileageRepository
             throw new Exception("Mileage Record with given id is not exist");
 
         _dbContext.MileageRecords.Remove(recordToDelete);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<List<MileageRecord>> GetAllAsync(int userCarId)

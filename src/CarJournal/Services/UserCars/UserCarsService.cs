@@ -37,4 +37,14 @@ public class UserCarsService : IUserCarsService
     {
         await _userCarRepository.DeleteAsync(id);
     }
+
+    public async Task UpdateAverageMileageAsync(int userCarId, int newAverageMileage)
+    {
+        await _userCarRepository.UpdateAverageMileageAsync(userCarId, newAverageMileage);
+    }
+
+    public async Task UpdateCurrentMileage(int userCarId, int mileage)
+    {
+        await _userCarRepository.UpdateCurrentMileage(userCarId, mileage);
+    }
 }

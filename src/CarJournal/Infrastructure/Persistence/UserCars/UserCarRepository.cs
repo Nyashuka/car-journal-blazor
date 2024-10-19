@@ -67,4 +67,38 @@ public class UserCarsRepository : IUserCarsRepository
             }
         }
     }
+
+    public async Task UpdateAverageMileageAsync(int userCarId, int newAverageMileage)
+    {
+        using(var context = _factory.CreateDbContext())
+        {
+            var userCar = await context.UserCars.FindAsync(userCarId);
+
+            if (userCar != null)
+            {
+                userCar.UpdateAverageMileage(newAverageMileage);
+
+                context.UserCars.Update(userCar);
+
+                await context.SaveChangesAsync();
+            }
+        }
+    }
+
+    public async Task UpdateCurrentMileage(int userCarId, int mileage)
+    {
+        using(var context = _factory.CreateDbContext())
+        {
+            var userCar = await context.UserCars.FindAsync(userCarId);
+
+            if (userCar != null)
+            {
+                userCar.UpdateCurrentMileage(mileage);
+
+                context.UserCars.Update(userCar);
+
+                await context.SaveChangesAsync();
+            }
+        }
+    }
 }

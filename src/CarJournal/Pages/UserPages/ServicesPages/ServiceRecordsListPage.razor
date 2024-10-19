@@ -12,12 +12,13 @@
 @inject NavigationManager _naviagationManager
 @inject ProtectedSessionStorage _protectedSessionStorage
 
-<MudButton Variant="Variant.Filled"
+<MudButton Variant="Variant.Outlined"
     DropShadow="false"
-    Color="Color.Primary"
-    Class="mb-4"
+    Color="Color.Success"
+    Class="mt-3"
+    StartIcon="@Icons.Material.Filled.Add"
     OnClick="@ViewModel.NavigateToCreateServiceRecord">
-    Add Record
+    Add new Record
 </MudButton>
 
 @foreach(var service in ViewModel.ServiceRecords)

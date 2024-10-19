@@ -1,4 +1,8 @@
 using CarJournal.DependencyInjection;
+using CarJournal.Jobs;
+
+using Hangfire;
+
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
@@ -45,6 +49,18 @@ var app = builder.Build();
 
     app.MapBlazorHub();
     app.MapFallbackToPage("/_Host");
+
+    var options = new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.Local  // Використання налаштованого часового поясу
+        };
+    app.UseHangfireDashboard();
+    RecurringJob.AddOrUpdate<DailyTrackingJob>(
+        "tracking",
+        job => job.ExecuteAsync(),
+        "14 13 * * *",
+        options
+    );
 
     app.UseAuthentication();
     app.UseAuthorization();
