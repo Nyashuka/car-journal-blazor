@@ -10,5 +10,7 @@ public interface ITrackingService
     Task UpdateTrackingAsync(Tracking tracking);
     Task DeleteTrackingAsync(int id);
     Task<List<Tracking>> GetTrackingsByParameters(TrackingType? type);
-    Task UpdateMileageTracking(int userCarId);
+    Task UpdateTotalMileage(MileageRecord mileage);
+    Task<Tracking?> GetTrackingById(int trackingId);
+    Task ResetTracking(int trackingId);
 }

@@ -5,6 +5,7 @@
 
 @using CarJournal.Services.Client
 @using CarJournal.Services.ServiceCategories
+@using CarJournal.Services.Mileages
 @using CarJournal.Services.ServiceRecords
 @using CarJournal.Services.Trackings
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -12,6 +13,7 @@
 @inject IServiceCategoryService _categoriesService
 @inject ISelectedCarService _selectedCarService
 @inject IServiceRecordService _servicesService
+@inject IMileageService _mileageService
 @inject NavigationManager _naviagationManager
 @inject ProtectedSessionStorage _protectedSessionStorage
 @inject ITrackingService _trackingService
@@ -24,6 +26,7 @@
     OnClick="@ViewModel.NavigateToCreateTrackingPage">
     Create Tracking
 </MudButton>
+@test
 
 @foreach(var tracking in ViewModel.Trackings)
 {
@@ -32,6 +35,7 @@
         <MudText Typo="Typo.h6">@tracking.Name</MudText>
         <MudText Typo="Typo.h6">Last update @tracking.UpdatedAt.ToLocalTime()</MudText>
         <MudText Class="mt-3" Typo="Typo.body1">Created @tracking.CreatedAt.ToLocalTime()</MudText>
+        <MudText Class="mt-3" Typo="Typo.body1">Mileage at Start @tracking.MileageAtStart</MudText>
         <MudText Typo="Typo.body1" Class="mt-3 mb-3">
             @tracking.MessageForReminder
         </MudText>
@@ -57,12 +61,13 @@
             </MudButton>
             <MudButton
                 Variant="@_variant"
+                @onclick="() => ResetRecord(tracking)"
                 Color="Color.Warning"
                 StartIcon="@Icons.Material.Filled.Refresh" Class="mt-3">
                 Reset
             </MudButton>
             <MudButton Variant="@_variant"
-                @onclick="() => DeleteRecord(tracking.Id)"
+                @onclick="() => DeleteRecord(tracking)"
                 Color="Color.Error"
                 StartIcon="@Icons.Material.Filled.Delete" Class="mt-3">
                 Delete
@@ -75,6 +80,7 @@
         <MudStack AlignItems="AlignItems.Start">
             <MudButton
                 Variant="@_variant"
+                @onclick="() => AddServiceAndResetTracking(tracking)"
                 Color="Color.Warning"
                 StartIcon="@Icons.Material.Filled.Build"
                 Class="mt-3">
@@ -101,13 +107,64 @@
         ViewModel = new TrackingListViewModel(
             _trackingService,
             _selectedCarService,
-            _naviagationManager
+            _naviagationManager,
+            _mileageService,
+            _servicesService
         );
 
         await ViewModel.Initialize();
     }
-    
-    private async Task DeleteRecord(int recordId)
+
+    private string test = "";
+
+    private async Task AddServiceAndResetTracking(Tracking tracking)
+    {
+        if(await ViewModel.CanReset())
+        {
+            var selectedCar = await _selectedCarService.GetSelectedCar();
+            var mileage = (await _mileageService.GetLastMileage(selectedCar.Id));
+
+            var trackingService = new AddTrackingServiceModel()
+            {
+                Title = tracking.Name,
+                Description = tracking.MessageForReminder,
+                Mileage = mileage != null ? mileage.Mileage : 0,
+                UserCarId = selectedCar.Id
+            };
+            var parameters = new DialogParameters()
+            {
+                { nameof(AddTrackingService_Dialog.TrackingService), trackingService }
+            };
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+            };
+            var dialog = await _dialogService
+                .ShowAsync<AddTrackingService_Dialog>(
+                    "Add Service",
+                    parameters,
+                    options
+                    );
+
+            var dialogResult = await dialog.Result;
+            if (dialogResult != null && !dialogResult.Canceled)
+            {
+                if(dialogResult.Data is AddTrackingServiceModel model)
+                {
+                    await ViewModel.ResetTracking(tracking.Id);
+                    await ViewModel.AddService(model);
+                    _naviagationManager.NavigateTo("/trackings");
+                    StateHasChanged();
+                }
+            }
+        }
+        else
+        {
+            await ShowResetRecordErrorDialog();
+        }
+    }
+
+    private async Task DeleteRecord(Tracking tracking)
     {
         var parameters = new DialogParameters<Delete_Dialog>
         {
@@ -116,14 +173,18 @@
             { x => x.Color, Color.Error },
         };
 
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var options = new DialogOptions()
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall
+        };
 
-        var dialog = await _dialogService.ShowAsync<Delete_Dialog>("Delete", parameters, options);
+        var dialog = await _dialogService.ShowAsync<Delete_Dialog>($"Delete {tracking.Name}?", parameters, options);
         var result = await dialog.Result;
 
         if(result != null && !result.Canceled)
         {
-            //await ViewModel.Delete(mileageRecordId);
+            await ViewModel.DeleteRecord(tracking.Id);
         }
     }
 
@@ -136,5 +197,51 @@
     public void Dispose()
     {
         _selectedCarService.SelectedCarChangedAsync -= OnSelectedCarChangedAsync;
+    }
+
+    public async Task ResetRecord(Tracking tracking)
+    {
+        if(await ViewModel.CanReset())
+        {
+            var parameters = new DialogParameters<Delete_Dialog>
+            {
+                { x => x.ContentText, "Do you want Reset this tracking? This will reset tracking to this day." },
+                { x => x.ButtonText, "Reset" },
+                { x => x.Color, Color.Warning },
+            };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+            var dialog = await _dialogService.ShowAsync<Delete_Dialog>($"Reset {tracking.Name}?", parameters, options);
+            var result = await dialog.Result;
+
+            if(result != null && !result.Canceled)
+            {
+                await ViewModel.ResetTracking(tracking.Id);
+            }
+        }
+        else
+        {
+           await ShowResetRecordErrorDialog();
+        }
+    }
+
+    private async Task ShowResetRecordErrorDialog()
+    {
+        var parameters = new DialogParameters<Delete_Dialog>
+        {
+            { x => x.ContentText, "You may set today mileage for Reset tracking by mileage" },
+            { x => x.ButtonText, "Go to mileages" },
+            { x => x.Color, Color.Primary },
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await _dialogService.ShowAsync<Delete_Dialog>("Reset error", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            _naviagationManager.NavigateTo("/mileages");
+        }
     }
 }

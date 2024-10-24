@@ -48,14 +48,9 @@ public class MileageViewModel
 
     public async Task UpdateMileage()
     {
-        
-    }
-
-    public async Task AddMileage()
-    {
         var selectedCar = await _selectedCarService.GetSelectedCar();
 
-        if(selectedCar == null || !selectedCar.HasData)
+        if (selectedCar == null || !selectedCar.HasData)
         {
             return;
         }
@@ -69,14 +64,17 @@ public class MileageViewModel
             DateTime.UtcNow
         );
 
-
-       // MileageRecords.FirstOrDefault(mr => mr.UpdatedAt.Date ==)
-
         await _mileageService.AddMileageRecordAsync(newMileage);
 
+        await LoadMileages();
+
+        await UpdateCarMileage(selectedCar);
+    }
+
+    private async Task UpdateCarMileage(SelectedCarData selectedCar)
+    {
         await _userCarsService.UpdateCurrentMileage(selectedCar.Id, MileageToAdd);
 
-        await LoadMileages();
 
         IAverageMileageCalculator averageMileageCalculator
             = new AverageMileageCalculator();
@@ -91,8 +89,6 @@ public class MileageViewModel
             selectedCar.Id,
             Convert.ToInt32(averageMileage)
         );
-
-        await _trackingService.UpdateMileageTracking(selectedCar.Id);
     }
 
     public async Task DeleteMileage(int mileageId)

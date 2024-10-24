@@ -2,6 +2,8 @@ using CarJournal.Domain;
 using CarJournal.Infrastructure.Persistence.MileageRecords;
 using CarJournal.Infrastructure.Persistence.Trackings;
 
+using MudBlazor;
+
 namespace CarJournal.Services.Trackings;
 
 public class TrackingService : ITrackingService
@@ -47,21 +49,36 @@ public class TrackingService : ITrackingService
         await _trackingsRepository.UpdateAsync(tracking);
     }
 
-    public async Task UpdateMileageTracking(int userCarId)
+    public async Task UpdateTotalMileage(MileageRecord mileageRecord)
     {
-        var trackings = await GetAllTrackingsByCarIdAsync(userCarId, TrackingType.Mileage);
-        var lastMileage = await _mileageRepository.GetLastMileage(userCarId);
-
-        if(lastMileage == null)
-            return;
+        var trackings =
+            await GetAllTrackingsByCarIdAsync(mileageRecord.UserCarId, TrackingType.Mileage);
 
         foreach(var tracking in trackings)
         {
             tracking.UpdateMileage(
-                Convert.ToInt32(lastMileage.Mileage - tracking.MileageAtStart)
+                Convert.ToInt32(mileageRecord.Mileage - tracking.MileageAtStart)
             );
 
             await UpdateTrackingAsync(tracking);
         }
+    }
+
+    public async Task ResetTracking(int trackingId)
+    {
+        var tracking = await GetTrackingById(trackingId);
+
+        var lastMileage = await _mileageRepository.GetLastMileage(tracking.UserCarId);
+
+        if(lastMileage != null && lastMileage.UpdatedAt.Date == DateTime.Today.Date)
+        {
+            tracking.Reset(lastMileage.Mileage);
+            await UpdateTrackingAsync(tracking);
+        }
+    }
+
+    public async Task<Tracking?> GetTrackingById(int trackingId)
+    {
+        return await _trackingsRepository.GetByIdAsync(trackingId);
     }
 }

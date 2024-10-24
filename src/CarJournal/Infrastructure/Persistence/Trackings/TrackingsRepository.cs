@@ -32,6 +32,7 @@ public class TrackingsRepository : ITrackingsRepository
             if ((await GetByIdAsync(id)) is Tracking tracking)
             {
                 context.Trackings.Remove(tracking);
+                await context.SaveChangesAsync();
             }
         }
     }
@@ -75,7 +76,7 @@ public class TrackingsRepository : ITrackingsRepository
 
         using (var context = _factory.CreateDbContext())
         {
-            trackingToUpdate.UpdateMileage(Convert.ToInt32(tracking.TotalMileage));
+            trackingToUpdate.Update(tracking);
 
             context.Trackings.Update(trackingToUpdate);
             await context.SaveChangesAsync();

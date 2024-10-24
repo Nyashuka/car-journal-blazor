@@ -47,9 +47,29 @@ public class Tracking
 
         TotalMileage = totalMileage;
         LimitMileage = limitMileage;
+        MileageAtStart = mileageAtStart;
 
         if(endDate.HasValue)
             EndDate = endDate.Value.ToUniversalTime();
+    }
+
+    public void Reset(int newStartMileage)
+    {
+        TotalMileage = 0;
+        MileageAtStart = newStartMileage;
+        UpdatedAt = DateTime.UtcNow;
+        CreatedAt = UpdatedAt;
+    }
+
+    public void Update(Tracking tracking)
+    {
+        Name = tracking.Name;
+        MessageForReminder = tracking.MessageForReminder;
+        UpdatedAt = tracking.UpdatedAt;
+        CreatedAt = tracking.CreatedAt;
+        TotalMileage = tracking.TotalMileage;
+        LimitMileage = tracking.LimitMileage;
+        MileageAtStart = tracking.MileageAtStart;
     }
 
     public void UpdateMileage(int mileage)

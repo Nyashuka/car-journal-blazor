@@ -1,0 +1,69 @@
+@using CarJournal.Services.Trackings
+@using CarJournal.Services.Client
+@using CarJournal.Services.ServiceCategories
+@using CarJournal.Services.ServiceRecords
+
+@inject IServiceCategoryService _serviceCategoryService
+@inject IServiceRecordService _servicesService
+@inject ISelectedCarService _selectedCarService
+@inject NavigationManager _naviagationManager
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1"/>
+            Add Service and Reset Tracking
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="@TrackingService.Title" Label="Service Title" />
+        <MudTextField @bind-Value="@TrackingService.Description" Label="Description" />
+        <MudTextField @bind-Value="@TrackingService.Mileage" Label="Service Mileage" />
+        <MudTextField @bind-Value="@TrackingService.Price" Label="Service Price" />
+        <MudAutocomplete T="ServiceCategory" Label="Category"
+            @bind-Value="@TrackingService.ServiceCategory"
+            SearchFunc="@SearchCategory"
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+            Variant="Variant.Outlined" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Warning" @onclick="Confirm">
+            Save Service and Reset Tracking
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public AddTrackingServiceModel TrackingService { get; set; } = new();
+
+    private List<ServiceCategory> ServiceCategories = new List<ServiceCategory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ServiceCategories = await _serviceCategoryService.GetAllAsync();
+    }
+
+    public async Task<IEnumerable<ServiceCategory>> SearchCategory(string value, CancellationToken token)
+    {
+        await Task.Delay(5, token);
+
+        if (string.IsNullOrEmpty(value))
+            return ServiceCategories;
+
+        return ServiceCategories.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Confirm()
+    {
+        MudDialog.Close(DialogResult.Ok(TrackingService));
+    }
+}
+

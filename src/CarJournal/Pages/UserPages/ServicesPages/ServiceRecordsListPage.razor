@@ -31,11 +31,11 @@
             <MudStack Row="false" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudStack Row="true">
                     <MudIcon Icon="@Icons.Material.Outlined.Numbers" />
-                    <MudText Typo="Typo.body2">@service.Mileage KM</MudText>
+                    <MudText Typo="Typo.body2">Service Mileage - @service.Mileage KM</MudText>
                 </MudStack>
                 <MudStack Row="true">
-                    <MudIcon Icon="@Icons.Material.Outlined.Money" Class="ml-4" />
-                    <MudText Typo="Typo.body2">$ @service.Price</MudText>
+                    <MudIcon Icon="@Icons.Material.Outlined.Money" />
+                    <MudText Typo="Typo.body2">Price - @service.Price</MudText>
                 </MudStack>
             </MudStack>
             <MudText Class="mt-3" Typo="Typo.body1">@service?.ServiceCategory?.Name</MudText>
