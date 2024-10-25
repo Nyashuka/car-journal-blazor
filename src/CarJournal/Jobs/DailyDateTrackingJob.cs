@@ -1,23 +1,18 @@
+
 using CarJournal.Domain;
 using CarJournal.Factories;
-using CarJournal.Services.AutoMileageCalculator;
-using CarJournal.Services.Mileages;
 using CarJournal.Services.Notifications;
 using CarJournal.Services.Trackings;
 
 namespace CarJournal.Jobs;
 
-public class DailyMileageTrackingJob
+public class DailyDateTrackingJob : IDailyTrackingJob
 {
     private readonly ITrackingService _trackingService;
-    private readonly IMileageService _mileageService;
 
-    public DailyMileageTrackingJob(
-        ITrackingService trackingService,
-        IMileageService mileageService)
+    public DailyDateTrackingJob(ITrackingService trackingService)
     {
         _trackingService = trackingService;
-        _mileageService = mileageService;
     }
 
     public async Task ExecuteAsync()
@@ -29,29 +24,12 @@ public class DailyMileageTrackingJob
                     = new MailMessageFactory("cocer");
 
         var trackings = await _trackingService
-            .GetTrackingsByParameters(TrackingType.Mileage);
+            .GetTrackingsByParameters(TrackingType.Date);
 
         foreach(var tracking in trackings)
         {
-            var lastMileage = await _mileageService.GetLastMileage(tracking.UserCarId);
-
-            if(lastMileage == null || lastMileage.UpdatedAt.Date == DateTime.Now.Date)
-            {
-                continue;
-            }
-
             if(tracking.UserCar == null)
                 continue;
-
-
-            var daysCountFromLastMileage = (lastMileage.UpdatedAt.Date - DateTime.Now.Date).Days;
-            var mileageDelta = lastMileage.Mileage - tracking.MileageAtStart;
-            var newTotalMileage = mileageDelta +
-                tracking.UserCar.AverageMileage * daysCountFromLastMileage;
-
-            tracking.UpdateMileage(newTotalMileage);
-
-            await _trackingService.UpdateTrackingAsync(tracking);
 
             if(tracking.IsLimitReached())
             {
@@ -67,7 +45,5 @@ public class DailyMileageTrackingJob
                 }
             }
         }
-
-
     }
 }

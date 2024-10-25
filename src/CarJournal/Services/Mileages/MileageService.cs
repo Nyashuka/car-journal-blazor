@@ -53,6 +53,7 @@ public class MileageService : IMileageService
             mileage.Mileage > lastMileage.Mileage)
         {
             await _mileageRepository.AddAsync(mileage);
+            await _trackingService.UpdateTotalMileage(mileage);
             return;
         }
 

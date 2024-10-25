@@ -1,11 +1,9 @@
 using CarJournal.DependencyInjection;
-using CarJournal.Jobs;
-
-using Hangfire;
 
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
+// configure the dependency injection
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddDbContextFactory<CarJournalDbContext>(options =>
@@ -13,9 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddScoped<CarJournalDbContext>(provider =>
         provider.GetRequiredService<IDbContextFactory<CarJournalDbContext>>().CreateDbContext());
-
-    // builder.Services.AddDbContext<CarJournalDbContext>(options =>
-    //         options.UseNpgsql(DbConstants.ConnectionString), ServiceLifetime.Scoped);
 
     builder.Services.AddRepositories()
                     .AddInfrastructure()
@@ -26,18 +21,11 @@ var builder = WebApplication.CreateBuilder(args);
                     .AddControllers();
 
     builder.Services.AddAuthenticationCore();
-
-
-    // builder.Services.AddAuthorization(options =>
-    // {
-    //     options.AddPolicy("admin", policy =>
-    //         policy.RequireRole("admin"));
-    // });
 }
 
+// Configure the HTTP request pipeline.
 var app = builder.Build();
 {
-    // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
         app.IncludeDeveloperServices();
@@ -50,17 +38,7 @@ var app = builder.Build();
     app.MapBlazorHub();
     app.MapFallbackToPage("/_Host");
 
-    var options = new RecurringJobOptions
-        {
-            TimeZone = TimeZoneInfo.Local  // Використання налаштованого часового поясу
-        };
-    app.UseHangfireDashboard();
-    RecurringJob.AddOrUpdate<DailyTrackingJob>(
-        "tracking",
-        job => job.ExecuteAsync(),
-        "14 13 * * *",
-        options
-    );
+    app.SetupHangFire();
 
     app.UseAuthentication();
     app.UseAuthorization();

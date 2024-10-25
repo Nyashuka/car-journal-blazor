@@ -86,7 +86,7 @@ public class Tracking
         return TrackingType switch
         {
             TrackingType.Mileage => LimitMileage.HasValue && TotalMileage >= LimitMileage.Value,
-            TrackingType.Date => EndDate.HasValue && DateTime.Today >= EndDate.Value,
+            TrackingType.Date => EndDate.HasValue && DateTime.Today.Date >= EndDate.Value.Date,
             _ => false,
         };
     }

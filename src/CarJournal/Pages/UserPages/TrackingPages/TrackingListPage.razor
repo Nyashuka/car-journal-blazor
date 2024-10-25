@@ -3,6 +3,7 @@
 
 @implements IDisposable
 
+@using CarJournal.ClientDtos
 @using CarJournal.Services.Client
 @using CarJournal.Services.ServiceCategories
 @using CarJournal.Services.Mileages
@@ -84,7 +85,7 @@
                 Color="Color.Warning"
                 StartIcon="@Icons.Material.Filled.Build"
                 Class="mt-3">
-                Add Service
+                Complete
             </MudButton>
         </MudStack>
         }
@@ -124,7 +125,7 @@
             var selectedCar = await _selectedCarService.GetSelectedCar();
             var mileage = (await _mileageService.GetLastMileage(selectedCar.Id));
 
-            var trackingService = new AddTrackingServiceModel()
+            var trackingService = new AddServiceDto()
             {
                 Title = tracking.Name,
                 Description = tracking.MessageForReminder,
@@ -149,7 +150,7 @@
             var dialogResult = await dialog.Result;
             if (dialogResult != null && !dialogResult.Canceled)
             {
-                if(dialogResult.Data is AddTrackingServiceModel model)
+                if(dialogResult.Data is AddServiceDto model)
                 {
                     await ViewModel.ResetTracking(tracking.Id);
                     await ViewModel.AddService(model);

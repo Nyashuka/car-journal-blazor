@@ -1,4 +1,4 @@
-@using CarJournal.Services.Trackings
+@using CarJournal.ClientDtos
 @using CarJournal.Services.Client
 @using CarJournal.Services.ServiceCategories
 @using CarJournal.Services.ServiceRecords
@@ -20,6 +20,7 @@
         <MudTextField @bind-Value="@TrackingService.Title" Label="Service Title" />
         <MudTextField @bind-Value="@TrackingService.Description" Label="Description" />
         <MudTextField @bind-Value="@TrackingService.Mileage" Label="Service Mileage" />
+        <MudDatePicker @bind-Date="@TrackingService.DateOfService" Label="Service date"/>
         <MudTextField @bind-Value="@TrackingService.Price" Label="Service Price" />
         <MudAutocomplete T="ServiceCategory" Label="Category"
             @bind-Value="@TrackingService.ServiceCategory"
@@ -40,7 +41,7 @@
     private MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public AddTrackingServiceModel TrackingService { get; set; } = new();
+    public AddServiceDto TrackingService { get; set; } = new();
 
     private List<ServiceCategory> ServiceCategories = new List<ServiceCategory>();
 

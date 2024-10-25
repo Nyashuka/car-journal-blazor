@@ -1,3 +1,4 @@
+using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Services.Client;
 using CarJournal.Services.Mileages;
@@ -75,7 +76,7 @@ public class TrackingListViewModel
         }
     }
 
-    public async Task AddService(AddTrackingServiceModel model)
+    public async Task AddService(AddServiceDto model)
     {
         var service = new ServiceRecord(
             0,
@@ -85,7 +86,7 @@ public class TrackingListViewModel
             model.Mileage,
             model.Price,
             model.Description,
-            model.DateOfService,
+            model.DateOfService ?? DateTime.UtcNow,
             null, null
         );
 
