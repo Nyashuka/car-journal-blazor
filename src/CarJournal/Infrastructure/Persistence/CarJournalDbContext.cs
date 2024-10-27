@@ -12,6 +12,7 @@ using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 public class CarJournalDbContext : DbContext
 {
@@ -47,6 +48,20 @@ public class CarJournalDbContext : DbContext
         modelBuilder.ApplyConfiguration(new MileageConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new TrackingConfiguration());
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
+                        v => v.ToUniversalTime(),
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                    ));
+                }
+            }
+        }
 
         CreateDefaultRoles(modelBuilder);
         CreateAdminUser(modelBuilder);

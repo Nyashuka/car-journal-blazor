@@ -3,14 +3,6 @@
 
 @implements IDisposable
 
-@using CarJournal.ClientDtos
-@using CarJournal.Services.Client
-@using CarJournal.Services.ServiceCategories
-@using CarJournal.Services.Mileages
-@using CarJournal.Services.ServiceRecords
-@using CarJournal.Services.Trackings
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-
 @inject IServiceCategoryService _categoriesService
 @inject ISelectedCarService _selectedCarService
 @inject IServiceRecordService _servicesService
@@ -20,14 +12,13 @@
 @inject ITrackingService _trackingService
 @inject IDialogService _dialogService
 
-<MudButton Variant="Variant.Filled"
-    DropShadow="false"
-    Color="Color.Primary"
-    Class="mb-4"
-    OnClick="@ViewModel.NavigateToCreateTrackingPage">
-    Create Tracking
-</MudButton>
-@test
+<MudStack Style="margin: 0px 10px;" AlignItems="AlignItems.Start">
+    <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Success" Class="mb-4"
+        OnClick="@ViewModel.NavigateToCreateTrackingPage"
+        StartIcon="@Icons.Material.Filled.Add">
+        Create Tracking
+    </MudButton>
+</MudStack>
 
 @foreach(var tracking in ViewModel.Trackings)
 {
@@ -116,8 +107,6 @@
         await ViewModel.Initialize();
     }
 
-    private string test = "";
-
     private async Task AddServiceAndResetTracking(Tracking tracking)
     {
         if(await ViewModel.CanReset())
@@ -134,14 +123,14 @@
             };
             var parameters = new DialogParameters()
             {
-                { nameof(AddTrackingService_Dialog.TrackingService), trackingService }
+                { nameof(AddService_Dialog.TrackingService), trackingService }
             };
             var options = new DialogOptions
             {
                 CloseOnEscapeKey = true,
             };
             var dialog = await _dialogService
-                .ShowAsync<AddTrackingService_Dialog>(
+                .ShowAsync<AddService_Dialog>(
                     "Add Service",
                     parameters,
                     options
@@ -152,10 +141,9 @@
             {
                 if(dialogResult.Data is AddServiceDto model)
                 {
-                    await ViewModel.ResetTracking(tracking.Id);
                     await ViewModel.AddService(model);
+                    await ViewModel.ResetTracking(tracking.Id);
                     _naviagationManager.NavigateTo("/trackings");
-                    StateHasChanged();
                 }
             }
         }

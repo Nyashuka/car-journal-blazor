@@ -1,12 +1,21 @@
+@using CarJournal.Services.ServiceCategories
+
+@inject IServiceCategoryService _serviceCategoryService
+
 <MudNavMenu>
     <AuthorizeView Roles="user">
         <Authorized>
             <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
             <MudNavLink Href="/garage" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Garage">Garage</MudNavLink>
-            <MudNavLink Href="/services" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.BuildCircle">Services Journal</MudNavLink>
+            <MudNavGroup Title="Service Journal" Icon="@Icons.Material.Filled.BuildCircle">
+                <MudNavLink Href="/services" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.BuildCircle">All</MudNavLink>
+                @foreach(var category in _serviceCategories)
+                {
+                   <MudNavLink Href="@($"/services/category/{category.Id}")" Match="NavLinkMatch.All">@category.Name</MudNavLink>
+                }
+            </MudNavGroup>
             <MudNavLink Href="/mileages" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled._60fps">Mileages</MudNavLink>
             <MudNavLink Href="/trackings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.TrackChanges">Trackings</MudNavLink>
-            <MudNavLink Href="/cars/search" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Search">Search cars</MudNavLink>
         </Authorized>
     </AuthorizeView>
     <AuthorizeView Roles="admin">
@@ -25,3 +34,12 @@
         </Authorized>
     </AuthorizeView>
 </MudNavMenu>
+
+@code {
+    private List<ServiceCategory> _serviceCategories = new List<ServiceCategory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _serviceCategories = await _serviceCategoryService.GetAllAsync();
+    }
+}

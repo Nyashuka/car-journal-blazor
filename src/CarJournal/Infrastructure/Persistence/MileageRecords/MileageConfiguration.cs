@@ -28,6 +28,10 @@ public class MileageConfiguration : IEntityTypeConfiguration<MileageRecord>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(mr => mr.UpdatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                v => v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
     }
 }

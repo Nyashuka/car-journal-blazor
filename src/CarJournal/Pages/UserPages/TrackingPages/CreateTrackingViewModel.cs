@@ -70,7 +70,7 @@ public class CreateTrackingViewModel
     {
         var selectedCar = await _selectedCarService.GetSelectedCar();
 
-        var lastMileage = 
+        var lastMileage =
                 await _mileageService.GetLastMileage(selectedCar.Id);
 
         if(lastMileage == null)

@@ -7,48 +7,64 @@ namespace CarJournal.Infrastructure.Persistence.ServiceRecords;
 
 public class ServiceRecordRepository : IServiceRecordRepository
 {
-    private readonly CarJournalDbContext _dbContext;
+    private readonly IDbContextFactory<CarJournalDbContext> _dbFactory;
 
-    public ServiceRecordRepository(CarJournalDbContext dbContext)
+    public ServiceRecordRepository(IDbContextFactory<CarJournalDbContext> dbFactory)
     {
-        _dbContext = dbContext;
+        _dbFactory = dbFactory;
     }
 
     public async Task AddAsync(ServiceRecord serviceRecord)
     {
-        _dbContext.ServiceRecords.Add(serviceRecord);
-        await _dbContext.SaveChangesAsync();
+        using (var context = await _dbFactory.CreateDbContextAsync())
+        {
+            context.ServiceRecords.Add(serviceRecord);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task DeleteAsync(int id)
     {
-        var serviceRecord = await GetByIdAsync(id);
-
-        if(serviceRecord == null)
+        using (var context = await _dbFactory.CreateDbContextAsync())
         {
-            return;
-        }
+            var serviceRecord = await GetByIdAsync(id);
 
-        _dbContext.ServiceRecords.Remove(serviceRecord);
-        await _dbContext.SaveChangesAsync();
+            if (serviceRecord == null)
+            {
+                return;
+            }
+
+            context.ServiceRecords.Remove(serviceRecord);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task<List<ServiceRecord>> GetAllCarServicesAsync(int userCarId)
     {
-        return await _dbContext.ServiceRecords
+        using (var context = await _dbFactory.CreateDbContextAsync())
+        {
+            return await context.ServiceRecords
                         .AsNoTracking()
                         .Where(r => r.UserCarId == userCarId)
+                        .Include(r => r.ServiceCategory)
                         .ToListAsync();
+        }
     }
 
     public async Task<ServiceRecord?> GetByIdAsync(int id)
     {
-        return await _dbContext.ServiceRecords.FirstOrDefaultAsync(r => r.Id == id);
+        using (var context = await _dbFactory.CreateDbContextAsync())
+        {
+            return await context.ServiceRecords.FirstOrDefaultAsync(r => r.Id == id);
+        }
     }
 
     public async Task UpdateAsync(ServiceRecord serviceRecord)
     {
-        _dbContext.ServiceRecords.Update(serviceRecord);
-        await _dbContext.SaveChangesAsync();
+        using (var context = await _dbFactory.CreateDbContextAsync())
+        {
+            context.ServiceRecords.Update(serviceRecord);
+            await context.SaveChangesAsync();
+        }
     }
 }

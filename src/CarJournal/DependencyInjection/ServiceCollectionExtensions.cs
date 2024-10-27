@@ -9,6 +9,7 @@ using CarJournal.Infrastructure.Persistence.ServiceRecords;
 using CarJournal.Infrastructure.Persistence.Trackings;
 using CarJournal.Infrastructure.Persistence.UserCars;
 using CarJournal.Infrastructure.Persistence.Vendors;
+using CarJournal.Mappings;
 using CarJournal.Persistence.Repositories;
 using CarJournal.Services;
 using CarJournal.Services.Authentication;
@@ -59,6 +60,8 @@ public static class ServiceCollectionExtensions
             config.UseMemoryStorage());
 
         services.AddHangfireServer();
+
+        services.AddAutoMapper(typeof(MappingProfile));
 
         return services;
     }

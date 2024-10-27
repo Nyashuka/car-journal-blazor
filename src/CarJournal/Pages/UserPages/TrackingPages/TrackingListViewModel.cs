@@ -73,6 +73,7 @@ public class TrackingListViewModel
         if(await CanReset())
         {
             await _trackingService.ResetTracking(trackingId);
+            _navigationManager.NavigateTo(_navigationManager.Uri, true);
         }
     }
 

@@ -53,7 +53,7 @@ public class CreateServiceRecordViewModel
                 CreateServiceRecordDto.Mileage,
                 CreateServiceRecordDto.Price,
                 CreateServiceRecordDto.Description,
-                DateTime.UtcNow,
+                CreateServiceRecordDto.DateOfService ?? DateTime.Now,
                 null,
                 null
             )

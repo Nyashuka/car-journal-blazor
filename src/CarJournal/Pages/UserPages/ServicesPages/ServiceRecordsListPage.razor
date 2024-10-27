@@ -1,23 +1,23 @@
 @page "/services"
+@page "/services/category/{categoryId:int?}"
+
 @attribute [Authorize(Roles = "user")]
 
-@using CarJournal.Services.Client
-@using CarJournal.Services.ServiceCategories
-@using CarJournal.Services.ServiceRecords
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-
+@inject IMileageService _mileageService
 @inject IServiceCategoryService _categoriesService
 @inject ISelectedCarService _selectedCarService
 @inject IServiceRecordService _servicesService
 @inject NavigationManager _naviagationManager
 @inject ProtectedSessionStorage _protectedSessionStorage
+@inject IDialogService _dialogService
 
 <MudButton Variant="Variant.Outlined"
     DropShadow="false"
     Color="Color.Success"
-    Class="mt-3"
+    Class="mb-4"
     StartIcon="@Icons.Material.Filled.Add"
-    OnClick="@ViewModel.NavigateToCreateServiceRecord">
+    OnClick="AddService"
+    Style="margin: 0px 10px;">
     Add new Record
 </MudButton>
 
@@ -28,6 +28,7 @@
         <MudItem xs="3" md="3">
             <MudText Typo="Typo.h6">@service.Title</MudText>
             <MudText Typo="Typo.h6">@service.DateOfService</MudText>
+            <MudText Typo="Typo.body1">@service?.ServiceCategory?.Name</MudText>
             <MudStack Row="false" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudStack Row="true">
                     <MudIcon Icon="@Icons.Material.Outlined.Numbers" />
@@ -38,7 +39,6 @@
                     <MudText Typo="Typo.body2">Price - @service.Price</MudText>
                 </MudStack>
             </MudStack>
-            <MudText Class="mt-3" Typo="Typo.body1">@service?.ServiceCategory?.Name</MudText>
             <MudText Typo="Typo.body1" Class="mt-3 mb-3">
                 @service.Description
             </MudText>
@@ -53,6 +53,9 @@
 }
 
 @code {
+    [Parameter]
+    public int? CategoryId { get; set; }
+
     private ServiceRecordsListViewModel ViewModel { get; set; }
     private Variant _variant = Variant.Outlined;
     private bool _readOnly;
@@ -68,12 +71,61 @@
             _selectedCarService,
             _naviagationManager);
 
-        await ViewModel.InitializeAsync();
+        await ViewModel.InitializeAsync(CategoryId);
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ViewModel.InitializeAsync(CategoryId);
+        StateHasChanged();
+    }
+
+    private async Task AddService()
+    {
+        var selectedCar = await _selectedCarService.GetSelectedCar();
+        var mileage = (await _mileageService.GetLastMileage(selectedCar.Id));
+
+        var trackingService = new AddServiceDto()
+        {
+            Mileage = mileage != null ? mileage.Mileage : 0,
+            UserCarId = selectedCar.Id
+        };
+
+        var parameters = new DialogParameters()
+        {
+            {
+                nameof(AddService_Dialog.TrackingService),
+                trackingService
+            }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+        };
+
+        var dialog = await _dialogService
+            .ShowAsync<AddService_Dialog>(
+            "Add Service",
+            parameters,
+            options
+        );
+
+        var dialogResult = await dialog.Result;
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            if (dialogResult.Data is AddServiceDto model)
+            {
+                await ViewModel.CreateRecord(model);
+                ViewModel.NavigateBackToServicesList();
+            }
+        }
     }
 
     private async Task OnSelectedCarChangedAsync(SelectedCarData selectedCar)
     {
-        await ViewModel.InitializeAsync();
+        await ViewModel.InitializeAsync(CategoryId);
         StateHasChanged();
     }
 }

@@ -1,3 +1,5 @@
+using AutoMapper;
+
 using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Services.Authentication;
@@ -5,56 +7,53 @@ using CarJournal.Services.UserCars;
 
 using Microsoft.AspNetCore.Components;
 
-namespace CarJournal.Pages.UserPages.CarPages.AddUserCar;
+namespace CarJournal.Pages.UserPages.CarPages.EditCar;
 
-public class AddUserCarViewModel : ISearchCarComponents
+public class EditUserCarViewModel : ISearchCarComponents
 {
     private readonly IUserCarsService _userCarsService;
     private readonly IClientAuthenticationService _authenticationService;
+    private readonly IMapper _mapper;
     private readonly NavigationManager _navigationManager;
 
-    public AddUserCarDto AddUserCarDto { get; private set; } = new AddUserCarDto();
+    public UpdateUserCarDto UserCarDto { get; private set; } = new UpdateUserCarDto();
     public List<Car> SearchedCars { get; set; } = new List<Car>();
 
     public string BindedCarText { get; private set; } = string.Empty;
 
-    public AddUserCarViewModel(
+    public EditUserCarViewModel(
         IUserCarsService userCarsService,
         IClientAuthenticationService authenticationService,
+        IMapper mapper,
         NavigationManager navigationManager)
     {
         _userCarsService = userCarsService;
         _authenticationService = authenticationService;
+        _mapper = mapper;
         _navigationManager = navigationManager;
     }
 
-    public async Task AddCar()
+    public async Task InitializeAsync(int userCarId)
     {
-        var userId = await _authenticationService.GetUserIdAsync();
-
-        if(userId == null)
+        var userCar = await _userCarsService.GetByIdAsync(userCarId);
+        if(userCar == null)
         {
-            throw new Exception ("not authorized");
+            return;
         }
 
-        var car = new UserCar(
-            0,
-            AddUserCarDto.Name,
-            AddUserCarDto.StartMileage,
-            AddUserCarDto.StartMileage,
-            0,
-            Convert.ToInt32(userId), null,
-            AddUserCarDto.Car?.Id,
-            null,
-            DateTime.UtcNow
-        );
-
-       await _userCarsService.AddUserCarAsync(car);
-       NavigateToGarage();
+        _mapper.Map(userCar, UserCarDto);
     }
 
-    public void NavigateToGarage()
+    public async Task UpdateCar()
     {
+        var userCar = await _userCarsService.GetByIdAsync(UserCarDto.Id);
+
+        if(userCar == null)
+        {
+            return;
+        }
+
+        await _userCarsService.UpdateUserCarAsync(_mapper.Map(UserCarDto, userCar));
         _navigationManager.NavigateTo("/garage");
     }
 

@@ -7,43 +7,58 @@ namespace CarJournal.Infrastructure.Persistence.ServiceCategories;
 
 public class ServiceCategoryRepository : IServiceCategoryRepository
 {
-    private readonly CarJournalDbContext _dbContext;
+    private readonly IDbContextFactory<CarJournalDbContext> _dbFactory;
 
-    public ServiceCategoryRepository(CarJournalDbContext dbContext)
+    public ServiceCategoryRepository(IDbContextFactory<CarJournalDbContext> dbContext)
     {
-        _dbContext = dbContext;
+        _dbFactory = dbContext;
     }
 
     public async Task AddAsync(ServiceCategory category)
     {
-        _dbContext.ServiceCategories.Add(category);
-        await _dbContext.SaveChangesAsync();
+        using(var context = _dbFactory.CreateDbContext())
+        {
+            context.ServiceCategories.Add(category);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task DeleteAsync(int id)
     {
-        var category = _dbContext.ServiceCategories.FirstOrDefault(c => c.Id == id);
-
-        if(category != null)
+        using(var context = _dbFactory.CreateDbContext())
         {
-            _dbContext.Remove(category);
-            await _dbContext.SaveChangesAsync();
+            var category = context.ServiceCategories.FirstOrDefault(c => c.Id == id);
+
+            if (category != null)
+            {
+                context.Remove(category);
+                await context.SaveChangesAsync();
+            }
         }
     }
 
     public async Task<List<ServiceCategory>> GetAllAsync()
     {
-        return await _dbContext.ServiceCategories.ToListAsync();
+        using(var context = _dbFactory.CreateDbContext())
+        {
+            return await context.ServiceCategories.ToListAsync();
+        }
     }
 
     public Task<ServiceCategory?> GetByIdAsync(int id)
     {
-        return _dbContext.ServiceCategories.FirstOrDefaultAsync(c => c.Id == id);
+        using(var context = _dbFactory.CreateDbContext())
+        {
+            return context.ServiceCategories.FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 
     public async Task UpdateAsync(ServiceCategory category)
     {
-        _dbContext.ServiceCategories.Update(category);
-        await _dbContext.SaveChangesAsync();
+        using(var context = _dbFactory.CreateDbContext())
+        {
+            context.ServiceCategories.Update(category);
+            await context.SaveChangesAsync();
+        }
     }
 }

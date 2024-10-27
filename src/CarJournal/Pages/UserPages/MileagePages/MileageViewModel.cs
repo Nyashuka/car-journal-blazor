@@ -17,6 +17,7 @@ public class MileageViewModel
     private readonly ITrackingService _trackingService;
 
     public List<MileageRecord> MileageRecords { get; private set; } = new List<MileageRecord>();
+    public MileageRecord LastMileage { get; private set; } 
 
     public int MileageToAdd { get; set; }
 
@@ -43,7 +44,10 @@ public class MileageViewModel
                                 .ToList();
 
         if(MileageRecords.Count > 0)
-            MileageToAdd = MileageRecords.First().Mileage;
+        {
+            LastMileage = MileageRecords.First();
+            MileageToAdd = LastMileage.Mileage;
+        }
     }
 
     public async Task UpdateMileage()

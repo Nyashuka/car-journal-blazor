@@ -10,4 +10,5 @@ public interface IMileageService
     Task AddMileageRecordAsync(MileageRecord mileage);
     Task UpdateMileageRecordAsync(MileageRecord mileage);
     Task DeleteMileageRecordAsync(int id);
+    Task<MileageValidationResult> ValidateNewMileage(int newMileage, int userCarId);
 }

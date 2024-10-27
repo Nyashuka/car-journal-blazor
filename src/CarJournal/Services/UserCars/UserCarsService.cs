@@ -1,4 +1,7 @@
 
+using AutoMapper;
+
+using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Persistence.UserCars;
 
@@ -6,11 +9,13 @@ namespace CarJournal.Services.UserCars;
 
 public class UserCarsService : IUserCarsService
 {
-   private readonly IUserCarsRepository _userCarRepository;
+    private readonly IUserCarsRepository _userCarRepository;
+    private readonly IMapper _mapper;
 
-    public UserCarsService(IUserCarsRepository userCarRepository)
+    public UserCarsService(IUserCarsRepository userCarRepository, IMapper mapper)
     {
         _userCarRepository = userCarRepository;
+        _mapper = mapper;
     }
 
     public async Task<UserCar?> GetByIdAsync(int id)

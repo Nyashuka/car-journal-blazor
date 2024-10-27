@@ -24,7 +24,12 @@
                               @bind-Value="_registerRequest.ConfirmPassword" For="@(() => _registerRequest.ConfirmPassword)" InputType="InputType.Password"/>
             </MudCardContent>
             <MudCardActions>
-                <MudButton ButtonType="ButtonType.Submit" OnClick="OnRegisterClicked" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                <MudButton ButtonType="ButtonType.Submit"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    Class="ml-auto">
+                    Register
+                </MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
@@ -39,7 +44,6 @@
             {
                 <MudText Color="@Color.Error">
                     <ValidationSummary />
-                    @_messageInfo
                 </MudText>
             }
         </MudPaper>
@@ -51,9 +55,21 @@
     bool success;
     private RegisterDto _registerRequest = new RegisterDto();
     private string _messageInfo = "";
+    string[] errors = { };
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+
+        await OnRegisterClicked();
+    }
 
     private async Task OnRegisterClicked()
     {
+        if(success == false)
+            return;
+
         try
         {
             var authenticationResult = _authenticationService.Register(_registerRequest.Email, _registerRequest.Password);
@@ -66,10 +82,5 @@
         {
             _messageInfo = "error: " + e.Message;
         }
-    }
-    private void OnValidSubmit(EditContext context)
-    {
-        success = true;
-        StateHasChanged();
     }
 }

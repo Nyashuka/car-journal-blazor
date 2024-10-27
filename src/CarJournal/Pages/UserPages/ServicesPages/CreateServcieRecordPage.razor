@@ -11,20 +11,22 @@
 @inject NavigationManager _naviagationManager
 
 <MudStack Row="true" Style="max-width: 400px;">
-    <MudButton Variant="Variant.Filled"
-        DropShadow="false"
-        Color="Color.Primary"
-        Class="mb-4"
-        OnClick="@ViewModel.NavigateBackToServicesList">
-        Back
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-        DropShadow="false"
-        Color="Color.Primary"
-        Class="mb-4"
-        OnClick="@ViewModel.CreateRecord">
-        Create
-    </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            StartIcon="@Icons.Material.Filled.ArrowBack"
+            DropShadow="false"
+            Color="Color.Primary" Class="mt-3"
+            OnClick="@ViewModel.NavigateBackToServicesList">
+            Service list
+        </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            StartIcon="@Icons.Material.Filled.Save"
+            DropShadow="false"
+            Color="Color.Success" Class="mt-3"
+            OnClick="ViewModel.CreateRecord">
+            Save
+        </MudButton>
 </MudStack>
 
 <MudStack Style="max-width: 400px;">
@@ -46,6 +48,8 @@
         @bind-Value="@ViewModel.CreateServiceRecordDto.Price"
         Label="Price" Variant="Variant.Outlined" />
 
+    <MudDatePicker @bind-Date="@ViewModel.CreateServiceRecordDto.DateOfService" Label="Service date"/>
+
     <MudAutocomplete T="ServiceCategory" Label="Category"
         @bind-Value="@ViewModel.CreateServiceRecordDto.ServiceCategory"
         SearchFunc="@ViewModel.SearchCategory"
@@ -53,15 +57,6 @@
         Variant="Variant.Outlined" />
 </MudStack>
 
-
-@*
-<MudButton Variant="Variant.Filled"
-    DropShadow="false"
-    Color="Color.Primary"
-    Class="mb-4"
-    OnClick="@ViewModel.CreateCategory">
-    Create
-</MudButton> *@
 
 @code {
     public CreateServiceRecordViewModel ViewModel;

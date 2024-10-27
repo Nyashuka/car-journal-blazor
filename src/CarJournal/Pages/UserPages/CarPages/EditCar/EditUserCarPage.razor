@@ -1,6 +1,7 @@
-@page "/garage/addcar"
+@page "/garage/edit/{userCarId:int}"
 @attribute [Authorize(Roles = "user")]
 
+@using AutoMapper
 @using CarJournal.Services.Authentication
 @using CarJournal.Services.Cars
 @using CarJournal.Services.UserCars
@@ -9,18 +10,16 @@
 @inject IUserCarsService _userCarService
 @inject ICarService _carService;
 @inject NavigationManager _navigationManager;
-@inject ISnackbar _snackbar
+@inject IMapper _mapper
 
 <MudStack>
-    <MudForm Style="width: 400px; margin: 0 10px;"
-        @ref="_form" Model="@ViewModel.AddUserCarDto">
     <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.None">
         <MudButton
             Variant="Variant.Outlined"
             StartIcon="@Icons.Material.Filled.ArrowBack"
             DropShadow="false"
             Color="Color.Primary" Class="mt-3"
-            OnClick="@ViewModel.NavigateToGarage">
+            OnClick="NavigateToGarage">
             Garage
         </MudButton>
         <MudButton
@@ -28,13 +27,19 @@
             StartIcon="@Icons.Material.Filled.Save"
             DropShadow="false"
             Color="Color.Success" Class="mt-3"
-            OnClick="Submit">
+            OnClick="ViewModel.UpdateCar">
             Save
         </MudButton>
     </MudStack>
-        <MudTextField @bind-Value="@ViewModel.AddUserCarDto.Name" For="@(() => ViewModel.AddUserCarDto.Name)" Label="Own car name" Variant="@_variant"/>
-        <MudTextField @bind-Value="@ViewModel.AddUserCarDto.StartMileage" For="@(() => ViewModel.AddUserCarDto.StartMileage)" Label="Current mileage" Variant="@_variant"/>
-    </MudForm>
+    <MudStack Style="width: 400px; margin: 0 10px;">
+        <MudTextField @bind-Value="ViewModel.UserCarDto.Name" Label="Own car name" Variant="@_variant"/>
+        <MudTextField @bind-Value="ViewModel.UserCarDto.StartMileage"
+            ReadOnly="true"
+            Label="Current mileage" Variant="@_variant"/>
+        <MudTextField @bind-Value="ViewModel.UserCarDto.AverageMileage"
+            ReadOnly="true"
+            Label="Own car name" Variant="@_variant"/>
+    </MudStack>
     <MudDivider />
     <MudStack Style="width: 400px; margin: 0 10px;" >
         <MudAlert Severity="Severity.Info">Binding a car is optional feature</MudAlert>
@@ -104,27 +109,30 @@
 
 @code {
     private Variant _variant = Variant.Outlined;
-    private MudForm _form;
+
+    [Parameter]
+    public int UserCarId { get; set; }
 
     bool _expanded = false;
 
     private void OnExpandCollapseClick() {
         _expanded = !_expanded;
     }
-    private AddUserCarViewModel ViewModel { get; set; }
+    private EditUserCarViewModel ViewModel { get; set; }
     private SearchCarsViewModel SelectCarViewModel { get; set; }
 
     private Car? SelectedCar
     {
-        get => ViewModel.AddUserCarDto.Car;
-        set => ViewModel.AddUserCarDto.Car = value;
+        get => ViewModel.UserCarDto.Car;
+        set => ViewModel.UserCarDto.Car = value;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        ViewModel = new AddUserCarViewModel(
+        ViewModel = new EditUserCarViewModel(
             _userCarService,
             _authenticationService,
+            _mapper,
             _navigationManager
         );
 
@@ -132,18 +140,15 @@
         await SelectCarViewModel.InitializeAsync();
     }
 
-    private async Task Submit()
+    protected override async Task OnParametersSetAsync()
     {
-        await _form.Validate();
-        if (_form.IsValid)
-        {
-            _snackbar.Add("Car is success added!", Severity.Success);
-            await ViewModel.AddCar();
-        }
-        else
-        {
-            _snackbar.Add("Form is invalid!", Severity.Error);
-        }
+        await ViewModel.InitializeAsync(UserCarId);
+        StateHasChanged();
+    }
+
+    private void NavigateToGarage()
+    {
+        _navigationManager.NavigateTo("/garage");
     }
 
     private void SelectCar(Car car)

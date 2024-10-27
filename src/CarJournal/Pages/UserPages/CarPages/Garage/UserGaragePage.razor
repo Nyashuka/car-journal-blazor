@@ -8,12 +8,13 @@
 @inject IUserCarsService _userCarService
 @inject NavigationManager _navigationManager
 
-<MudStack AlignItems="AlignItems.Start">
+<MudStack AlignItems="AlignItems.Start"
+    Style="margin: 0px 10px;">
     <MudButton
             Variant="Variant.Outlined"
             StartIcon="@Icons.Material.Filled.Add"
             DropShadow="false"
-            Color="Color.Success" Class="mt-3"
+            Color="Color.Success" Class="mb-4"
             OnClick="NavigateToAddCarInGarage">
             Add new car
         </MudButton>
@@ -44,8 +45,15 @@
                 Домашня
             </MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
-                <MudButton Variant="@_variant" Color="Color.Primary" Class="mt-3">Details</MudButton>
-                <MudButton Variant="@_variant" Color="Color.Warning" Class="mt-3">Delete</MudButton>
+                <MudButton Variant="@_variant"
+                    @onclick="() => NavigateToEdit(userCar.Id)"
+                    Color="Color.Primary" Class="mt-3">Details</MudButton>
+                <MudButton Variant="@_variant"
+                    @onclick="() => ViewModel.DeleteRecord(userCar.Id)"
+                    Color="Color.Warning"
+                    Class="mt-3">
+                    Delete
+                </MudButton>
             </MudStack>
         </MudItem>
     </MudGrid>
@@ -60,15 +68,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ViewModel = new UserGarageViewModel(_userCarService, _authenticationService);
+        ViewModel = new UserGarageViewModel(
+            _userCarService,
+            _authenticationService,
+            _navigationManager
+        );
 
         await Task.WhenAll(ViewModel.LoadCars());
     }
 
     bool _expanded = false;
 
-    private void OnExpandCollapseClick() {
+    private void OnExpandCollapseClick()
+    {
         _expanded = !_expanded;
+    }
+
+    private void NavigateToEdit(int userCarId)
+    {
+        _navigationManager.NavigateTo($"/garage/edit/{userCarId}");
     }
 
     private void NavigateToAddCarInGarage()

@@ -33,7 +33,11 @@ public class ServiceRecordConfiguration : IEntityTypeConfiguration<ServiceRecord
             .IsRequired(false);
 
         builder.Property(sr => sr.DateOfService)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                v => v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
 
         builder.HasOne(sr => sr.ServiceCategory)
             .WithMany()
