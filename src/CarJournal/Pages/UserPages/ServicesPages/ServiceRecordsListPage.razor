@@ -43,7 +43,10 @@
                 @service.Description
             </MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
-                <MudButton Variant="@_variant" Color="Color.Primary" Class="mt-3">Details</MudButton>
+                <MudButton Variant="@_variant"
+                    Color="Color.Primary"
+                    Class="mt-3"
+                    @onclick="() => EditService(service.Id)">Details</MudButton>
                 <MudButton Variant="@_variant" Color="Color.Warning" Class="mt-3">Delete</MudButton>
             </MudStack>
         </MudItem>
@@ -79,6 +82,57 @@
     {
         await ViewModel.InitializeAsync(CategoryId);
         StateHasChanged();
+    }
+
+    private async Task EditService(int serviceId)
+    {
+        var serviceToEdit = await _servicesService.GetByIdAsync(serviceId);
+
+        if(serviceToEdit == null)
+        {
+            return;
+        }
+
+        var trackingService = new AddServiceDto()
+        {
+            Title = serviceToEdit.Title,
+            Mileage = serviceToEdit.Mileage,
+            UserCarId = serviceToEdit.UserCarId,
+            DateOfService = serviceToEdit.DateOfService,
+            Description = serviceToEdit.Description,
+            Price = serviceToEdit.Price,
+            ServiceCategory = serviceToEdit.ServiceCategory
+        };
+
+        var parameters = new DialogParameters()
+        {
+            {
+                nameof(AddService_Dialog.TrackingService),
+                trackingService
+            }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+        };
+
+        var dialog = await _dialogService
+            .ShowAsync<AddService_Dialog>(
+            "Details Service",
+            parameters,
+            options
+        );
+
+        var dialogResult = await dialog.Result;
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            if (dialogResult.Data is AddServiceDto model)
+            {
+                await ViewModel.UpdateService(serviceId, model);
+                ViewModel.NavigateBackToServicesList();
+            }
+        }
     }
 
     private async Task AddService()

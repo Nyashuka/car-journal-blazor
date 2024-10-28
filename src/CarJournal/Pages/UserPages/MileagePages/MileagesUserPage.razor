@@ -24,7 +24,7 @@
     <MudButton Variant="Variant.Outlined"
                Color="Color.Warning"
                Class="mt-3" 
-        @onclick="ViewModel.UpdateMileage">
+        @onclick="UpdateMileage">
         Update
     </MudButton>
 </MudStack>
@@ -67,6 +67,33 @@
     {
         await ViewModel.LoadMileages();
         StateHasChanged();
+    }
+
+    private async Task UpdateMileage()
+    {
+        var selectedCar = await _selectedCarService.GetSelectedCar();
+        var validateData = await _mileageService
+            .ValidateNewMileage(ViewModel.MileageToAdd, selectedCar.Id);
+
+        if(validateData.IsValid)
+        {
+            await ViewModel.UpdateMileage();
+            StateHasChanged();
+        }
+        else
+        {
+            var parameters = new DialogParameters<Delete_Dialog>
+            {
+                { x => x.ContentText, validateData.ErrorMessage},
+                { x => x.ButtonText, "Ok" },
+                { x => x.Color, Color.Error },
+            };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+            var dialog = await _dialogService.ShowAsync<Delete_Dialog>("Update error", parameters, options);
+            var result = await dialog.Result;
+        }
     }
 
     private async Task DeleteRecord(int mileageRecordId)

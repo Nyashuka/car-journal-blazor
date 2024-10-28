@@ -70,12 +70,28 @@ public class ServiceRecordsListViewModel
                 null
             )
         );
+    }
+    
+    public async Task UpdateService(int serviceId, AddServiceDto addServiceDto)
+    {
+        var serviceModel = new ServiceRecord(
+                serviceId,
+                addServiceDto.Title,
+                addServiceDto.ServiceCategory.Id,
+                addServiceDto.UserCarId,
+                addServiceDto.Mileage,
+                addServiceDto.Price,
+                addServiceDto.Description,
+                addServiceDto.DateOfService ?? DateTime.Now,
+                null,
+                null
+            );
 
-        NavigateBackToServicesList();
+        await _serviceRecordService.UpdateServiceRecordAsync(serviceModel);
     }
 
     public void NavigateBackToServicesList()
     {
-        _navigationManager.NavigateTo(UrlConstants.ServiceRecordList);
+        _navigationManager.NavigateTo(UrlConstants.ServiceRecordList, true);
     }
 }

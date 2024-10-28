@@ -43,40 +43,21 @@ public class MileageService : IMileageService
 
     public async Task AddMileageRecordAsync(MileageRecord mileage)
     {
-        if(mileage.Mileage < 0)
-            throw new Exception("\nMILEAGE CANT BE LESS THAN 0\n");
-
-        var lastMileage =
-            await _mileageRepository.GetLastMileage(mileage.UserCarId);
-
-        var trackings =
-            await _trackingService.GetAllTrackingsByCarIdAsync(mileage.UserCarId, TrackingType.Mileage);
-
-        if(lastMileage == null ||
-            lastMileage.UpdatedAt.Date < DateTime.Today.Date &&
-            mileage.Mileage > lastMileage.Mileage)
+        var validateData = await ValidateNewMileage(mileage.Mileage, mileage.UserCarId);
+        if(validateData.IsValid)
         {
-            await _mileageRepository.AddAsync(mileage);
-            await _trackingService.UpdateTotalMileage(mileage);
-            return;
-        }
+            var lastMileage = await GetLastMileage(mileage.UserCarId);
 
-        if(lastMileage.UpdatedAt.Date == DateTime.Today &&
-            mileage.Mileage > lastMileage.Mileage)
-        {
-            var biggestStartMileageTracking = trackings
-                .Where(t => t.CreatedAt.Date == DateTime.Today.Date)
-                .OrderByDescending(t => t.MileageAtStart)
-                .FirstOrDefault();
-
-            if(biggestStartMileageTracking != null &&
-                biggestStartMileageTracking.MileageAtStart >= mileage.Mileage)
-                {
-                    throw new Exception("\nCan't set mileage less than existing Tracking's mileage at start");
-                }
-
-            lastMileage.UpdateData(mileage.Mileage, DateTime.UtcNow);
-            await UpdateMileageRecordAsync(lastMileage);
+            if(lastMileage != null &&
+                lastMileage.UpdatedAt.Date == DateTime.Now.Date)
+            {
+                lastMileage.UpdateData(mileage.Mileage, DateTime.UtcNow);
+                await UpdateMileageRecordAsync(lastMileage);
+            }
+            else
+            {
+                await AddMileageRecordAsync(mileage);
+            }
             await _trackingService.UpdateTotalMileage(mileage);
         }
     }
@@ -104,6 +85,17 @@ public class MileageService : IMileageService
             {
                 return new MileageValidationResult(false, "Mileage can't be less than exists tracking's start mileage");
             }
+        }
+
+        // ---
+        var mileages = await GetAllAsync(userCarId);
+        var lastMileage = await GetLastMileage(userCarId);
+        if(mileages.Count > 1 &&
+            lastMileage != null &&
+            lastMileage.UpdatedAt.Date != DateTime.Now.Date &&
+            newMileage <= lastMileage.Mileage)
+        {
+            return new MileageValidationResult(false, "Mileage must be greater than last record");
         }
 
         // ---

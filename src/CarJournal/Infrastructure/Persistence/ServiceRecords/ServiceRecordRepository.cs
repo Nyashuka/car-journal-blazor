@@ -1,4 +1,3 @@
-
 using CarJournal.Domain;
 
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +54,9 @@ public class ServiceRecordRepository : IServiceRecordRepository
     {
         using (var context = await _dbFactory.CreateDbContextAsync())
         {
-            return await context.ServiceRecords.FirstOrDefaultAsync(r => r.Id == id);
+            return await context.ServiceRecords
+                .Include(r => r.ServiceCategory)
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
     }
 
