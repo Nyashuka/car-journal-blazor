@@ -14,7 +14,7 @@
 
 <MudStack Style="margin: 0px 10px;" AlignItems="AlignItems.Start">
     <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Success" Class="mb-4"
-        OnClick="@ViewModel.NavigateToCreateTrackingPage"
+        OnClick="CreateTracking"
         StartIcon="@Icons.Material.Filled.Add">
         Create Tracking
     </MudButton>
@@ -31,7 +31,8 @@
         <MudText Typo="Typo.body1" Class="mt-3 mb-3">
             @tracking.MessageForReminder
         </MudText>
-        @if(@tracking.TotalMileage != null)
+        @if(tracking.TrackingType == TrackingType.Mileage &&
+            tracking.TotalMileage != null)
         {
             <MudStack Row="true">
                 <MudProgressLinear
@@ -45,10 +46,18 @@
                 </MudText>
             </MudStack>
         }
+        else if (tracking.TrackingType == TrackingType.Date &&
+                 tracking.EndDate.HasValue)
+        {
+            <MudText Typo="Typo.h6">End date @tracking.EndDate.Value.Date</MudText>
+            <MudText Class="mt-3" Typo="Typo.body1">
+                @((tracking.EndDate.Value.Date - DateTime.Today.Date).TotalDays) days left</MudText>
+        }
         <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" >
             <MudButton Variant="@_variant"
                 Color="Color.Primary"
-                Class="mt-3">
+                Class="mt-3"
+                @onclick="() => EditTracking(tracking)">
                 Details
             </MudButton>
             <MudButton
@@ -65,7 +74,8 @@
                 Delete
             </MudButton>
         </MudStack>
-        @if(tracking.TotalMileage >= tracking.LimitMileage ||
+        @if(tracking.TrackingType == TrackingType.Mileage &&
+            tracking.TotalMileage >= tracking.LimitMileage ||
             tracking.EndDate.HasValue &&
             tracking.EndDate.Value.Date == DateTime.Today.Date)
         {
@@ -105,6 +115,60 @@
         );
 
         await ViewModel.Initialize();
+    }
+
+    private async Task CreateTracking()
+    {
+        var parameters = new DialogParameters<Delete_Dialog>
+        {
+            { x => x.ButtonText, "Save" },
+            { x => x.Color, Color.Warning },
+        };
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+            };
+
+        var dialog = await _dialogService
+        .ShowAsync<CreateTracking_Dialog>(
+        "Add Tracking",
+        parameters,
+        options
+        );
+
+        var result = await dialog.Result;
+    }
+
+    private async Task EditTracking(Tracking tracking)
+    {
+        var trackingDto = new UpdateTrackingDto()
+        {
+            Id = tracking.Id,
+            Name = tracking.Name,
+            MessageForReminder = tracking.MessageForReminder
+        };
+
+        var parameters = new DialogParameters<EditTracking_Dialog>
+        {
+            { nameof(EditTracking_Dialog.UpdateTracking), trackingDto },
+            { x => x.ButtonText, "Save" },
+            { x => x.Color, Color.Success },
+        };
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+            };
+
+        var dialog = await _dialogService
+        .ShowAsync<EditTracking_Dialog>(
+        "Update Tracking",
+        parameters,
+        options
+        );
+
+        var result = await dialog.Result;
     }
 
     private async Task AddServiceAndResetTracking(Tracking tracking)

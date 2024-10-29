@@ -3,14 +3,6 @@
 
 @implements IDisposable
 
-@using CarJournal.Services.Client
-@using CarJournal.Services.Mileages
-@using CarJournal.Services.ServiceCategories
-@using CarJournal.Services.ServiceRecords
-@using CarJournal.Services.Trackings
-@using CarJournal.Services.UserCars
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-
 @inject IServiceCategoryService _categoriesService
 @inject ISelectedCarService _selectedCarService
 @inject IServiceRecordService _servicesService
@@ -55,15 +47,15 @@ else
 
     <MudAutocomplete T="TrackingType"
         Label="Tracking Type"
-        @bind-Value="selectedTrackingType"
+        @bind-Value="ViewModel.CreateTrackingDto.TrackingType"
         SearchFunc="@SearchTrackingType"
         ToStringFunc="@(e=> e==null?null : $"{e}")" Strict="false"/>
 
-    @if(selectedTrackingType == TrackingType.Date)
+    @if(ViewModel.CreateTrackingDto.TrackingType == TrackingType.Date)
     {
         <MudDatePicker Label="Notification date" @bind-Date="ViewModel.CreateTrackingDto.EndDate"/>
     }
-    @if(selectedTrackingType == TrackingType.Mileage)
+    @if(ViewModel.CreateTrackingDto.TrackingType == TrackingType.Mileage)
     {
         <MudTextField
             @bind-Value="@ViewModel.CreateTrackingDto.LimitMileage"
@@ -76,7 +68,6 @@ else
 
 @code {
     private CreateTrackingViewModel ViewModel { get; set; }
-    private TrackingType selectedTrackingType;
     private TrackingType[] trackingTypes = (TrackingType[])Enum.GetValues(typeof(TrackingType));
 
     protected override async Task OnInitializedAsync()

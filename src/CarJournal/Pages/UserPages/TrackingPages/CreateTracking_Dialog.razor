@@ -1,0 +1,121 @@
+@implements IDisposable
+
+@inject IServiceCategoryService _categoriesService
+@inject ISelectedCarService _selectedCarService
+@inject IServiceRecordService _servicesService
+@inject IUserCarsService _userCarService;
+@inject NavigationManager _navigationManager
+@inject ProtectedSessionStorage _protectedSessionStorage
+@inject ITrackingService _trackingService
+@inject IMileageService _mileageService
+
+<MudDialog>
+    <DialogContent>
+        @if(!ViewModel.HasTodayMileageRecord)
+        {
+            <MudAlert Severity="Severity.Error">For creating Tracking you may update your <a href="/mileages">Mileage</a></MudAlert>
+        }
+        else
+        {
+        <MudStack disabled="@(!ViewModel.HasTodayMileageRecord)" Style="max-width: 400px;">
+            <MudTextField
+                @bind-Value="@ViewModel.CreateTrackingDto.Name"
+                Label="Name"
+                Variant="Variant.Outlined" />
+
+            <MudTextField
+                @bind-Value="@ViewModel.CreateTrackingDto.MessageForReminder"
+                Label="Message for reminder"
+                Variant="Variant.Outlined" />
+
+            <MudAutocomplete T="TrackingType"
+                Label="Tracking Type"
+                @bind-Value="ViewModel.CreateTrackingDto.TrackingType"
+                SearchFunc="@SearchTrackingType"
+                ToStringFunc="@(e=> e==null?null : $"{e}")" Strict="false"/>
+
+            @if(ViewModel.CreateTrackingDto.TrackingType == TrackingType.Date)
+            {
+                <MudDatePicker Label="Notification date" @bind-Date="ViewModel.CreateTrackingDto.EndDate"/>
+            }
+            @if(ViewModel.CreateTrackingDto.TrackingType == TrackingType.Mileage)
+            {
+                <MudTextField
+                    @bind-Value="@ViewModel.CreateTrackingDto.LimitMileage"
+                    Label="Limit Miliage"
+                    Variant="Variant.Outlined" />
+            }
+        </MudStack>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string ContentText { get; set; }
+
+    [Parameter]
+    public string ButtonText { get; set; }
+
+    [Parameter]
+    public Color Color { get; set; }
+
+    private async Task Submit()
+    {
+        await ViewModel.CreateRecord();
+        MudDialog.Close(DialogResult.Ok(true));
+    } 
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private CreateTrackingViewModel ViewModel { get; set; }
+    private TrackingType[] trackingTypes = (TrackingType[])Enum.GetValues(typeof(TrackingType));
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new CreateTrackingViewModel(
+            _trackingService,
+            _navigationManager,
+            _selectedCarService,
+            _userCarService,
+            _mileageService
+        );
+
+        _selectedCarService.SelectedCarChangedAsync += OnSelectedCarChanged;
+
+        await ViewModel.InitializeAsync();
+        if(!ViewModel.HasTodayMileageRecord)
+        {
+            ButtonText = "To mileages";
+            Color = Color.Primary;
+        }
+    }
+
+    private async Task OnSelectedCarChanged(SelectedCarData selectedCarData)
+    {
+        await ViewModel.InitializeAsync();
+        StateHasChanged();
+    }
+
+    public async Task<IEnumerable<TrackingType>> SearchTrackingType(string value, CancellationToken token)
+    {
+        await Task.Delay(5, token);
+
+        if (string.IsNullOrEmpty(value))
+            return trackingTypes;
+
+        return trackingTypes.Where(x => x.ToString().Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    public void Dispose()
+    {
+        _selectedCarService.SelectedCarChangedAsync -= OnSelectedCarChanged;
+    }
+}

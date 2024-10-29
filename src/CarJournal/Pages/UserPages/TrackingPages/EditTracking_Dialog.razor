@@ -1,0 +1,77 @@
+@inject IServiceCategoryService _categoriesService
+@inject ISelectedCarService _selectedCarService
+@inject IServiceRecordService _servicesService
+@inject IUserCarsService _userCarService;
+@inject NavigationManager _navigationManager
+@inject ProtectedSessionStorage _protectedSessionStorage
+@inject ITrackingService _trackingService
+@inject IMileageService _mileageService
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Style="max-width: 400px;">
+            <MudTextField
+                @bind-Value="@UpdateTracking.Name"
+                Label="Name"
+                Variant="Variant.Outlined" />
+
+            <MudTextField
+                @bind-Value="@UpdateTracking.MessageForReminder"
+                Label="Message for reminder"
+                Variant="Variant.Outlined" />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">
+            @ButtonText
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string ContentText { get; set; }
+
+    [Parameter]
+    public string ButtonText { get; set; }
+
+    [Parameter]
+    public Color Color { get; set; }
+
+    [Parameter]
+    public UpdateTrackingDto UpdateTracking { get; set; }
+
+    private async Task Submit()
+    {
+        await SaveChanges();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public void NavigateBackToTrackingList()
+    {
+        _navigationManager.NavigateTo("/trackings", true);
+    }
+
+    public async Task SaveChanges()
+    {
+        var tracking = await _trackingService.GetByIdAsync(UpdateTracking.Id);
+        if(tracking != null)
+        {
+            tracking.Update(UpdateTracking.Name, UpdateTracking.MessageForReminder);
+            await _trackingService.UpdateTrackingAsync(tracking);
+        }
+
+        NavigateBackToTrackingList();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+}

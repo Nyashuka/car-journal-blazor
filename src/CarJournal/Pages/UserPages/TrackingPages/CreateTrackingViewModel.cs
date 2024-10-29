@@ -63,11 +63,22 @@ public class CreateTrackingViewModel
 
     public void NavigateBackToTrackingList()
     {
-        _navigationManager.NavigateTo("/trackings");
+        _navigationManager.NavigateTo("/trackings", true);
+    }
+
+    public void NavigateToMileages()
+    {
+        _navigationManager.NavigateTo("/mileages");
     }
 
     public async Task CreateRecord()
     {
+        if(!HasTodayMileageRecord)
+        {
+            NavigateToMileages();
+            return;
+        }
+
         var selectedCar = await _selectedCarService.GetSelectedCar();
 
         var lastMileage =

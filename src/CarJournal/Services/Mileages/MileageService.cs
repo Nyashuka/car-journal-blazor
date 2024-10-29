@@ -56,7 +56,7 @@ public class MileageService : IMileageService
             }
             else
             {
-                await AddMileageRecordAsync(mileage);
+                await _mileageRepository.AddAsync(mileage);
             }
             await _trackingService.UpdateTotalMileage(mileage);
         }

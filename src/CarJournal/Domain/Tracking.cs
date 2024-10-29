@@ -1,3 +1,5 @@
+using MudBlazor.Extensions;
+
 namespace CarJournal.Domain;
 
 public class Tracking
@@ -58,7 +60,22 @@ public class Tracking
         TotalMileage = 0;
         MileageAtStart = newStartMileage;
         UpdatedAt = DateTime.UtcNow;
+
+        if(TrackingType == TrackingType.Date && EndDate.HasValue)
+        {
+            EndDate =
+                DateTime.Now.AddDays(
+                    (EndDate.Value.Date - CreatedAt.Date).Days
+                );
+        }
+
         CreatedAt = UpdatedAt;
+    }
+
+    public void Update(string name, string messageForReminder)
+    {
+        Name = name;
+        MessageForReminder = messageForReminder;
     }
 
     public void Update(Tracking tracking)
