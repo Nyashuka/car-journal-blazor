@@ -13,6 +13,7 @@
 @inject ITrackingService _trackingService
 @inject ProtectedSessionStorage _protectedSessionStorage
 @inject IDialogService _dialogService
+@inject ISnackbar _snackbar
 
 <MudStack Style="max-width: 300px; margin: 0px 10px;" Row="true" AlignItems="AlignItems.Start"
     >
@@ -79,6 +80,11 @@
         {
             await ViewModel.UpdateMileage();
             StateHasChanged();
+
+            var trackings = await _trackingService.GetTrackingsReachedLimit(selectedCar.Id);
+
+            if(trackings.Count > 0)
+                _snackbar.Add("You have trackings that has reached limit!", Severity.Success);
         }
         else
         {

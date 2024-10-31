@@ -10,4 +10,5 @@ public interface ITrackingsRepository
     Task UpdateAsync(Tracking tracking);
     Task DeleteAsync(int id);
     Task<List<Tracking>> GetByParameters(TrackingType? type);
+    Task<List<Tracking>> GetTrackingsReachedLimit(int userCarId);
 }

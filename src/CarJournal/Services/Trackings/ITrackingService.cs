@@ -13,4 +13,6 @@ public interface ITrackingService
     Task UpdateTotalMileage(MileageRecord mileage);
     Task<Tracking?> GetTrackingById(int trackingId);
     Task ResetTracking(int trackingId);
+    Task<List<Tracking>> GetTrackingsReachedLimit(int userCarId);
+
 }

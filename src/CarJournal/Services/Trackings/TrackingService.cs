@@ -81,4 +81,9 @@ public class TrackingService : ITrackingService
     {
         return await _trackingsRepository.GetByIdAsync(trackingId);
     }
+
+    public async Task<List<Tracking>> GetTrackingsReachedLimit(int userCarId)
+    {
+        return await _trackingsRepository.GetTrackingsReachedLimit(userCarId);
+    }
 }

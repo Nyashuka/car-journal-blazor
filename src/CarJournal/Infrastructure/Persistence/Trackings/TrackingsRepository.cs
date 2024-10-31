@@ -1,6 +1,3 @@
-
-
-using System.Runtime.CompilerServices;
 using CarJournal.Domain;
 
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +60,18 @@ public class TrackingsRepository : ITrackingsRepository
                 .Where(t => t.TrackingType == type)
                 .Include(t => t.UserCar)
                 .ThenInclude(uc => uc.User)
+                .ToListAsync();
+        }
+    }
+
+    public async Task<List<Tracking>> GetTrackingsReachedLimit(int userCarId)
+    {
+        using(var context = _factory.CreateDbContext())
+        {
+            return await context.Trackings
+                .Where(t => t.UserCarId == userCarId &&
+                    t.TrackingType == TrackingType.Mileage &&
+                    t.TotalMileage >= t.LimitMileage)
                 .ToListAsync();
         }
     }
