@@ -1,4 +1,3 @@
-
 using CarJournal.Domain;
 using CarJournal.Factories;
 using CarJournal.Services.Notifications;
@@ -18,10 +17,10 @@ public class DailyDateTrackingJob : IDailyTrackingJob
     public async Task ExecuteAsync()
     {
         EmailNotificationSender notificationSender
-                    = new EmailNotificationSender("coc", "coc");
+                    = new EmailNotificationSender();
 
         MailMessageFactory mailMessageFactory
-                    = new MailMessageFactory("cocer");
+                    = new MailMessageFactory(notificationSender.GetEmailAddress);
 
         var trackings = await _trackingService
             .GetTrackingsByParameters(TrackingType.Date);

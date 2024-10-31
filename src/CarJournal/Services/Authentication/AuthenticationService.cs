@@ -22,7 +22,7 @@ public class AuthenticationService : IAuthenticationService
     {
         if(_userRepository.GetUserByEmail(email) is not User user)
         {
-            throw new Exception("User with giver email does not exists!");
+            throw new Exception("User with given email does not exists!");
         }
 
         if(!PasswordHasher.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
@@ -50,8 +50,13 @@ public class AuthenticationService : IAuthenticationService
 
         var role = _roleRepository.GetById(RolesStorage.User.Id);
 
-        User user = new User(email,
-                        passwordHash, passwordSalt, role.Id, role);
+        User user = new User(
+            email,
+            passwordHash,
+            passwordSalt,
+            role.Id,
+            role
+        );
 
         _userRepository.Add(user);
 

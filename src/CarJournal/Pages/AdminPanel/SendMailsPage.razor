@@ -1,0 +1,38 @@
+@page "/mails"
+@using CarJournal.Services.Notifications
+@using System.Net.Mail
+
+<MudStack>
+    <MudTextField @bind-Value="EmailToSend" Label="Email" Variant="Variant.Outlined"/>
+    <MudTextField @bind-Value="MessageToSend" Label="Message" Variant="Variant.Outlined"/>
+    <MudButton
+            Variant="Variant.Outlined"
+            StartIcon="@Icons.Material.Filled.Save"
+            DropShadow="false"
+            Color="Color.Success" Class="mt-3"
+            OnClick="SendMessage">
+        Send
+     </MudButton>
+</MudStack>
+
+@code {
+    private string EmailToSend { get; set; } = string.Empty;
+    private string MessageToSend { get; set; } = string.Empty;
+
+    private void SendMessage()
+    {
+        var sender = new EmailNotificationSender();
+
+        MailMessage mailMessage = new MailMessage
+        {
+            From = new MailAddress(sender.GetEmailAddress),
+            Subject = "Testove",
+            Body = MessageToSend,
+            IsBodyHtml = false,
+        };
+
+        mailMessage.To.Add(EmailToSend);
+
+        sender.SendMail(mailMessage);
+    }
+}

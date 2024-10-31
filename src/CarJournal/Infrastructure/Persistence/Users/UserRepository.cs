@@ -19,9 +19,21 @@ public class UserRepository : IUserRepository
         _dbContext.SaveChangesAsync();
     }
 
+    public void ChangeUserEmail(string newEmail)
+    {
+        throw new NotImplementedException();
+    }
+
     public User? GetUserByEmail(string email)
     {
         return _dbContext.Users.Include(u => u.Role)
                 .SingleOrDefault(user => user.Email == email);
+    }
+
+    public User? GetUserById(int id)
+    {
+        return _dbContext.Users
+            .Include(u => u.Role)
+            .SingleOrDefault(u => u.Id == id);
     }
 }

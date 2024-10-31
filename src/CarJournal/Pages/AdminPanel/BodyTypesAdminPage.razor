@@ -1,10 +1,6 @@
 @page "/admin/bodytypes"
 @attribute [Authorize(Roles = "admin")]
 
-@using CarJournal.Domain
-@using System.Net.Http.Json
-@using CarJournal.Services
-
 @inject IGenericService<BodyType> _bodyTypesService
 
 @if(_isCreating)

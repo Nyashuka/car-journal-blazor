@@ -18,7 +18,7 @@ public static class WebApplicationExtensions
     {
         var options = new RecurringJobOptions
         {
-            TimeZone = TimeZoneInfo.Local  // Використання налаштованого часового поясу
+            TimeZone = TimeZoneInfo.Local
         };
 
         app.UseHangfireDashboard();
@@ -33,7 +33,7 @@ public static class WebApplicationExtensions
         RecurringJob.AddOrUpdate<DailyDateTrackingJob>(
             "date-tracking",
             job => job.ExecuteAsync(),
-            "14 13 * * *", //minute hour day month year
+            "10 15 * * *", //minute hour day month year
             options
         );
 

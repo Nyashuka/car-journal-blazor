@@ -63,6 +63,8 @@ public static class ServiceCollectionExtensions
 
         services.AddAutoMapper(typeof(MappingProfile));
 
+        services.AddHttpContextAccessor();
+
         return services;
     }
 

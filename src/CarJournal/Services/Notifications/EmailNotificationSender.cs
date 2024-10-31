@@ -1,20 +1,20 @@
-using System.Net;
 using System.Net.Mail;
+
+using CarJournal.Factories;
 
 namespace CarJournal.Services.Notifications;
 
 public class EmailNotificationSender
 {
+    private readonly GmailSmtpClientFactory _authDataReader;
     private readonly SmtpClient _smtpClient;
+    public string GetEmailAddress => _authDataReader.EmailAddress;
 
-    public EmailNotificationSender(string senderMailAddress, string emailPassword)
+    public EmailNotificationSender()
     {
+        _authDataReader = new GmailSmtpClientFactory();
 
-        _smtpClient = new SmtpClient("smtp.gmail.com", 587)
-        {
-            Credentials = new NetworkCredential(senderMailAddress, emailPassword),
-            EnableSsl = true
-        };
+        _smtpClient = _authDataReader.CreateAuthorizedClient();
     }
 
     public void SendMail(MailMessage mailMessage)

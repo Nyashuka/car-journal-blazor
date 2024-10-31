@@ -1,2 +1,30 @@
 @page "/account"
 @attribute [Authorize(Roles = "user")]
+
+@inject IAccountService _accountService
+@inject IClientAuthenticationService _authService
+
+<MudStack Style="max-width: 500px;">
+    <MudText>
+        @AccountEmail
+    </MudText>
+</MudStack>
+
+@code {
+    private string AccountEmail { get; set; }
+   
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = await _authService.GetUserIdAsync();
+
+        if(string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        AccountEmail = await _accountService
+            .GetEmailByUserId(Convert.ToInt32(userId));        
+
+        
+    }
+}

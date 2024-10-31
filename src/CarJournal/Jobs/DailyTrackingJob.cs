@@ -23,10 +23,10 @@ public class DailyMileageTrackingJob
     public async Task ExecuteAsync()
     {
         EmailNotificationSender notificationSender
-                    = new EmailNotificationSender("coc", "coc");
+                    = new EmailNotificationSender();
 
         MailMessageFactory mailMessageFactory
-                    = new MailMessageFactory("cocer");
+                    = new MailMessageFactory(notificationSender.GetEmailAddress);
 
         var trackings = await _trackingService
             .GetTrackingsByParameters(TrackingType.Mileage);
@@ -35,7 +35,8 @@ public class DailyMileageTrackingJob
         {
             var lastMileage = await _mileageService.GetLastMileage(tracking.UserCarId);
 
-            if(lastMileage == null || lastMileage.UpdatedAt.Date == DateTime.Now.Date)
+            if(lastMileage == null ||
+                lastMileage.UpdatedAt.Date == DateTime.Now.Date)
             {
                 continue;
             }
@@ -43,8 +44,9 @@ public class DailyMileageTrackingJob
             if(tracking.UserCar == null)
                 continue;
 
+            var daysCountFromLastMileage =
+                (DateTime.Now.Date - lastMileage.UpdatedAt.Date).Days;
 
-            var daysCountFromLastMileage = (lastMileage.UpdatedAt.Date - DateTime.Now.Date).Days;
             var mileageDelta = lastMileage.Mileage - tracking.MileageAtStart;
             var newTotalMileage = mileageDelta +
                 tracking.UserCar.AverageMileage * daysCountFromLastMileage;
@@ -67,7 +69,5 @@ public class DailyMileageTrackingJob
                 }
             }
         }
-
-
     }
 }

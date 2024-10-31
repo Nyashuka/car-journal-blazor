@@ -1,0 +1,12 @@
+@page "/jobstime"
+
+<MudStack Row="true">
+    <MudTimePicker Label="24 hours" @bind-Time="_time" />
+    <MudButton/>
+</MudStack>
+
+@code {
+    private TimeSpan? _time;
+
+      
+}
