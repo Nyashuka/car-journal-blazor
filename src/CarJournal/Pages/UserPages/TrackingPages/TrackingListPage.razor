@@ -51,7 +51,23 @@
         {
             <MudText Typo="Typo.h6">End date @tracking.EndDate.Value.Date</MudText>
             <MudText Class="mt-3" Typo="Typo.body1">
-                @((tracking.EndDate.Value.Date - DateTime.Today.Date).TotalDays) days left</MudText>
+                @{
+                    var daysDifference = (tracking.EndDate.Value.Date - DateTime.Today.Date).TotalDays;
+                }
+
+                @if (daysDifference > 0)
+                {
+                    @(daysDifference + " days left")
+                }
+                else if (daysDifference == 0)
+                {
+                    @("Today")
+                }
+                else
+                {
+                    @(daysDifference * -1 + " days ago")
+                }
+            </MudText>
         }
         <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" >
             <MudButton Variant="@_variant"
