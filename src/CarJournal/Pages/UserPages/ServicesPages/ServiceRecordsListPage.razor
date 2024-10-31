@@ -47,7 +47,8 @@
                     Color="Color.Primary"
                     Class="mt-3"
                     @onclick="() => EditService(service.Id)">Details</MudButton>
-                <MudButton Variant="@_variant" Color="Color.Warning" Class="mt-3">Delete</MudButton>
+                <MudButton Variant="@_variant" 
+                    @onclick="() => DeleteService(service)" Color="Color.Warning" Class="mt-3">Delete</MudButton>
             </MudStack>
         </MudItem>
     </MudGrid>
@@ -132,6 +133,31 @@
                 await ViewModel.UpdateService(serviceId, model);
                 ViewModel.NavigateBackToServicesList();
             }
+        }
+    }
+
+    private async Task DeleteService(ServiceRecord service)
+    {
+        var parameters = new DialogParameters<Delete_Dialog>
+        {
+            { x => x.ContentText, "Do you really want to delete these records? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error },
+        };
+
+        var options = new DialogOptions()
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall
+        };
+
+        var dialog = await _dialogService.ShowAsync<Delete_Dialog>($"Delete {service.Title}?", parameters, options);
+        var result = await dialog.Result;
+
+        if(result != null && !result.Canceled)
+        {
+            await ViewModel.DeleteServiceAsync(service.Id);
+            ViewModel.NavigateBackToServicesList();
         }
     }
 

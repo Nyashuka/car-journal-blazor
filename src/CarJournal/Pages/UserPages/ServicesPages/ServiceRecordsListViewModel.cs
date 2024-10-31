@@ -14,6 +14,7 @@ public class ServiceRecordsListViewModel
     private readonly ISelectedCarService _selectedCarService;
     private readonly NavigationManager _navigationManager;
 
+
     public List<ServiceRecord> ServiceRecords { get; private set; }
     public List<ServiceCategory> ServiceCategories { get; private set; }
 
@@ -71,7 +72,7 @@ public class ServiceRecordsListViewModel
             )
         );
     }
-    
+
     public async Task UpdateService(int serviceId, AddServiceDto addServiceDto)
     {
         var serviceModel = new ServiceRecord(
@@ -88,6 +89,11 @@ public class ServiceRecordsListViewModel
             );
 
         await _serviceRecordService.UpdateServiceRecordAsync(serviceModel);
+    }
+
+    public async Task DeleteServiceAsync(int serviceId)
+    {
+        await _serviceRecordService.DeleteServiceRecordAsync(serviceId);
     }
 
     public void NavigateBackToServicesList()
