@@ -55,7 +55,7 @@ public class AddUserCarViewModel : ISearchCarComponents
 
     public void NavigateToGarage()
     {
-        _navigationManager.NavigateTo("/garage");
+        _navigationManager.NavigateTo("/garage", true);
     }
 
     public Task<IEnumerable<BodyType>> SearchBodyType(string value, CancellationToken token)
