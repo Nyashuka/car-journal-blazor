@@ -35,8 +35,7 @@ public class DailyMileageTrackingJob
         {
             var lastMileage = await _mileageService.GetLastMileage(tracking.UserCarId);
 
-            if(lastMileage == null ||
-                lastMileage.UpdatedAt.Date == DateTime.Now.Date)
+            if(lastMileage == null)
             {
                 continue;
             }
