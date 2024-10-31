@@ -4,12 +4,15 @@ using AutoMapper;
 using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Persistence.UserCars;
+using CarJournal.Services.AutoMileageCalculator;
+using CarJournal.Services.Mileages;
 
 namespace CarJournal.Services.UserCars;
 
 public class UserCarsService : IUserCarsService
 {
     private readonly IUserCarsRepository _userCarRepository;
+
     private readonly IMapper _mapper;
 
     public UserCarsService(IUserCarsRepository userCarRepository, IMapper mapper)
@@ -48,8 +51,20 @@ public class UserCarsService : IUserCarsService
         await _userCarRepository.UpdateAverageMileageAsync(userCarId, newAverageMileage);
     }
 
-    public async Task UpdateCurrentMileage(int userCarId, int mileage)
+    public async Task UpdateCurrentMileage(int userCarId, int mileage, List<MileageRecord> mileages)
     {
         await _userCarRepository.UpdateCurrentMileage(userCarId, mileage);
+
+        IAverageMileageCalculator averageMileageCalculator
+            = new AverageMileageCalculator();
+
+        var averageMileage = averageMileageCalculator.Calculate(
+            mileages
+        );
+
+        await UpdateAverageMileageAsync(
+            userCarId,
+            Convert.ToInt32(averageMileage)
+        );
     }
 }

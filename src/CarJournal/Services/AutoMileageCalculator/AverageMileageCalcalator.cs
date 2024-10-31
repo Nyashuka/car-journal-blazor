@@ -5,18 +5,22 @@ namespace CarJournal.Services.AutoMileageCalculator;
 
 public class AverageMileageCalculator : IAverageMileageCalculator
 {
-    public double Calculate(MileageRecord[] mileages)
+    public double Calculate(List<MileageRecord> mileages)
     {
-        if(mileages.Length < 2)
+        if(mileages.Count < 2)
             return 0;
+
+        var sortedMileagesArray = mileages
+            .OrderBy(m => m.UpdatedAt)
+            .ToArray();
 
         double totalAverageMileage = 0;
         int intervalsBetweenMileages = 0;
 
-        for(int i = 1; i < mileages.Length; i++)
+        for(int i = 1; i < sortedMileagesArray.Length; i++)
         {
-            double deltaMileage = mileages[i].Mileage - mileages[i - 1].Mileage;
-            double daysBetweenRecords = (mileages[i].UpdatedAt - mileages[i - 1].UpdatedAt).TotalDays;
+            double deltaMileage = sortedMileagesArray[i].Mileage - sortedMileagesArray[i - 1].Mileage;
+            double daysBetweenRecords = (sortedMileagesArray[i].UpdatedAt - sortedMileagesArray[i - 1].UpdatedAt).TotalDays;
 
             totalAverageMileage += deltaMileage / daysBetweenRecords;
             intervalsBetweenMileages++;

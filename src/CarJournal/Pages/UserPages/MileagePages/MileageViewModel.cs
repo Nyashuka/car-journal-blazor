@@ -71,28 +71,6 @@ public class MileageViewModel
         await _mileageService.AddMileageRecordAsync(newMileage);
 
         await LoadMileages();
-
-        await UpdateCarMileage(selectedCar);
-    }
-
-    private async Task UpdateCarMileage(SelectedCarData selectedCar)
-    {
-        await _userCarsService.UpdateCurrentMileage(selectedCar.Id, MileageToAdd);
-
-
-        IAverageMileageCalculator averageMileageCalculator
-            = new AverageMileageCalculator();
-
-        var averageMileage = averageMileageCalculator.Calculate(
-            (await _mileageService.GetAllAsync(selectedCar.Id))
-                                .OrderBy(m => m.UpdatedAt)
-                                .ToArray()
-        );
-
-        await _userCarsService.UpdateAverageMileageAsync(
-            selectedCar.Id,
-            Convert.ToInt32(averageMileage)
-        );
     }
 
     public async Task DeleteMileage(int mileageId)

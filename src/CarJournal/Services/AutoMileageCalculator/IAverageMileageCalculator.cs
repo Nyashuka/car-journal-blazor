@@ -4,5 +4,5 @@ namespace CarJournal.Services.AutoMileageCalculator;
 
 public interface IAverageMileageCalculator
 {
-    double Calculate(MileageRecord[] mileages);
+    double Calculate(List<MileageRecord> mileages);
 }

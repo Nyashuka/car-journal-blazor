@@ -58,6 +58,12 @@ public class MileageService : IMileageService
             {
                 await _mileageRepository.AddAsync(mileage);
             }
+
+            await _userCarsService.UpdateCurrentMileage(
+                mileage.UserCarId,
+                mileage.Mileage,
+                await GetAllAsync(mileage.UserCarId));
+
             await _trackingService.UpdateTotalMileage(mileage);
         }
     }
