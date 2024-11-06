@@ -36,7 +36,7 @@
     <MudItem xs="3" md="3">
         <MudText Typo="Typo.h5">@mileage.Mileage KM</MudText>
         <MudText Typo="Typo.body1" Class="mt-3 mb-3">
-            Last update @mileage.UpdatedAt
+            Last update @mileage.UpdatedAt.ToLocalTime()
         </MudText>
         @if(mileage.Id != ViewModel.LastMileage.Id)
         {

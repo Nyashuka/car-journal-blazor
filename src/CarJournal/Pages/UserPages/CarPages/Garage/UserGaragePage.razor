@@ -24,27 +24,14 @@
 {
     <MudCard Style="margin: 10px; padding: 20px;">
     <MudGrid>
-        @* <MudItem xs="3" md="3">
-            <MudImage
-                Src="https://www.mbusa.com/content/dam/mb-nafta/us/myco/my25/e-class/e-sedan/class-page/series/2025-E-SEDAN-CT-2-7-01-DR.jpg" 
-                Alt="Mercedes-Benz E-Class 2017"
-                Style="width: 100%; max-width: 300px; height: auto;" />
-        </MudItem> *@
         <MudItem xs="3" md="3">
             <MudText Typo="Typo.h6">@userCar.Name</MudText>
             <MudText Typo="Typo.h6">@userCar?.Car?.Model</MudText>
-            @* <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
-                <MudIcon Icon="@Icons.Material.Outlined.LocalGasStation" />
-                <MudText Typo="Typo.body2">@userCar?.Car?.Engine.EngineSize</MudText>
-                <MudIcon Icon="@Icons.Material.Outlined.Settings" Class="ml-4" />
-                <MudText Typo="Typo.body2">@userCar?.Car?.Gearbox.Name</MudText>
-            </MudStack> *@
+
             <MudText Class="mt-3" Typo="Typo.body1">Start mileage @userCar.StartMileage</MudText>
             <MudText Class="mt-3" Typo="Typo.body1">Current mileage @userCar.CurrentMileage</MudText>
             <MudText Class="mt-3" Typo="Typo.body1">Trackings count 0</MudText>
-            <MudText Typo="Typo.body1" Class="mt-3 mb-3">
-                Домашня
-            </MudText>
+
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudButton Variant="@_variant"
                     @onclick="() => NavigateToEdit(userCar.Id)"

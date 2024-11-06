@@ -20,7 +20,6 @@ public class ManufacturerController() : ControllerBase
         return Ok(id);
     }
 
-    [HttpPut("{id:int}")]
     public IActionResult UpsertManufacturer(int id, UpsertManufacturerRequest request)
     {
         return Ok(request);

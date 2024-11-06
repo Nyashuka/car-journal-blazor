@@ -44,7 +44,7 @@ public class TrackingListViewModel
         var selectedCar = await _selectedCarService.GetSelectedCar();
         var lastMileage = await _mileageService.GetLastMileage(selectedCar.Id);
 
-        return lastMileage.UpdatedAt.Date == DateTime.Today.Date;
+        return lastMileage.UpdatedAt.ToLocalTime().Date == DateTime.Today.ToLocalTime().Date;
     }
 
     public async Task Initialize()

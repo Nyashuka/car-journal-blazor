@@ -1,4 +1,5 @@
 @page "/account"
+@using System.ComponentModel.DataAnnotations
 @attribute [Authorize(Roles = "user")]
 
 @inject IAccountService _accountService
@@ -6,13 +7,32 @@
 
 <MudStack Style="max-width: 500px;">
     <MudText>
-        @AccountEmail
+        @CurrentAccountEmail
     </MudText>
+
+    <MudTextField
+        @bind-Value="@NewAccountEmail"
+        For="@(() => NewAccountEmail)"
+        Label="New Mail"
+        Variant="Variant.Outlined"/>
+
+    <MudButton
+        Color="Color.Warning"
+        Variant="Variant.Filled">
+        Change Email
+    </MudButton>
+</MudStack>
+
+<MudStack Style="max-width: 500px;">
+    
 </MudStack>
 
 @code {
-    private string AccountEmail { get; set; }
-   
+    [EmailAddress]
+    private string NewAccountEmail { get; set; } = string.Empty;
+
+    private string CurrentAccountEmail { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         var userId = await _authService.GetUserIdAsync();
@@ -22,9 +42,7 @@
             return;
         }
 
-        AccountEmail = await _accountService
+        CurrentAccountEmail = await _accountService
             .GetEmailByUserId(Convert.ToInt32(userId));        
-
-        
     }
 }

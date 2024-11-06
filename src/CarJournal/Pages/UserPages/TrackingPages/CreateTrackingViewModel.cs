@@ -55,7 +55,7 @@ public class CreateTrackingViewModel
             return;
         }
 
-        if(mileage.UpdatedAt.Date == DateTime.Today)
+        if(mileage.UpdatedAt.ToLocalTime().Date == DateTime.Today.ToLocalTime().Date)
         {
             HasTodayMileageRecord = true;
         }
