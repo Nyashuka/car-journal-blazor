@@ -14,10 +14,15 @@
     Add new Vendor
 </MudButton>
 
-    <MudDataGrid T="ServiceCategory" Items="@ViewModel.ServiceCategories"
-        Bordered="true" Dense="true"
+    <MudDataGrid T="ServiceCategory"
+        Items="@ViewModel.ServiceCategories"
+        Bordered="true"
+        Dense="true"
         SortMode="@SortMode.Single" ReadOnly="@_readOnly"
         EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
+        StartedEditingItem="@StartedEditingItem"
+        CanceledEditingItem="@CanceledEditingItem"
+        CommittedItemChanges="@CommittedItemChanges"
         EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
 
         <ToolBarContent>
@@ -33,15 +38,17 @@
         <Columns>
             <PropertyColumn Property="x => x.Id" Title="#" Editable="false" HeaderStyle="width: 5%;" />
             <PropertyColumn Property="x => x.Name" Title="Category Name"/>
-            @* <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
+           
+            <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit"
                             OnClick="@context.Actions.StartEditingItemAsync" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => ViewModel.DeleteRecord(@context.Item))" aria-label="delete" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                            OnClick="@(() => ViewModel.DeleteRecord(@context.Item))" aria-label="delete" />
                     </MudStack>
                 </CellTemplate>
-            </TemplateColumn> *@
+            </TemplateColumn>
 
         </Columns>
         <PagerContent>
@@ -59,5 +66,24 @@
     {
         ViewModel = new ServiceCategoriesViewModel(_categoriesService, _naviagationManager);
         await ViewModel.InitializeAsync();
+    }
+
+    private List<string> _events = new();
+    private string TextValue { get; set; } = string.Empty;
+
+    void StartedEditingItem(ServiceCategory item)
+    {
+        _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    void CanceledEditingItem(ServiceCategory item)
+    {
+        _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    async Task CommittedItemChanges(ServiceCategory item)
+    {
+        _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        await _categoriesService.UpdateServiceCategoryAsync(item);
     }
 }

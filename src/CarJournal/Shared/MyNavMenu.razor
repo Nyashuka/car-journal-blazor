@@ -5,7 +5,6 @@
 <MudNavMenu>
     <AuthorizeView Roles="user">
         <Authorized>
-            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
             <MudNavLink Href="/garage" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Garage">Garage</MudNavLink>
             <MudNavGroup Title="Service Journal" Icon="@Icons.Material.Filled.BuildCircle">
                 <MudNavLink Href="/services" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.BuildCircle">All</MudNavLink>
@@ -16,6 +15,7 @@
             </MudNavGroup>
             <MudNavLink Href="/mileages" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled._60fps">Mileages</MudNavLink>
             <MudNavLink Href="/trackings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.TrackChanges">Trackings</MudNavLink>
+            <MudNavLink Href="/cars/search" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Search">Search Cars</MudNavLink>
         </Authorized>
     </AuthorizeView>
     <AuthorizeView Roles="admin">

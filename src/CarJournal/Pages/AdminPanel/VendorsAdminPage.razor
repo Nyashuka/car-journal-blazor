@@ -14,6 +14,10 @@
     <MudTextField @bind-Value="VendorName" Label="Vendor Name" Variant="Variant.Outlined" />
 
     <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateVendor">Create</MudButton>
+
+    <MudText Color="Color.Error">
+        @ErrorMessage
+    </MudText>
 }
 else
 {
@@ -60,13 +64,24 @@ else
     private bool _isCreating = false;
     private string VendorName { get; set; } = string.Empty;
 
+    private string ErrorMessage { get; set; } = string.Empty;
+
     private async Task CreateVendor()
     {
+        if(string.IsNullOrEmpty(VendorName) ||
+            VendorName.Length < 3)
+        {
+            ErrorMessage = "Must be 3 or more characters";
+            StateHasChanged();
+            return;
+        }
+
         var result = await _vendorService.CreateVendor(VendorName);
         _vendors.Add(new Vendor(result.Id, result.Name));
 
         VendorName = string.Empty;
         _isCreating = false;
+        ErrorMessage = "";
     }
 
     // editing
@@ -95,6 +110,7 @@ else
     void CommittedItemChanges(Vendor item)
     {
         _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        _vendorService.UpdateAsync(item);
     }
 
     private Task OnSearch(string text)
@@ -117,5 +133,6 @@ else
     {
         _vendorService.DeleteVendor(vendor.Id);
         _vendors.Remove(vendor);
+        StateHasChanged();
     }
 }

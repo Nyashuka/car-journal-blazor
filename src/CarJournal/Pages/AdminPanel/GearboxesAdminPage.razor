@@ -14,6 +14,10 @@
     <MudTextField @bind-Value="Name" Label="Name" Variant="Variant.Outlined" />
 
     <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateEngine">Create</MudButton>
+
+    <MudText Color="Color.Error">
+        @ErrorMessage
+    </MudText>
 }
 else
 {
@@ -38,7 +42,7 @@ else
             <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit"
                             OnClick="@context.Actions.StartEditingItemAsync" />
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteRecord(@context.Item))" aria-label="delete" />
                     </MudStack>
@@ -60,8 +64,18 @@ else
     private bool _isCreating = false;
     private string Name { get; set; } = string.Empty;
 
+    private string ErrorMessage { get; set; } = string.Empty;
+
     private async Task CreateEngine()
     {
+        if(string.IsNullOrEmpty(Name) ||
+            Name.Length < 3)
+        {
+            ErrorMessage = "Must be 3 or more characters";
+            StateHasChanged();
+            return;
+        }
+
         await _gearboxService.AddAsync(new Gearbox(0, Name));
         _gearboxes = (await _gearboxService.GetAllAsync()).ToList();
 
@@ -90,9 +104,10 @@ else
         _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
 
-    void CommittedItemChanges(Gearbox item)
+    async Task CommittedItemChanges(Gearbox item)
     {
         _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        await _gearboxService.UpdateAsync(item);
     }
 
     private Task OnSearch(string text)
@@ -115,5 +130,6 @@ else
     {
         _gearboxService.DeleteAsync(record.Id);
         _gearboxes.Remove(record);
+        StateHasChanged();
     }
 }

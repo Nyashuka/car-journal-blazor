@@ -1,4 +1,5 @@
 
+using CarJournal.ClientDtos;
 using CarJournal.Domain;
 using CarJournal.Infrastructure.Persistence.Cars;
 using CarJournal.Services.DTOs;
@@ -29,7 +30,7 @@ public class CarService : ICarService
         return car;
     }
 
-    public async Task UpdateCarAsync(int id, UpdateCarDto updateCarDto)
+    public async Task UpdateCarAsync(int id, CreateCarDto updateCarDto)
     {
         var car = await _carRepository.GetByIdAsync(id);
         if (car == null)
@@ -38,13 +39,14 @@ public class CarService : ICarService
         }
 
         car.Model = updateCarDto.Model;
-        car.Series = updateCarDto.Model;
+        car.Series = updateCarDto.Series;
         car.Year = updateCarDto.Year;
-        car.BodyTypeId = updateCarDto.BodyTypeId;
-        car.EngineId = updateCarDto.EngineId;
-        car.FuelTypeId = updateCarDto.FuelTypeId;
-        car.GearboxId = updateCarDto.GearboxId;
-        car.VendorId = updateCarDto.VendorId;
+        car.BodyTypeId = updateCarDto.BodyType.Id;
+        car.EngineId = updateCarDto.Engine.Id;
+        car.FuelTypeId = updateCarDto.FuelType.Id;
+        car.GearboxId = updateCarDto.Gearbox.Id;
+        car.VendorId = updateCarDto.Vendor.Id;
+        car.DocumentationUrl = updateCarDto.DocumentationUrl;
 
         await _carRepository.UpdateAsync(car);
     }
@@ -70,8 +72,8 @@ public class CarService : ICarService
         return await _carRepository.GetAllCarsWithDetails();
     }
 
-    public async Task<List<Car>> SearchCars(string? vendor = null, string? model = null, int? year = null)
+    public async Task<List<Car>> SearchCars(string? vendor = null, string? series = null, int? year = null)
     {
-        return await _carRepository.SearchCars(vendor, model, year);
+        return await _carRepository.SearchCars(vendor, series, year);
     }
 }

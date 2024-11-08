@@ -1,10 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 using CarJournal.Attributes;
 
 namespace CarJournal.ClientDtos;
 
-public class LoginDto
+public class ChangeEmailDto
 {
+    [Required]
     [MyEmailAddress]
     public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
 }

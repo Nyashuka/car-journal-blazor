@@ -16,6 +16,6 @@ public interface ICarRepository
     Task<Car?> GetCarWithDetailsAsync(int id);
     Task<List<Car>> SearchCars(
         string? vendor = null,
-        string? model = null,
+        string? series = null,
         int? year = null);
 }

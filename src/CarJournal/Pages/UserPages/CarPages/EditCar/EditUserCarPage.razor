@@ -2,15 +2,13 @@
 @attribute [Authorize(Roles = "user")]
 
 @using AutoMapper
-@using CarJournal.Services.Authentication
-@using CarJournal.Services.Cars
-@using CarJournal.Services.UserCars
 
 @inject IClientAuthenticationService _authenticationService
 @inject IUserCarsService _userCarService
 @inject ICarService _carService;
 @inject NavigationManager _navigationManager;
 @inject IMapper _mapper
+@inject IAdminVendorService _vendorService
 
 <MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;" Row="true" StretchItems="StretchItems.None">
@@ -69,24 +67,42 @@
     <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Collapse Filters" : "Expand Filters")</MudButton>
         <MudDivider />
      <MudCollapse Expanded="_expanded">
-        <MudTextField @bind-Value="SelectCarViewModel.Vendor" Label="Vendor" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="SelectCarViewModel.Model" Label="Model" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="SelectCarViewModel.Year" Label="Year" Variant="Variant.Outlined" />
+        <MudAutocomplete T="Vendor" Label="Vendor"
+            SearchFunc="@SearchCarViewModel.SearchVendor"
+            ValueChanged="SearchCarViewModel.SelectVendor"
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+            Variant="@_variant" />
+
+        <MudAutocomplete T="string" Label="Series"
+            SearchFunc="@SearchCarViewModel.SearchSeries"
+            ValueChanged="SearchCarViewModel.SelectSeries"
+            Variant="@_variant" />
+
+        <MudAutocomplete T="string" Label="Year"
+            SearchFunc="@SearchCarViewModel.SearchYears"
+            ValueChanged="SearchCarViewModel.SelectYear"
+            Variant="@_variant" />
      </MudCollapse>
 </MudStack>
 
-@foreach(var car in SelectCarViewModel.Cars)
+@foreach(var car in SearchCarViewModel.Cars)
 {
     <MudCard Style="margin: 10px 10px; padding: 20px;">
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudText Typo="Typo.h6">@car?.Vendor?.Name @car.Model @car.Year</MudText>
+            <MudText Typo="Typo.h6">@car?.Vendor?.Name @car?.Series @car?.Model</MudText>
+            <MudText Typo="Typo.h6">@car.Year year</MudText>
+            <MudText Typo="Typo.body2">Engine Size @car?.Engine?.EngineSize л.</MudText>
+            <MudText Typo="Typo.body2">Body Type @car?.BodyType?.Name</MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudIcon Icon="@Icons.Material.Outlined.LocalGasStation" />
-                <MudText Typo="Typo.body2">@car.FuelType.Name, @car.Engine.EngineSize л.</MudText>
-                <MudIcon Icon="@Icons.Material.Outlined.Settings" Class="ml-4" />
-                <MudText Typo="Typo.body2">@car.Gearbox.Name</MudText>
+                <MudText Typo="Typo.body2">@car?.FuelType?.Name</MudText>
             </MudStack>
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
+                <MudIcon Icon="@Icons.Material.Outlined.Settings"/>
+                <MudText Typo="Typo.body2">@car?.Gearbox?.Name</MudText>
+            </MudStack>
+
             <MudDivider Style="max-width: 200px;margin: 10px 0px 10px 0px;"/>
             @if (SelectedCar != null && SelectedCar.Id == car.Id)
             {
@@ -119,7 +135,7 @@
         _expanded = !_expanded;
     }
     private EditUserCarViewModel ViewModel { get; set; }
-    private SearchCarsViewModel SelectCarViewModel { get; set; }
+    private SearchCarsViewModel SearchCarViewModel { get; set; }
 
     private Car? SelectedCar
     {
@@ -136,8 +152,8 @@
             _navigationManager
         );
 
-        SelectCarViewModel = new SearchCarsViewModel(_carService);
-        await SelectCarViewModel.InitializeAsync();
+        SearchCarViewModel = new SearchCarsViewModel(_carService, _vendorService);
+        await SearchCarViewModel.InitializeAsync();
     }
 
     protected override async Task OnParametersSetAsync()

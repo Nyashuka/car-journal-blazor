@@ -35,9 +35,10 @@ public class ServiceCategoriesViewModel
         _navigationManager.NavigateTo(UrlConstants.AdminCreateServiceCategory);
     }
 
-    public Task DeleteRecord(ServiceCategory serviceCategory)
+    public async Task DeleteRecord(ServiceCategory serviceCategory)
     {
-        throw new NotImplementedException();
+        await _serviceCategory.DeleteServiceCategoryAsync(serviceCategory.Id);
+        _navigationManager.NavigateTo(_navigationManager.Uri, true);
     }
 
     public Task OnSearch(string text)
@@ -49,4 +50,6 @@ public class ServiceCategoriesViewModel
     {
         throw new NotImplementedException();
     }
+
+
 }

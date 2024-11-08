@@ -47,4 +47,9 @@ public class AdminVendorService : IAdminVendorService
     {
         return await _vendorRepository.GetAllAsync();
     }
+
+    public async Task UpdateAsync(Vendor vendor)
+    {
+        await _vendorRepository.UpdateAsync(vendor);
+    }
 }

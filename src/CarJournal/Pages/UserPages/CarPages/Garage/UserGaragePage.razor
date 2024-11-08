@@ -26,11 +26,18 @@
     <MudGrid>
         <MudItem xs="3" md="3">
             <MudText Typo="Typo.h6">@userCar.Name</MudText>
-            <MudText Typo="Typo.h6">@userCar?.Car?.Model</MudText>
 
-            <MudText Class="mt-3" Typo="Typo.body1">Start mileage @userCar.StartMileage</MudText>
-            <MudText Class="mt-3" Typo="Typo.body1">Current mileage @userCar.CurrentMileage</MudText>
-            <MudText Class="mt-3" Typo="Typo.body1">Trackings count 0</MudText>
+            @{
+                var car = userCar?.Car;
+                if(car != null)
+                {
+                    <MudText Typo="Typo.h6">@car?.Vendor?.Name @car.Series @car.Model</MudText>
+                }
+            }
+
+            <MudText Class="mt-3" Typo="Typo.body1">Start mileage @userCar?.StartMileage</MudText>
+            <MudText Class="mt-3" Typo="Typo.body1">Current mileage @userCar?.CurrentMileage</MudText>
+            <MudText Class="mt-3" Typo="Typo.body1">Average Mileage @userCar?.AverageMileage KM</MudText>
 
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudButton Variant="@_variant"

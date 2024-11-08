@@ -1,5 +1,5 @@
+using CarJournal.ClientDtos;
 using CarJournal.Domain;
-using CarJournal.Services.DTOs;
 
 namespace CarJournal.Services.Cars;
 
@@ -9,7 +9,7 @@ public interface ICarService
     Task<IEnumerable<Car>> GetAllCarsAsync();
     Task<IEnumerable<Car>> GetAllCarsWithDetailsAsync();
     Task<Car?> GetCarByIdAsync(int id);
-    Task UpdateCarAsync(int id, UpdateCarDto updateCarDto);
+    Task UpdateCarAsync(int id, CreateCarDto updateCarDto);
     Task DeleteCarAsync(int id);
-    Task<List<Car>> SearchCars(string? vendor = null, string? model = null, int? year = null);
+    Task<List<Car>> SearchCars(string? vendor = null, string? series = null, int? year = null);
 }

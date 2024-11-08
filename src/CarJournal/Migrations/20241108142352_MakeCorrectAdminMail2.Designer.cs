@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CarJournal.Migrations
 {
     [DbContext(typeof(CarJournalDbContext))]
-    partial class CarJournalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241108142352_MakeCorrectAdminMail2")]
+    partial class MakeCorrectAdminMail2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -321,8 +324,8 @@ namespace CarJournal.Migrations
                         {
                             Id = -1,
                             Email = "admin@gmail.com",
-                            PasswordHash = new byte[] { 80, 94, 11, 64, 67, 41, 46, 7, 54, 74, 214, 243, 29, 91, 26, 105, 81, 152, 219, 10, 47, 146, 195, 143, 122, 170, 211, 200, 47, 26, 228, 222, 177, 4, 252, 160, 36, 26, 132, 201, 130, 34, 18, 102, 35, 8, 10, 81, 20, 16, 8, 17, 170, 114, 41, 181, 114, 144, 166, 97, 30, 254, 143, 12 },
-                            PasswordSalt = new byte[] { 209, 42, 201, 137, 65, 249, 109, 151, 222, 32, 212, 189, 189, 65, 153, 99, 237, 209, 164, 110, 132, 188, 148, 163, 203, 233, 149, 165, 172, 244, 8, 41, 127, 34, 44, 140, 149, 197, 139, 68, 181, 202, 208, 126, 31, 137, 218, 42, 77, 53, 44, 0, 126, 166, 219, 218, 1, 141, 66, 37, 93, 218, 122, 223, 172, 95, 74, 228, 250, 71, 214, 209, 81, 156, 34, 88, 220, 204, 183, 91, 68, 255, 250, 9, 5, 29, 101, 248, 90, 228, 145, 208, 111, 228, 98, 238, 209, 136, 92, 102, 91, 105, 232, 203, 90, 162, 213, 172, 195, 176, 249, 42, 130, 129, 204, 0, 159, 251, 193, 106, 57, 117, 171, 132, 245, 199, 174, 41 },
+                            PasswordHash = new byte[] { 114, 144, 20, 233, 66, 110, 48, 3, 56, 18, 127, 90, 249, 116, 170, 93, 253, 94, 233, 66, 114, 202, 12, 245, 174, 87, 47, 19, 244, 196, 101, 123, 35, 251, 135, 41, 39, 187, 145, 238, 35, 155, 194, 14, 112, 37, 31, 223, 133, 101, 217, 54, 200, 33, 71, 145, 79, 135, 163, 93, 202, 163, 197, 60 },
+                            PasswordSalt = new byte[] { 5, 123, 168, 197, 43, 202, 104, 74, 91, 158, 51, 133, 30, 232, 170, 238, 214, 169, 151, 111, 98, 93, 188, 160, 25, 47, 79, 88, 71, 2, 146, 202, 182, 188, 145, 189, 4, 27, 104, 173, 25, 216, 232, 41, 5, 10, 208, 61, 220, 199, 234, 25, 115, 195, 154, 59, 27, 71, 161, 196, 173, 250, 120, 118, 7, 10, 252, 102, 16, 76, 195, 146, 98, 148, 2, 91, 215, 178, 109, 170, 82, 198, 56, 221, 10, 134, 171, 54, 53, 191, 99, 42, 70, 174, 36, 163, 161, 143, 225, 254, 187, 51, 144, 86, 15, 31, 248, 119, 227, 183, 92, 188, 39, 254, 161, 227, 76, 8, 116, 70, 216, 10, 162, 228, 14, 60, 233, 68 },
                             RoleId = 2
                         });
                 });

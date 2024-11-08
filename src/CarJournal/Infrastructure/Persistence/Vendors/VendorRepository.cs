@@ -39,4 +39,10 @@ public class VendorRepository : IVendorRepository
     {
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task UpdateAsync(Vendor vendor)
+    {
+        _dbContext.Vendors.Update(vendor);
+        await _dbContext.SaveChangesAsync();
+    }
 }

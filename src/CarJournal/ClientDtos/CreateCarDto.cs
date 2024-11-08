@@ -4,6 +4,7 @@ namespace CarJournal.ClientDtos;
 
 public class CreateCarDto
 {
+    public int Id { get; set; }
     public string Model { get; set; } = string.Empty;
     public string Series { get; set; } = string.Empty;
     public int Year { get; set; }
@@ -16,4 +17,5 @@ public class CreateCarDto
     public int EngineId { get; set; }
     public int GearboxId { get; set; }
     public int FuelTypeId { get; set; }
+    public string DocumentationUrl { get; set; } = string.Empty;
 }

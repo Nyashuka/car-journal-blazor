@@ -8,4 +8,5 @@ public interface IAdminVendorService
     VendorResult EditVendor(int id, string name);
     void DeleteVendor(int id);
     Task<List<Vendor>> GetAllAsync();
+    Task UpdateAsync(Vendor vendor);
 }

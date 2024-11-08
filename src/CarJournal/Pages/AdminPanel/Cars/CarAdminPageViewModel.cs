@@ -3,6 +3,8 @@ using CarJournal.Domain;
 using CarJournal.Pages.Enums;
 using CarJournal.Services.Cars;
 
+using Microsoft.AspNetCore.Components;
+
 using MudBlazor;
 
 namespace CarJournal.Pages.AdminPanel.Cars;
@@ -19,10 +21,13 @@ public class CarAdminPageViewModel
 
     public FormState State = FormState.View;
 
-    public CarAdminPageViewModel(ICarService carService, CarComponentsData carComponentsData)
+    private readonly NavigationManager _navigationManager;
+
+    public CarAdminPageViewModel(ICarService carService, CarComponentsData carComponentsData, NavigationManager navigationManager)
     {
         _carService = carService;
         Components = carComponentsData;
+        _navigationManager = navigationManager;
     }
 
     public async Task Initialize()
@@ -30,9 +35,28 @@ public class CarAdminPageViewModel
         Cars = (await _carService.GetAllCarsWithDetailsAsync()).ToList();
     }
 
-    public async void OpenCreateMenu()
+    public async Task OpenCreateMenu()
     {
         State = FormState.Create;
+
+        await Components.LoadData();
+    }
+
+    public async Task EditItem(Car item)
+    {
+        CreateDto = new CreateCarDto()
+        {
+            Id = item.Id,
+            Vendor = item.Vendor,
+            Series = item.Series,
+            Model = item.Model,
+            Year = item.Year,
+            BodyType = item.BodyType,
+            Engine = item.Engine,
+            FuelType = item.FuelType,
+            Gearbox = item.Gearbox,
+            DocumentationUrl = item.DocumentationUrl == null ? "" : item.DocumentationUrl
+        };
 
         await Components.LoadData();
     }
@@ -56,28 +80,19 @@ public class CarAdminPageViewModel
         var car = new Car(0, CreateDto.Model, CreateDto.Series,
                             CreateDto.Year, CreateDto.Vendor.Id,
                             CreateDto.BodyType.Id, CreateDto.Engine.Id,
-                            CreateDto.Gearbox.Id, CreateDto.FuelType.Id);
+                            CreateDto.Gearbox.Id, CreateDto.FuelType.Id, CreateDto.DocumentationUrl);
 
         var createdCar = await _carService.CreateCarAsync(car);
 
         Cars.Add(createdCar);
+
+        _navigationManager.NavigateTo(_navigationManager.Uri, true);
     }
 
-    public void StartedEditingItem(Car item)
+    public async Task SaveItemChanges()
     {
-    }
-
-    public void CanceledEditingItem(Car item)
-    {
-    }
-
-    public void CommittedItemChanges(Car item)
-    {
-    }
-
-    public Task SaveItemChanges()
-    {
-        throw new NotImplementedException();
+        await _carService.UpdateCarAsync(CreateDto.Id, CreateDto);
+        _navigationManager.NavigateTo(_navigationManager.Uri, true);
     }
 
     public Task OnSearch(string text)
@@ -85,9 +100,9 @@ public class CarAdminPageViewModel
         return DataGrid.ReloadServerData();
     }
 
-    public void DeleteRecord(Car record)
+    public async Task DeleteRecord(Car record)
     {
-        _carService.DeleteCarAsync(record.Id);
+        await _carService.DeleteCarAsync(record.Id);
 
         Cars.Remove(record);
     }

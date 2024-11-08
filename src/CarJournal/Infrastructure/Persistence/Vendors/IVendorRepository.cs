@@ -9,4 +9,5 @@ public interface IVendorRepository
     Task<List<Vendor>> GetAllAsync();
     void Remove(Vendor vendor);
     Task Save();
+    Task UpdateAsync(Vendor vendor);
 }

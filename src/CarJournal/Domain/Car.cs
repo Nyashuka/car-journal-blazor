@@ -2,7 +2,17 @@ namespace CarJournal.Domain;
 
 public class Car
 {
-    public Car(int id, string model, string series, int year, int vendorId, int bodyTypeId, int engineId, int gearboxId, int fuelTypeId)
+    public Car(
+        int id,
+        string model,
+        string series,
+        int year,
+        int vendorId,
+        int bodyTypeId,
+        int engineId,
+        int gearboxId,
+        int fuelTypeId,
+        string? documentationUrl)
     {
         Id = id;
         Model = model;
@@ -13,6 +23,7 @@ public class Car
         EngineId = engineId;
         GearboxId = gearboxId;
         FuelTypeId = fuelTypeId;
+        DocumentationUrl = documentationUrl;
     }
 
     private Car() {}
@@ -26,6 +37,7 @@ public class Car
     public int EngineId { get; set; }
     public int GearboxId { get; set; }
     public int FuelTypeId { get; set; }
+    public string? DocumentationUrl { get; set; }
     public Vendor? Vendor { get; private set; }
     public BodyType? BodyType { get; private set; }
     public Engine? Engine { get; private set; }

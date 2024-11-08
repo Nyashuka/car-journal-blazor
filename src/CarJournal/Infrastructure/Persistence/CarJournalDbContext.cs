@@ -86,7 +86,7 @@ public class CarJournalDbContext : DbContext
 
         modelBuilder.Entity<User>()
             .HasData(
-                new User(-1, "admin", passwordHash, passwordSalt, RolesStorage.Admin.Id)
+                new User(-1, "admin@gmail.com", passwordHash, passwordSalt, RolesStorage.Admin.Id)
             );
     }
 }

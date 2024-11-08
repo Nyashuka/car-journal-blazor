@@ -42,7 +42,7 @@
             </AuthorizeView>
             <AuthorizeView Roles="user">
                 <Authorized>
-                    <MudMenuItem>Account Settings</MudMenuItem>
+                    <MudMenuItem Href="/account">Account Settings</MudMenuItem>
                 </Authorized>
             </AuthorizeView>
         </MudMenu>
@@ -52,7 +52,7 @@
     </MudDrawer>
     <MudMainContent Class="mt-4 px-4 pb-4">
         @Body
-    </MudMainContent>    //
+    </MudMainContent> 
 </MudLayout>
 
 @code {

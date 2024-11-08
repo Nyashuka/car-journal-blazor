@@ -1,46 +1,95 @@
-@* @page "/cars/search"
+@page "/cars/search"
+
+@using CarJournal.Services.Cars
+@using CarJournal.Services.Vendors
+
+@inject ICarService _carService
+@inject IAdminVendorService _vendorService
 
 <MudStack Direction="Row" Spacing="2">
     <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Collapse Filters" : "Expand Filters")</MudButton>
         <MudDivider />
      <MudCollapse Expanded="_expanded">
-                  <MudTextField @bind-Value="ViewModel.Vendor" Label="Vendor" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="ViewModel.Model" Label="Model" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="ViewModel.Year" Label="Year" Variant="Variant.Outlined" />
+        <MudAutocomplete T="Vendor" Label="Vendor"
+            SearchFunc="@ViewModel.SearchVendor"
+            ValueChanged="ViewModel.SelectVendor"
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+            Variant="@_variant" />
+
+        <MudAutocomplete T="string" Label="Series"
+            SearchFunc="@ViewModel.SearchSeries"
+            ValueChanged="ViewModel.SelectSeries"
+            Variant="@_variant" />
+
+        <MudAutocomplete T="string" Label="Year"
+            SearchFunc="@ViewModel.SearchYears"
+            ValueChanged="ViewModel.SelectYear"
+            Variant="@_variant" />
+
      </MudCollapse>
 </MudStack>
 
-@for(int i = 0; i < 8; i++)
+@foreach(var car in ViewModel.Cars)
 {
     <MudCard Style="margin: 10px 10px; padding: 20px;">
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudText Typo="Typo.h6">Mercedes-Benz E-Class 2017</MudText>
+            <MudText Typo="Typo.h6">@car?.Vendor?.Name @car?.Series @car?.Model</MudText>
+            <MudText Typo="Typo.h6">@car.Year year</MudText>
+            <MudText Typo="Typo.body2">Engine Size @car?.Engine?.EngineSize л.</MudText>
+            <MudText Typo="Typo.body2">Body Type @car?.BodyType?.Name</MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudIcon Icon="@Icons.Material.Outlined.LocalGasStation" />
-                <MudText Typo="Typo.body2">Дизель, 2 л.</MudText>
-                <MudIcon Icon="@Icons.Material.Outlined.Settings" Class="ml-4" />
-                <MudText Typo="Typo.body2">Автомат</MudText>
+                <MudText Typo="Typo.body2">@car?.FuelType?.Name</MudText>
             </MudStack>
-            <MudText Typo="Typo.body1" Style="margin: 10px 0px;" Class="mt-3 margin-top-3 margin-bottom-3">
-                idk, якийсь може опис
-            </MudText>
-            <MudButton Variant="@_variant" Color="Color.Primary" Class="margin-top-3 margin-bottom-3">Details</MudButton>
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
+                <MudIcon Icon="@Icons.Material.Outlined.Settings"/>
+                <MudText Typo="Typo.body2">@car?.Gearbox?.Name</MudText>
+            </MudStack>
+            <MudDivider Style="max-width: 200px;margin: 10px 0px 10px 0px;"/>
+            @if(!string.IsNullOrEmpty(car.DocumentationUrl))
+            {
+            <MudLink Href="@($"{car.DocumentationUrl}")" Target="_blank">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                    Open Documentation
+                </MudButton>
+            </MudLink>
+            }
         </MudItem>
     </MudGrid>
 </MudCard>
 <MudDivider />
-} 
+}
 
 @code {
     private Variant _variant = Variant.Outlined;
 
-    public SearchCarsViewModel ViewModel { get; set; } = new SearchCarsViewModel();
+    public SearchCarsViewModel ViewModel { get; set; }
 
     bool _expanded = false;
 
-    private void OnExpandCollapseClick() {
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new SearchCarsViewModel(_carService, _vendorService);
+        await ViewModel.InitializeAsync();
+    }
+
+    private void OnExpandCollapseClick()
+    {
         _expanded = !_expanded;
     }
+
+    private async Task OnVendorChanged(Vendor vendor)
+    {
+        await ViewModel.SelectVendor(vendor);
+    }
+
+    private async Task OnModelChanged(string vendor)
+    {
+
+    }
+
+    private async Task OnYearChanged(string vendor)
+    {
+    }
 }
-*@

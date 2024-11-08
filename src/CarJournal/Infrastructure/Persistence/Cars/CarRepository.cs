@@ -80,19 +80,19 @@ public class CarRepository : ICarRepository
 
     public async Task<List<Car>> SearchCars(
         string? vendor = null,
-        string? model = null,
+        string? series = null,
         int? year = null)
     {
         var query = _dbContext.Cars.AsQueryable();
 
         if (!string.IsNullOrEmpty(vendor))
         {
-            query = query.Where(car => car.Vendor.Name.Contains(vendor, StringComparison.InvariantCultureIgnoreCase));
+            query = query.Where(car => car.Vendor.Name.ToLower().Contains(vendor.ToLower()));
         }
 
-        if (!string.IsNullOrEmpty(model))
+        if (!string.IsNullOrEmpty(series))
         {
-            query = query.Where(car => car.Model.Contains(model, StringComparison.InvariantCultureIgnoreCase));
+            query = query.Where(car => car.Series.ToLower().Contains(series.ToLower()));
         }
 
         if (year != null)

@@ -25,10 +25,14 @@
         OnClick="@CreateEngine">
         Create
     </MudButton>
+
+    <MudText Color="Color.Error">
+        @ErrorMessage
+    </MudText>
 }
 else
 {
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Vendor</MudButton>
+    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Engine</MudButton>
 
     <MudDataGrid T="Engine" Items="@_engines"
         Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
@@ -51,7 +55,7 @@ else
             <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit"
                             OnClick="@context.Actions.StartEditingItemAsync" />
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteRecord(@context.Item))" aria-label="delete" />
                     </MudStack>
@@ -74,8 +78,18 @@ else
     private string EngineModel { get; set; } = string.Empty;
     private float EngineSize { get; set; }
 
+    private string ErrorMessage { get; set; } = string.Empty;
+
     private async Task CreateEngine()
     {
+        if(string.IsNullOrEmpty(EngineModel) ||
+            EngineModel.Length < 3)
+        {
+            ErrorMessage = "Must be 3 or more characters";
+            StateHasChanged();
+            return;
+        }
+
         await _engineService.Add(EngineModel, EngineSize);
         _engines = await _engineService.GetAllAsync();
 
@@ -111,6 +125,7 @@ else
     void CommittedItemChanges(Engine item)
     {
         _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        _engineService.Update(item.Id, item.Model, item.EngineSize);
     }
 
     private Task OnSearch(string text)
@@ -133,5 +148,6 @@ else
     {
         _engineService.Remove(engine.Id);
         _engines.Remove(engine);
+        StateHasChanged();
     }
 }

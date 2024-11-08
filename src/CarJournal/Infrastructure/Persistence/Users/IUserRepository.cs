@@ -4,8 +4,10 @@ namespace CarJournal.Persistence.Repositories;
 
 public interface IUserRepository
 {
-    public void Add(User user);
-    public User? GetUserByEmail(string email);
-    User? GetUserById(int id);
-    void ChangeUserEmail(string newEmail);
+    Task Add(User user);
+    Task<string?> GetEmailByUserId(int userId);
+    Task<User?> GetUserByEmail(string email);
+    Task<User?> GetUserById(int id);
+    Task ChangeUserEmail(int userId, string newEmail);
+    Task UpdateAsync(User user);
 }

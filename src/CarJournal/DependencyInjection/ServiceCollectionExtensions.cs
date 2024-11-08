@@ -12,6 +12,7 @@ using CarJournal.Infrastructure.Persistence.Vendors;
 using CarJournal.Mappings;
 using CarJournal.Persistence.Repositories;
 using CarJournal.Services;
+using CarJournal.Services.Account;
 using CarJournal.Services.Authentication;
 using CarJournal.Services.Cars;
 using CarJournal.Services.Client;
@@ -53,8 +54,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISelectedCarService, SelectedCarService>();
         services.AddScoped<ITrackingService, TrackingService>();
 
-
         services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
+
+        services.AddScoped<IAccountService, AccountService>();
 
         services.AddHangfire(config =>
             config.UseMemoryStorage());
@@ -85,6 +87,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITrackingsRepository, TrackingsRepository>();
 
         services.AddScoped(typeof(IDataRepository<>), typeof(DataRepository<>));
+
         return services;
     }
 

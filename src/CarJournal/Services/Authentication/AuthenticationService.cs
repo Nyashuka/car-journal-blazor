@@ -18,9 +18,9 @@ public class AuthenticationService : IAuthenticationService
         _roleRepository = roleRepository;
     }
 
-    public AuthenticationResult Login(string email, string password)
+    public async Task<AuthenticationResult> Login(string email, string password)
     {
-        if(_userRepository.GetUserByEmail(email) is not User user)
+        if(await _userRepository.GetUserByEmail(email) is not User user)
         {
             throw new Exception("User with given email does not exists!");
         }
@@ -37,9 +37,9 @@ public class AuthenticationService : IAuthenticationService
         );
     }
 
-    public AuthenticationResult Register(string email, string password)
+    public async Task<AuthenticationResult> Register(string email, string password)
     {
-        if(_userRepository.GetUserByEmail(email) is not null)
+        if(await _userRepository.GetUserByEmail(email) is not null)
         {
             throw new Exception("User with given email already exists.");
         }
@@ -58,7 +58,7 @@ public class AuthenticationService : IAuthenticationService
             role
         );
 
-        _userRepository.Add(user);
+        await _userRepository.Add(user);
 
         return new AuthenticationResult(
             user.Id,

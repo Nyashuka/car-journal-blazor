@@ -4,34 +4,79 @@
 
 @inject IAccountService _accountService
 @inject IClientAuthenticationService _authService
+@inject NavigationManager _navigationManager
 
 <MudStack Style="max-width: 500px;">
     <MudText>
         @CurrentAccountEmail
     </MudText>
+        <EditForm Model="@ChangeEmailDto"
+            OnValidSubmit="OnValidEmailSubmit">
+            <DataAnnotationsValidator/>
+            <MudTextField
+                @bind-Value="@ChangeEmailDto.Email"
+                For="@(() => ChangeEmailDto.Email)"
+                Label="New Mail"
+                InputType="InputType.Email"
+                Variant="Variant.Outlined"/>
 
-    <MudTextField
-        @bind-Value="@NewAccountEmail"
-        For="@(() => NewAccountEmail)"
-        Label="New Mail"
-        Variant="Variant.Outlined"/>
+            <MudButton
+                Color="Color.Warning"
+                Variant="Variant.Outlined"
+                ButtonType="ButtonType.Submit">
+                Change Email
+            </MudButton>
+        </EditForm>
 
-    <MudButton
-        Color="Color.Warning"
-        Variant="Variant.Filled">
-        Change Email
-    </MudButton>
+    <MudDivider Style="max-width: 200px;margin: 10px 0px 10px 0px;"/>
+
+    <EditForm Model="ChangePasswordDto" OnValidSubmit="OnValidPasswordSubmit">
+        <DataAnnotationsValidator/>
+
+        <MudTextField
+                @bind-Value="@ChangePasswordDto.OldPassword"
+                For="@(() => ChangePasswordDto.OldPassword)"
+                Label="Old Password"
+                InputType="InputType.Password"
+                Variant="Variant.Outlined"/>
+
+        <MudTextField
+                @bind-Value="@ChangePasswordDto.Password"
+                For="@(() => ChangePasswordDto.Password)"
+                Label="New Password"
+                InputType="InputType.Password"
+                Variant="Variant.Outlined"/>
+
+        <MudTextField
+                @bind-Value="@ChangePasswordDto.ConfirmPassword"
+                For="@(() => ChangePasswordDto.ConfirmPassword)"
+                Label="Confirm New Password"
+                InputType="InputType.Password"
+                Variant="Variant.Outlined"/>
+
+            <MudButton
+                Color="Color.Warning"
+                Variant="Variant.Outlined"
+                ButtonType="ButtonType.Submit">
+               Change Password
+            </MudButton>
+    </EditForm>
 </MudStack>
 
 <MudStack Style="max-width: 500px;">
-    
+    <MudText Color="Color.Error">
+        @ErrorMessage
+    </MudText>
 </MudStack>
 
 @code {
-    [EmailAddress]
-    private string NewAccountEmail { get; set; } = string.Empty;
+    private ChangeEmailDto ChangeEmailDto { get; set; } = new();
 
     private string CurrentAccountEmail { get; set; } = string.Empty;
+
+    private ChangePasswordDto ChangePasswordDto { get; set; } = new ();
+
+    private string ErrorMessage { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,7 +87,51 @@
             return;
         }
 
-        CurrentAccountEmail = await _accountService
-            .GetEmailByUserId(Convert.ToInt32(userId));        
+        var email = await _accountService
+            .GetEmailByUserId(Convert.ToInt32(userId));
+
+        CurrentAccountEmail = email == null ? string.Empty : email;
+    }
+
+    private async Task OnValidEmailSubmit(EditContext context)
+    {
+        StateHasChanged();
+
+        var userId = await _authService.GetUserIdAsync();
+
+        if(string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        await _accountService.ChangeEmail(Convert.ToInt32(userId), ChangeEmailDto.Email);
+        _navigationManager.NavigateTo(_navigationManager.Uri, true);
+    }
+
+    private async Task OnValidPasswordSubmit(EditContext context)
+    {
+        StateHasChanged();
+
+        var userId = await _authService.GetUserIdAsync();
+
+        if(string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        var result = await _accountService.ChangePassword(
+            Convert.ToInt32(userId),
+            ChangePasswordDto.OldPassword,
+            ChangePasswordDto.Password
+        );
+
+        if(result.IsSuccess)
+        {
+            _navigationManager.NavigateTo(_navigationManager.Uri, true);
+            return;
+        }
+
+        ErrorMessage = result.ErrorMessage;
+        StateHasChanged();
     }
 }

@@ -33,6 +33,7 @@ public class UserCarsRepository : IUserCarsRepository
                 .Where(uc => uc.UserId == userId)
                 .Include(uc => uc.User)
                 .Include(uc => uc.Car)
+                .Include(uc => uc.Car.Vendor)
                 .ToListAsync();
         }
     }

@@ -14,6 +14,7 @@
 @inject IGenericService<BodyType> _bodyTypesService
 @inject IGenericService<Engine> _engineService
 @inject IGenericService<FuelType> _fuelTypeService
+@inject NavigationManager _navigationManager
 
 @if(ViewModel.State == FormState.Create)
 {
@@ -29,12 +30,13 @@
         </MudButton>
     </MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;">
-        <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
-        <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
-        <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
-
         <MudAutocomplete T="Vendor" Label="Vendor" @bind-Value="ViewModel.CreateDto.Vendor" SearchFunc="@ViewModel.SearchVendor"
             ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
+
+        <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
+
         <MudAutocomplete T="Gearbox" Label="Gearbox" @bind-Value="ViewModel.CreateDto.Gearbox"
             SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
         <MudAutocomplete T="FuelType" Label="Fuel" @bind-Value="ViewModel.CreateDto.FuelType"
@@ -43,6 +45,8 @@
             SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
         <MudAutocomplete T="Engine" Label="Engine" @bind-Value="ViewModel.CreateDto.Engine" SearchFunc="@ViewModel.SearchEngine"
             ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" />
+
+        <MudTextField @bind-Value="ViewModel.CreateDto.DocumentationUrl" Label="Documentation URL" Variant="@_variant" />
     </MudStack>
 </MudStack>
 }
@@ -56,16 +60,17 @@ else if(ViewModel.State == FormState.Edit)
         </MudButton>
         <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
             OnClick="@ViewModel.SaveItemChanges">
-            Save editing
+            Save changes
         </MudButton>
     </MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;">
-        <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
-        <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
-        <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
-
         <MudAutocomplete T="Vendor" Label="Vendor" @bind-Value="ViewModel.CreateDto.Vendor" SearchFunc="@ViewModel.SearchVendor"
             ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
+        <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
+
+        <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
+
         <MudAutocomplete T="Gearbox" Label="Gearbox" @bind-Value="ViewModel.CreateDto.Gearbox"
             SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
         <MudAutocomplete T="FuelType" Label="Fuel" @bind-Value="ViewModel.CreateDto.FuelType"
@@ -74,18 +79,24 @@ else if(ViewModel.State == FormState.Edit)
             SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
         <MudAutocomplete T="Engine" Label="Engine" @bind-Value="ViewModel.CreateDto.Engine" SearchFunc="@ViewModel.SearchEngine"
             ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" />
+
+        <MudTextField @bind-Value="ViewModel.CreateDto.DocumentationUrl" Label="Documentation URL" Variant="@_variant" />
     </MudStack>
 </MudStack>
 }
 else
 {
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4"
-                OnClick="@ViewModel.OpenCreateMenu">Add new Car</MudButton>
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false" Color="Color.Primary" Class="mb-4"
+        OnClick="@ViewModel.OpenCreateMenu">Add new Car</MudButton>
 
     <MudDataGrid T="Car" Items="@ViewModel.Cars" Bordered="true" Dense="true"
-                    SortMode="@SortMode.Single" ReadOnly="@_readOnly"
-                    EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
-                    EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
+            SortMode="@SortMode.Single" ReadOnly="@_readOnly"
+            EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
+            StartedEditingItem="@StartedEditingItem"
+            CanceledEditingItem="@CanceledEditingItem"
+            CommittedItemChanges="@CommittedItemChanges"
+            EditTrigger="@(_editTriggerRowClick ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
 
         <ToolBarContent>
             <MudText Typo="Typo.h6">Cars</MudText>
@@ -99,14 +110,15 @@ else
         <Columns>
             <PropertyColumn Property="x => x.Id" Title="#" Editable="false" HeaderStyle="width: 5%;" />
             <PropertyColumn Property="x => x.Vendor.Name" Title="Vendor" />
-            <PropertyColumn Property="x => x.Model" Title="Model" />
             <PropertyColumn Property="x => x.Series" Title="Series" />
+            <PropertyColumn Property="x => x.Model" Title="Model" />
+            <PropertyColumn Property="x => x.Year" Title="Year" />
             <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
-                            OnClick="@(() => ViewModel.StartedEditingItem(@context.Item))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => ViewModel.DeleteRecord(@context.Item))" aria-label="delete" />
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit"
+                            OnClick="@(() => StartedEditingItem(@context.Item))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteRecord(@context.Item))" aria-label="delete" />
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
@@ -133,7 +145,33 @@ else
                                             _fuelTypeService, _bodyTypesService,
                                             _engineService);
 
-        ViewModel = new CarAdminPageViewModel(_carService, Componenets);
+        ViewModel = new CarAdminPageViewModel(_carService, Componenets, _navigationManager);
         await ViewModel.Initialize();
+    }
+
+    private List<string> _events = new();
+
+    public async Task StartedEditingItem(Car item)
+    {
+        ViewModel.State = FormState.Edit;
+        await ViewModel.EditItem(item);
+        StateHasChanged();
+    }
+
+    public void CanceledEditingItem(Car item)
+    {
+        _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    public void CommittedItemChanges(Car item)
+    {
+        _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        //await _carService.UpdateCarAsync(item);
+    }
+
+    public async Task DeleteRecord(Car car)
+    {
+        await ViewModel.DeleteRecord(car);
+        StateHasChanged();
     }
 }

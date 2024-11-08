@@ -18,6 +18,9 @@ public class CarConfigurations : IEntityTypeConfiguration<Car>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.HasIndex(c => c.Model)
+            .IsUnique();
+
         builder.Property(c => c.Series)
             .HasMaxLength(50);
 
@@ -49,8 +52,8 @@ public class CarConfigurations : IEntityTypeConfiguration<Car>
             .HasForeignKey(c => c.FuelTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(c => c.Model)
-            .IsUnique();
-    }
 
+        builder.Property(c => c.DocumentationUrl)
+            .IsRequired(false);
+    }
 }

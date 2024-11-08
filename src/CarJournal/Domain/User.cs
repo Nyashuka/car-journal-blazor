@@ -47,4 +47,15 @@ public class User
     {
         Id = id;
     }
+
+    public void ChangeEmail(string newEmail)
+    {
+        Email = newEmail;
+    }
+
+    public void ChangePassword(byte[] newHash, byte[] newSalt)
+    {
+        PasswordHash = newHash;
+        PasswordSalt = newSalt;
+    }
 }

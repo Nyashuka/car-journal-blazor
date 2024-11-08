@@ -14,10 +14,18 @@
     <MudTextField @bind-Value="Name" Label="Name" Variant="Variant.Outlined" />
 
     <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@CreateEngine">Create</MudButton>
+
+    <MudText Color="Color.Error">
+        @ErrorMessage
+    </MudText>
 }
 else
 {
-    <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4" OnClick="@OpenCreateMenu">Add new Vendor</MudButton>
+    <MudButton Variant="Variant.Filled"
+        DropShadow="false" Color="Color.Primary" Class="mb-4"
+        OnClick="@OpenCreateMenu">
+        Add new Fuel Type
+    </MudButton>
 
     <MudDataGrid T="FuelType" Items="@_fuelTypes" Bordered="true" Dense="true" SortMode="@SortMode.Single" ReadOnly="@_readOnly"
         EditMode="@(_isCellEditMode ? DataGridEditMode.Cell : DataGridEditMode.Form)"
@@ -38,7 +46,7 @@ else
             <TemplateColumn CellClass="d-flex justify-end" HeaderStyle="width: 5%;">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit"
                             OnClick="@context.Actions.StartEditingItemAsync" />
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteRecord(@context.Item))" aria-label="delete" />
                     </MudStack>
@@ -60,8 +68,18 @@ else
     private bool _isCreating = false;
     private string Name { get; set; } = string.Empty;
 
+    private string ErrorMessage { get; set; } = string.Empty;
+
     private async Task CreateEngine()
     {
+        if(string.IsNullOrEmpty(Name) ||
+            Name.Length < 3)
+        {
+            ErrorMessage = "Must be 3 or more characters";
+            StateHasChanged();
+            return;
+        }
+
         await _fuelTypesService.AddAsync(new FuelType(0, Name));
         _fuelTypes = (await _fuelTypesService.GetAllAsync()).ToList();
 
@@ -90,9 +108,10 @@ else
         _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
     }
 
-    void CommittedItemChanges(FuelType item)
+    async Task CommittedItemChanges(FuelType item)
     {
         _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        await _fuelTypesService.UpdateAsync(item);
     }
 
     private Task OnSearch(string text)
@@ -115,5 +134,6 @@ else
     {
         _fuelTypesService.DeleteAsync(record.Id);
         _fuelTypes.Remove(record);
+        StateHasChanged();
     }
 }

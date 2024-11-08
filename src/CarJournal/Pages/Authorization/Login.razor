@@ -19,7 +19,7 @@
             <MudCardContent>
                 <MudTextField Label="Email" Class="mt-3"
                               @bind-Value="_loginDto.Email" For="@(() => _loginDto.Email)" InputType="InputType.Text"/>
-                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                <MudTextField Label="Password" HelperText="Enter a strong password" Class="mt-3"
                               @bind-Value="_loginDto.Password" For="@(() => _loginDto.Password)" InputType="InputType.Password"/>
             </MudCardContent>
             <MudCardActions>
@@ -27,37 +27,43 @@
             </MudCardActions>
         </MudCard>
     </MudItem>
+
+    @if(!success)
+    {
     <MudItem xs="12" sm="5">
         <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
-            @if (success)
-            {
-                <MudText Color="Color.Success">Success</MudText>
-            }
-            else
-            {
-                <MudText Color="@Color.Error">
-                    <ValidationSummary />
-                    @_errorMessage
-                </MudText>
-            }
+            <MudText Color="@Color.Error">
+                @_errorMessage
+            </MudText>
         </MudPaper>
     </MudItem>
+    }
 </MudStack>
 </EditForm>
 
 @code {
-    private bool success;
+    private bool success = true;
     private LoginDto _loginDto = new LoginDto();
     private string _errorMessage = "";
 
     private async Task OnLoginClicked()
     {
         await _clientAuthenticationService.ClearSessionStorage();
-        
-        var authenticationResult = _authenticationService.Login(_loginDto.Email, _loginDto.Password);
-        await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
+        AuthenticationResult authenticationResult;
 
+        try
+        {
+            authenticationResult = await _authenticationService.Login(_loginDto.Email, _loginDto.Password);
+        }
+        catch(Exception ex)
+        {
+            success = false;
+            _errorMessage = ex.Message;
+            StateHasChanged();
+            return;
+        }
+
+        await _clientAuthenticationService.UpdateSessionStorage(authenticationResult.Token);
         _navigationManager.NavigateTo("/");
         _navigationManager.Refresh();
     }
