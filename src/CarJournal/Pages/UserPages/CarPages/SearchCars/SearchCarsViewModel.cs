@@ -47,7 +47,7 @@ public class SearchCarsViewModel
 
         Year = string.Empty;
         Series = string.Empty;
-        
+
         AllSeries = Cars.Select(c => c.Series).Distinct().ToList();
         Years = Cars.Select(c => c.Year.ToString()).Distinct().ToList();
     }

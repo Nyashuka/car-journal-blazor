@@ -42,21 +42,23 @@
         @if(SelectedCar == null)
         {
             <MudText>
-                <b>Car is not binding</b>
+                <b>Car is not binded</b>
             </MudText>
         }
         else
         {
             <MudAlert Severity="Severity.Success">
-                @SelectedCar?.Vendor?.Name @SelectedCar?.Model @SelectedCar?.Year
+                <MudText>@SelectedCar?.Vendor?.Name @SelectedCar?.Series @SelectedCar?.Model</MudText>
+                <MudText>@SelectedCar?.Year year</MudText>
+                <MudText>Body Type @SelectedCar?.BodyType?.Name</MudText>
+                <MudText>Fuel Type @SelectedCar?.FuelType?.Name</MudText>
+                <MudText>Engine Model @SelectedCar?.Engine?.Model  @SelectedCar?.Engine?.EngineSize l.</MudText>
+                <MudText>Gearbox @SelectedCar?.Gearbox?.Name</MudText>
             </MudAlert>
             <MudButton Variant="@_variant" @onclick="ClearBindedCar">
                 Clear
             </MudButton>
         }
-        @* <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Class="mb-4">
-            Bind car
-        </MudButton> *@
     </MudStack>
 </MudStack>
 
@@ -90,7 +92,7 @@
         <MudItem xs="12" md="6">
             <MudText Typo="Typo.h6">@car?.Vendor?.Name @car?.Series @car?.Model</MudText>
             <MudText Typo="Typo.h6">@car.Year year</MudText>
-            <MudText Typo="Typo.body2">Engine Size @car?.Engine?.EngineSize л.</MudText>
+            <MudText Typo="Typo.body2">Endine Model @car?.Engine?.Model  @car?.Engine?.EngineSize л.</MudText>
             <MudText Typo="Typo.body2">Body Type @car?.BodyType?.Name</MudText>
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Class="mt-3">
                 <MudIcon Icon="@Icons.Material.Outlined.LocalGasStation" />

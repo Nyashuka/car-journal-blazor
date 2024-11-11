@@ -19,9 +19,19 @@ public class UserCarsRepository : IUserCarsRepository
         using (var context = _factory.CreateDbContext())
         {
             return await context.UserCars
-                .Include(uc => uc.User)
-                .Include(uc => uc.Car).AsSplitQuery()
-                .FirstOrDefaultAsync(uc => uc.Id == id);
+            .Include(uc => uc.User)
+            .Include(uc => uc.Car)
+                .ThenInclude(c => c.Vendor)
+            .Include(uc => uc.Car)
+                .ThenInclude(c => c.BodyType)
+            .Include(uc => uc.Car)
+                .ThenInclude(c => c.Engine)
+            .Include(uc => uc.Car)
+                .ThenInclude(c => c.Gearbox)
+            .Include(uc => uc.Car)
+                .ThenInclude(c => c.FuelType)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(uc => uc.Id == id);
         }
     }
 
