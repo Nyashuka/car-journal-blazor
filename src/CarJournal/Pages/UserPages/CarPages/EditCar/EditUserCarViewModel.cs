@@ -16,10 +16,10 @@ public class EditUserCarViewModel : ISearchCarComponents
     private readonly IMapper _mapper;
     private readonly NavigationManager _navigationManager;
 
-    public UpdateUserCarDto UserCarDto { get; private set; } = new UpdateUserCarDto();
+    public UpdateUserCarDto UserCarDto { get; set; } = new UpdateUserCarDto();
     public List<Car> SearchedCars { get; set; } = new List<Car>();
 
-    public string BindedCarText { get; private set; } = string.Empty;
+    public string BindedCarText { get; set; } = string.Empty;
 
     public EditUserCarViewModel(
         IUserCarsService userCarsService,

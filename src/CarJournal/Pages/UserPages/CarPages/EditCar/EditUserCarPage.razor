@@ -169,12 +169,14 @@
     private void SelectCar(Car car)
     {
         SelectedCar = car;
+        ViewModel.UserCarDto.CarId = car.Id;
         StateHasChanged();
     }
 
     private void ClearBindedCar()
     {
         SelectedCar = null;
+        ViewModel.UserCarDto.CarId = null;
         StateHasChanged();
     }
 }

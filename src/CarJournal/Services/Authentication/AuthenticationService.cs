@@ -48,14 +48,11 @@ public class AuthenticationService : IAuthenticationService
                         out byte[] passwordHash,
                         out byte[] passwordSalt);
 
-        var role = _roleRepository.GetById(RolesStorage.User.Id);
-
         User user = new User(
             email,
             passwordHash,
             passwordSalt,
-            role.Id,
-            role
+            RolesStorage.User.Id
         );
 
         await _userRepository.Add(user);
@@ -63,7 +60,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult(
             user.Id,
             user.Email,
-            _jwtTokenGenerator.GenerateToken(user.Id, user.Role.Name)
+            _jwtTokenGenerator.GenerateToken(user.Id, RolesStorage.User.Name)
         );
     }
 }

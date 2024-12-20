@@ -1,5 +1,3 @@
-using CarJournal.Api.Authentication;
-
 namespace CarJournal.Services.Authentication;
 
 public interface IAuthenticationService

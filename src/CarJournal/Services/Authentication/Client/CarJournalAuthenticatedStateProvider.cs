@@ -39,7 +39,7 @@ public class CarJournalAuthenticationStateProvider : AuthenticationStateProvider
         {
             return await Task.FromResult(new AuthenticationState(_anonymousPrincipals));
         }
-        
+
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimPrincipal)));
 
         return await Task.FromResult(new AuthenticationState(claimPrincipal));

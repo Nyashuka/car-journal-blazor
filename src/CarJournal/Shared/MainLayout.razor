@@ -12,7 +12,11 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <AuthorizeView>
+            <Authorized>
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            </Authorized>
+        </AuthorizeView>
         <AuthorizeView Roles="user">
             <Authorized>
                 <SelectCarComponent/>
@@ -47,9 +51,13 @@
             </AuthorizeView>
         </MudMenu>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <MyNavMenu/>
-    </MudDrawer>
+    <AuthorizeView>
+        <Authorized>
+            <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+                <MyNavMenu/>
+            </MudDrawer>
+        </Authorized>
+    </AuthorizeView>
     <MudMainContent Class="mt-4 px-4 pb-4">
         @Body
     </MudMainContent> 

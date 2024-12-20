@@ -14,7 +14,7 @@ public class User
     public User(string email, byte[] passwordHash,
                 byte[] passwordSalt, int roleId)
     {
-        Id = 0;
+        Id = -5;
         Email = email;
         PasswordHash = passwordHash;
         PasswordSalt = passwordSalt;
@@ -24,7 +24,7 @@ public class User
     public User(string email, byte[] passwordHash,
                 byte[] passwordSalt, int roleId, Role role) : this(email, passwordHash, passwordSalt, roleId)
     {
-        Id = 0;
+        Id = -5;
         Email = email;
         PasswordHash = passwordHash;
         PasswordSalt = passwordSalt;
