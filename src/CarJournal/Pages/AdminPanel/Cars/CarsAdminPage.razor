@@ -31,20 +31,20 @@
     </MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;">
         <MudAutocomplete T="Vendor" Label="Vendor" @bind-Value="ViewModel.CreateDto.Vendor" SearchFunc="@ViewModel.SearchVendor"
-            ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null"/>
         <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
         <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
 
         <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
 
         <MudAutocomplete T="Gearbox" Label="Gearbox" @bind-Value="ViewModel.CreateDto.Gearbox"
-            SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+            SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null"/>
         <MudAutocomplete T="FuelType" Label="Fuel" @bind-Value="ViewModel.CreateDto.FuelType"
-            SearchFunc="@ViewModel.SearchFuelType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+							 SearchFunc="@ViewModel.SearchFuelType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null" />
         <MudAutocomplete T="BodyType" Label="Body" @bind-Value="ViewModel.CreateDto.BodyType"
-            SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+							 SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null" />
         <MudAutocomplete T="Engine" Label="Engine" @bind-Value="ViewModel.CreateDto.Engine" SearchFunc="@ViewModel.SearchEngine"
-            ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" />
+							 ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" MaxItems="null" />
 
         <MudTextField @bind-Value="ViewModel.CreateDto.DocumentationUrl" Label="Documentation URL" Variant="@_variant" />
     </MudStack>
@@ -65,20 +65,21 @@ else if(ViewModel.State == FormState.Edit)
     </MudStack>
     <MudStack Style="width: 400px; margin: 0 10px;">
         <MudAutocomplete T="Vendor" Label="Vendor" @bind-Value="ViewModel.CreateDto.Vendor" SearchFunc="@ViewModel.SearchVendor"
-            ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+            ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant"
+							 MaxItems="null" />
         <MudTextField @bind-Value="ViewModel.CreateDto.Series" Label="Series" Variant="@_variant" />
         <MudTextField @bind-Value="ViewModel.CreateDto.Model" Label="Model" Variant="@_variant" />
 
         <MudTextField @bind-Value="ViewModel.CreateDto.Year" Label="Year of ..." Variant="@_variant" />
 
         <MudAutocomplete T="Gearbox" Label="Gearbox" @bind-Value="ViewModel.CreateDto.Gearbox"
-            SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+							 SearchFunc="@ViewModel.SearchGearbox" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null" />
         <MudAutocomplete T="FuelType" Label="Fuel" @bind-Value="ViewModel.CreateDto.FuelType"
-            SearchFunc="@ViewModel.SearchFuelType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+							 SearchFunc="@ViewModel.SearchFuelType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null" />
         <MudAutocomplete T="BodyType" Label="Body" @bind-Value="ViewModel.CreateDto.BodyType"
-            SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" />
+            SearchFunc="@ViewModel.SearchBodyType" ToStringFunc="@(e=> e==null?null : $"{e.Name}")" Variant="@_variant" MaxItems="null"/>
         <MudAutocomplete T="Engine" Label="Engine" @bind-Value="ViewModel.CreateDto.Engine" SearchFunc="@ViewModel.SearchEngine"
-            ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" />
+							 ToStringFunc="@(e=> e==null?null : $"{e.Model}")" Variant="@_variant" MaxItems="null" />
 
         <MudTextField @bind-Value="ViewModel.CreateDto.DocumentationUrl" Label="Documentation URL" Variant="@_variant" />
     </MudStack>

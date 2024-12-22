@@ -18,9 +18,6 @@ public class CarConfigurations : IEntityTypeConfiguration<Car>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.HasIndex(c => c.Model)
-            .IsUnique();
-
         builder.Property(c => c.Series)
             .HasMaxLength(50);
 
