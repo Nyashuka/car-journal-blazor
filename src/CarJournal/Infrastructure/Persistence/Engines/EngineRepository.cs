@@ -42,5 +42,6 @@ public class EngineRepository : IEngineRepository
     public void Update(Engine engine)
     {
         _dbContext.Set<Engine>().Update(engine);
+        _dbContext.SaveChanges();
     }
 }

@@ -37,8 +37,13 @@ public class EngineService : IEngineService
         await _engineRepository.Save();
     }
 
-    public Task Update(int id, string model, float size)
+    public async Task Update(int id, string model, float size)
     {
-        throw new NotImplementedException();
+        var engineToEdit = _engineRepository.GetById(id);
+        if(engineToEdit is not null)
+        {
+            engineToEdit.Update(model, size);
+            _engineRepository.Update(engineToEdit);
+        }
     }
 }
