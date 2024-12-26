@@ -93,7 +93,7 @@
         @if(tracking.TrackingType == TrackingType.Mileage &&
             tracking.TotalMileage >= tracking.LimitMileage ||
             tracking.EndDate.HasValue &&
-            tracking.EndDate.Value.Date == DateTime.Today.Date)
+            tracking.EndDate.Value.Date == DateTime.Today.Date.ToUniversalTime())
         {
         <MudStack AlignItems="AlignItems.Start">
             <MudButton
